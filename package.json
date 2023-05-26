@@ -1,0 +1,20 @@
+{
+  "name": "wgpu-exercises",
+  "version": "1.0.0",
+  "description": "A simple WebGPU exercise",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc && vite build",
+    "start": "vite"
+  },
+  "author": "Sébastien Guimmara",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.0.4",
+    "vite": "^4.3.9"
+  },
+  "dependencies": {
+    "@webgpu/types": "^0.1.32"
+  }
+}

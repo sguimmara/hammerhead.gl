@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2020", "DOM"],
+    "module": "system",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "outDir": "dist",
+    "sourceMap": true,
+    "typeRoots": [ "./node_modules/@webgpu/types", "./node_modules/@types"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["**/*.spec.ts"]
+}
