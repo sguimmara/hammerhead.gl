@@ -1,5 +1,5 @@
-import { VertexBufferSlot } from './constants';
-import BufferGeometry from './geometries/BufferGeometry';
+import { VertexBufferSlot } from '../constants';
+import BufferGeometry from '../geometries/BufferGeometry';
 
 class BufferStore {
     private device: GPUDevice;

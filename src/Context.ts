@@ -1,7 +1,7 @@
 import chroma, { Color } from "chroma-js";
 
-import ShaderStore from "./ShaderStore";
-import WebGPURenderer from "./WebGPURenderer";
+import ShaderStore from "./renderer/ShaderStore";
+import WebGPURenderer from "./renderer/WebGPURenderer";
 
 class Context {
     canvas: HTMLCanvasElement;

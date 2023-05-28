@@ -1,10 +1,10 @@
 import chroma from "chroma-js";
-import Material from "./materials/Material";
-import Mesh from "./objects/Mesh";
+import Material from "../materials/Material";
+import Mesh from "../objects/Mesh";
 import ShaderStore from './ShaderStore';
 import RenderSceneStage from "./pipelines/RenderSceneStage";
 import BufferStore from "./BufferStore";
-import { VertexBufferSlot } from "./constants";
+import { VertexBufferSlot } from "../constants";
 
 const DEFAULT_CLEAR_COLOR = chroma('black');
 
