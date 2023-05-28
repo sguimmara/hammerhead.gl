@@ -1,9 +1,10 @@
-import chroma, { Color } from "chroma-js";
+import chroma from "chroma-js";
 import Material from "./materials/Material";
 import Mesh from "./objects/Mesh";
 import ShaderStore from './ShaderStore';
-import RenderPass from "./pipelines/RenderPass";
-import BufferGeometry from "./geometries/BufferGeometry";
+import RenderSceneStage from "./pipelines/RenderSceneStage";
+import BufferStore from "./BufferStore";
+import { VertexBufferSlot } from "./constants";
 
 const DEFAULT_CLEAR_COLOR = chroma('black');
 
@@ -12,10 +13,10 @@ class WebGPURenderer {
     private device: GPUDevice;
     private pipelines: Map<number, GPURenderPipeline>;
     private context: GPUCanvasContext;
-    private clearColor: chroma.Color;
-    private renderPass: RenderPass;
-    private vertexBuffers: Map<number, GPUBuffer>;
-    private indexBuffers: Map<number, GPUBuffer>;
+    private renderPass: RenderSceneStage;
+    private bufferStore: BufferStore;
+
+    clearColor: chroma.Color;
 
     constructor(device: GPUDevice, shaderStore: ShaderStore, context: GPUCanvasContext) {
         this.shaderStore = shaderStore;
@@ -23,9 +24,8 @@ class WebGPURenderer {
         this.pipelines = new Map();
         this.context = context;
         this.clearColor = DEFAULT_CLEAR_COLOR;
-        this.renderPass = new RenderPass();
-        this.vertexBuffers = new Map();
-        this.indexBuffers = new Map();
+        this.renderPass = new RenderSceneStage();
+        this.bufferStore = new BufferStore(device);
     }
 
     private getShaderModule(material: Material) {
@@ -62,7 +62,13 @@ class WebGPURenderer {
                     {
                         arrayStride: 3 * 4,
                         attributes: [
-                            { shaderLocation: 0, offset: 0, format: 'float32x3' } // position
+                            { shaderLocation: VertexBufferSlot.Vertex, offset: 0, format: 'float32x3' }, // position
+                        ]
+                    },
+                    {
+                        arrayStride: 2 * 4,
+                        attributes: [
+                            { shaderLocation: VertexBufferSlot.TexCoord, offset: 0, format: 'float32x2' } // texcoord
                         ]
                     }
                 ]
@@ -79,38 +85,21 @@ class WebGPURenderer {
         return pipeline;
     }
 
-    private getVertexBuffer(geometry: BufferGeometry): GPUBuffer {
-        if (this.vertexBuffers.has(geometry.id)) {
-            return this.vertexBuffers.get(geometry.id);
+    renderMesh(mesh: Mesh, pass: GPURenderPassEncoder) {
+        const material = mesh.material;
+        const geometry = mesh.geometry;
+
+        pass.setPipeline(this.getPipeline(material));
+
+        const vertices = this.bufferStore.getVertexBuffer(geometry, VertexBufferSlot.Vertex);
+        pass.setVertexBuffer(VertexBufferSlot.Vertex, vertices);
+        const texcoord = this.bufferStore.getVertexBuffer(geometry, VertexBufferSlot.TexCoord);
+        if (texcoord) {
+            pass.setVertexBuffer(VertexBufferSlot.TexCoord, texcoord);
         }
+        pass.setIndexBuffer(this.bufferStore.getIndexBuffer(geometry), "uint16");
 
-        const gpuBuffer = this.device.createBuffer({
-            size: geometry.vertexBuffer.byteLength,
-            usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
-        });
-
-        this.vertexBuffers.set(geometry.id, gpuBuffer);
-
-        this.device.queue.writeBuffer(gpuBuffer, 0, geometry.vertexBuffer);
-
-        return gpuBuffer;
-    }
-
-    private getIndexBuffer(geometry: BufferGeometry): GPUBuffer {
-        if (this.indexBuffers.has(geometry.id)) {
-            return this.indexBuffers.get(geometry.id);
-        }
-
-        const gpuBuffer = this.device.createBuffer({
-            size: geometry.indexBuffer.byteLength,
-            usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
-        });
-
-        this.indexBuffers.set(geometry.id, gpuBuffer);
-
-        this.device.queue.writeBuffer(gpuBuffer, 0, geometry.indexBuffer);
-
-        return gpuBuffer;
+        pass.drawIndexed(geometry.indexCount);
     }
 
     render(list : Iterable<Mesh>) {
@@ -121,18 +110,8 @@ class WebGPURenderer {
             .withClearColor(this.clearColor)
             .begin(encoder);
 
-        const pass = scenePass.pass;
-
         for (const mesh of list) {
-            const material = mesh.material;
-            const geometry = mesh.geometry;
-
-            pass.setPipeline(this.getPipeline(material));
-
-            pass.setVertexBuffer(0, this.getVertexBuffer(geometry));
-            pass.setIndexBuffer(this.getIndexBuffer(geometry), "uint16");
-
-            pass.drawIndexed(geometry.indexCount);
+            this.renderMesh(mesh, scenePass.getPass());
         }
 
         scenePass.finish();

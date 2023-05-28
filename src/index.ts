@@ -1,7 +1,8 @@
 import Context from './Context';
 import Mesh from './objects/Mesh';
 import ScreenQuadMaterial from './materials/ScreenQuadMaterial';
-import BufferGeometry from './geometries/BufferGeometry';
+import chroma from 'chroma-js';
+import GeometryBuilder from './geometries/GeometryBuilder';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -9,8 +10,9 @@ Context.create(canvas)
     .then(ctx => {
         const quad = new Mesh({
             material: new ScreenQuadMaterial(),
-            geometry: BufferGeometry.screenQuad(),
+            geometry: GeometryBuilder.screenQuad(),
         });
+        ctx.renderer.clearColor = chroma('pink');
         ctx.renderer.render([quad]);
 
         const observer = new ResizeObserver(entries => {

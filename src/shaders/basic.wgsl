@@ -3,26 +3,19 @@ struct VSOutput {
     @location(0) color: vec4f,
 };
 
-fn toColor(v: vec3f) -> vec4f {
-    return vec4f(
-        (v.x + 1.0) / 2.0,
-        (v.y + 1.0) / 2.0,
-        0.0,
-        1.0
-    );
-}
-
 struct Vertex {
     @location(0) position: vec3f,
+    @location(1) texcoord: vec2f,
 };
 
 @vertex fn vs(
    vertex: Vertex,
 ) -> VSOutput {
     var output: VSOutput;
-    var position = vertex.position;
-    output.position = vec4f(position, 1.0);
-    output.color = toColor(position);
+
+    output.position = vec4f(vertex.position, 1.0);
+    output.color = vec4f(vertex.texcoord, 0.0, 1.0);
+
     return output;
 }
 
