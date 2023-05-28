@@ -1,21 +1,21 @@
 class ShaderStore {
     device: GPUDevice;
-    modules: Map<string, GPUShaderModule>
+    modules: Map<number, GPUShaderModule>
     constructor(device: GPUDevice) {
         this.device = device;
-        this.modules = new Map<string, GPUShaderModule>();
+        this.modules = new Map<number, GPUShaderModule>();
     }
 
-    store(id: string, code: string) {
+    store(id: number, code: string) {
         const shaderModule = this.device.createShaderModule({
-            label: id,
+            label: `${id}`,
             code,
         });
 
         this.modules.set(id, shaderModule);
     }
 
-    get(id: string): GPUShaderModule {
+    get(id: number): GPUShaderModule {
         return this.modules.get(id);
     }
 }

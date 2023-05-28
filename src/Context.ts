@@ -1,8 +1,7 @@
 import chroma, { Color } from "chroma-js";
 
-import triangle from './shaders/triangle.wgsl';
-import triangleRgb from './shaders/triangle-rgb.wgsl';
 import ShaderStore from "./ShaderStore";
+import WebGPURenderer from "./WebGPURenderer";
 
 class Context {
     canvas: HTMLCanvasElement;
@@ -12,41 +11,15 @@ class Context {
     view: GPUTextureView;
 
     shaderStore: ShaderStore;
+    renderer: WebGPURenderer;
 
     constructor(canvas: HTMLCanvasElement, context: GPUCanvasContext, device: GPUDevice) {
         this.canvas = canvas;
         this.context = context;
         this.device = device;
-
         this.shaderStore = new ShaderStore(device);
 
-        this.shaderStore.store('triangle', triangle);
-        this.shaderStore.store('triangle-rgb', triangleRgb);
-    }
-
-    private createRenderPipeline(shaderId: string) {
-        const shaderModule = this.shaderStore.get(shaderId);
-        if (!shaderModule) {
-            throw new Error(`no shader module found with id ${shaderId}`);
-        }
-
-        const target: GPUColorTargetState = {
-            format: navigator.gpu.getPreferredCanvasFormat(), // TODO save
-        };
-
-        return this.device.createRenderPipeline({
-            label: `pipeline for '${shaderId}'`,
-            layout: 'auto',
-            vertex: {
-                module: shaderModule,
-                entryPoint: 'vs',
-            },
-            fragment: {
-                module: shaderModule,
-                entryPoint: 'fs',
-                targets: [target]
-            }
-        });
+        this.renderer = new WebGPURenderer(this.device, this.shaderStore, this.context);
     }
 
     private beginCanvasPass(options: { clearColor: Color }) {
@@ -67,35 +40,55 @@ class Context {
         return { pass, encoder };
     }
 
-    renderTriangle() {
-        const clearColor = chroma('pink');
+    // renderTriangleUniform() {
+    //     const uniformBufsize =
+    //         4 * 4 +
+    //         2 * 4 +
+    //         2 * 4;
+    //     const uniformBuf = this.device.createBuffer({
+    //         size: uniformBufsize,
+    //         usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    //     });
 
-        const { pass, encoder } = this.beginCanvasPass({ clearColor });
+    //     const uniformValues = new Float32Array(uniformBufsize / 4);
+    //     uniformValues.set([0, 1, 0, 1], 0);
+    //     uniformValues.set([1, 1.2], 4);
+    //     uniformValues.set([0, 0.3], 6);
 
-        pass.setPipeline(this.createRenderPipeline('triangle'));
-        pass.draw(3);
+    //     const pipeline = this.createRenderPipeline('triangle-uniforms');
+    //     const bindGroup = this.device.createBindGroup({
+    //         layout: pipeline.getBindGroupLayout(0),
+    //         entries: [
+    //             { binding: 0, resource: { buffer: uniformBuf }}
+    //         ]
+    //     });
 
-        pass.end();
+    //     this.device.queue.writeBuffer(uniformBuf, 0, uniformValues);
 
-        const cmdBuf = encoder.finish();
+    //     const { pass, encoder } = this.beginCanvasPass({ clearColor: chroma('black') });
 
-        this.device.queue.submit([cmdBuf]);
-    }
+    //     pass.setPipeline(pipeline);
+    //     pass.setBindGroup(0, bindGroup);
+    //     pass.draw(3);
+    //     pass.end();
 
-    renderTriangleRgb() {
-        const clearColor = chroma('pink');
+    //     this.device.queue.submit([encoder.finish()]);
+    // }
 
-        const { pass, encoder } = this.beginCanvasPass({ clearColor });
+    // renderTriangleRgb() {
+    //     const clearColor = chroma('pink');
 
-        pass.setPipeline(this.createRenderPipeline('triangle-rgb'));
-        pass.draw(3);
+    //     const { pass, encoder } = this.beginCanvasPass({ clearColor });
 
-        pass.end();
+    //     pass.setPipeline(this.createRenderPipeline('triangle-rgb'));
+    //     pass.draw(3);
 
-        const cmdBuf = encoder.finish();
+    //     pass.end();
 
-        this.device.queue.submit([cmdBuf]);
-    }
+    //     const cmdBuf = encoder.finish();
+
+    //     this.device.queue.submit([cmdBuf]);
+    // }
 
     /**
      * Clears the canvas.

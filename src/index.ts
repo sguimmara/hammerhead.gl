@@ -1,12 +1,17 @@
-import chroma from 'chroma-js';
 import Context from './Context';
+import Mesh from './objects/Mesh';
+import ScreenQuadMaterial from './materials/ScreenQuadMaterial';
+import BufferGeometry from './geometries/BufferGeometry';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
 Context.create(canvas)
     .then(ctx => {
-        // ctx.clearCanvas(chroma.rgb(0, 255, 255, 255));
-        ctx.renderTriangleRgb();
+        const quad = new Mesh({
+            material: new ScreenQuadMaterial(),
+            geometry: BufferGeometry.screenQuad(),
+        });
+        ctx.renderer.render([quad]);
 
         const observer = new ResizeObserver(entries => {
             for (const entry of entries) {
@@ -15,8 +20,7 @@ Context.create(canvas)
                 const height = entry.contentBoxSize[0].blockSize;
                 canvas.width = Math.min(width, ctx.device.limits.maxTextureDimension2D);
                 canvas.height = Math.min(height, ctx.device.limits.maxTextureDimension2D);
-                // re-render
-                ctx.renderTriangleRgb();
+                ctx.renderer.render([quad]);
               }
         });
 
