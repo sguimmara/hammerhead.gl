@@ -1,7 +1,7 @@
 import Texture from "../textures/Texture";
 
-class  TextureStore {
-    private readonly textures: Map<number, GPUTexture>;
+class TextureStore {
+    private readonly textures: Map<number, { gpuTexture: GPUTexture, sampler: GPUSampler, view: GPUTextureView }>;
     private readonly device: GPUDevice;
 
     constructor(device: GPUDevice) {
@@ -9,7 +9,7 @@ class  TextureStore {
         this.device = device;
     }
 
-    getTexture(texture: Texture) {
+    getTexture(texture: Texture): { gpuTexture: GPUTexture; sampler: GPUSampler; view: GPUTextureView; } {
         if (this.textures.has(texture.id)) {
             return this.textures.get(texture.id);
         }
@@ -20,15 +20,21 @@ class  TextureStore {
             usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST
         });
 
-        this.textures.set(texture.id, gpuTexture);
+        const sampler = this.device.createSampler({
+            magFilter: "linear",
+        });
+
+        const result = { gpuTexture, sampler, view: gpuTexture.createView() };
+
+        this.textures.set(texture.id, result);
 
         this.device.queue.writeTexture(
             { texture: gpuTexture },
             texture.getData(),
-            { bytesPerRow: texture.width * 4 },
+            { bytesPerRow: texture.width * 4 },
             { width: texture.width, height: texture.height });
 
-        return gpuTexture;
+        return result;
     }
 }
 

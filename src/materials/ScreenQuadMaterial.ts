@@ -1,10 +1,11 @@
 import Material from "./Material";
 
 import shaderCode from '../shaders/basic.wgsl';
+import Texture from "../textures/Texture";
 
 class ScreenQuadMaterial extends Material {
-    constructor() {
-        super({ shaderCode });
+    constructor(texture : Texture) {
+        super({ shaderCode, texture });
     }
 }
 

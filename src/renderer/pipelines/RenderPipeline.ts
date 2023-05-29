@@ -1,0 +1,95 @@
+import chroma, { Color } from "chroma-js";
+import BufferGeometry from "../../geometries/BufferGeometry";
+import GeometryBuilder from "../../geometries/GeometryBuilder";
+import Mesh from "../../objects/Mesh";
+import BufferStore from "../BufferStore";
+import ShaderStore from "../ShaderStore";
+import TextureStore from "../TextureStore";
+import RenderSceneStage from "./RenderSceneStage";
+import Stage from "./Stage";
+import Material from "../../materials/Material";
+import PostProcessingStage from "./PostProcessingStage";
+
+class RenderPipeline {
+    private readonly stages: Stage[];
+    private readonly device: GPUDevice;
+    private readonly shaderStore: ShaderStore;
+    private readonly bufferStore: BufferStore;
+    private readonly textureStore: TextureStore;
+    private readonly sceneStage: any;
+
+    private finalRenderTexture: GPUTexture;
+    private intermediateTextures : GPUTexture[];
+
+    private clearColor: Color;
+
+    constructor(
+        device: GPUDevice,
+        bufferStore: BufferStore,
+        shaderStore: ShaderStore,
+        textureStore: TextureStore
+    ) {
+        this.device = device;
+        this.shaderStore = shaderStore;
+        this.bufferStore = bufferStore;
+        this.textureStore = textureStore;
+        this.sceneStage = new RenderSceneStage(this.device, this.bufferStore, this.shaderStore, this.textureStore);
+        this.stages = [this.sceneStage];
+        this.clearColor = chroma('black'); // TODO Constant
+        this.intermediateTextures = [null, null];
+    }
+
+    private createSwapTexture(reference: GPUTexture) {
+        return this.device.createTexture({
+            label: 'swap',
+            dimension: '2d',
+            format: reference.format,
+            size: [reference.width, reference.height],
+            usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING
+        });
+    }
+
+    addStage(material: Material) {
+        const stage = new PostProcessingStage(this.device, this.bufferStore, this.shaderStore, this.textureStore)
+            .withMaterial(material);
+
+        this.stages.push(stage);
+    }
+
+    render(meshes: Iterable<Mesh>, target: GPUTexture) {
+        const encoder = this.device.createCommandEncoder();
+
+        if (this.finalRenderTexture != target) {
+            this.intermediateTextures.forEach(t => {
+                t?.destroy();
+            })
+            this.intermediateTextures[0] = this.createSwapTexture(target);
+            this.intermediateTextures[1] = this.createSwapTexture(target);
+            this.finalRenderTexture = target;
+        }
+
+        this.sceneStage
+            .withOutput(this.stages.length > 1 ? this.intermediateTextures[0] : target)
+            .withClearColor(this.clearColor)
+            .withMeshes(meshes)
+            .execute(encoder);
+
+        if (this.stages.length > 1) {
+            for (let i = 1; i < this.stages.length; i++) {
+                const prev = this.stages[i - 1];
+                const stage = this.stages[i];
+                const isLast = i == this.stages.length - 1;
+                stage.withInput(prev.getOutput());
+                const output = isLast
+                    ? this.finalRenderTexture
+                    : this.intermediateTextures[i % 2];
+                stage.withOutput(output);
+                stage.execute(encoder);
+            }
+        }
+
+        this.device.queue.submit([encoder.finish()]);
+    }
+}
+
+export default RenderPipeline;
