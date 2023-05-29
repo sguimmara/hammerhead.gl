@@ -4,5 +4,6 @@ export enum VertexBufferSlot {
 }
 
 export enum BindGroups {
-    Textures = 0,
+    GlobalUniforms,
+    Textures,
 }

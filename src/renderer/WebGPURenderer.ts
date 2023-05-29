@@ -1,6 +1,6 @@
 import chroma from "chroma-js";
 import Mesh from "../objects/Mesh";
-import ShaderStore from './ShaderStore';
+import PipelineManager from './PipelineManager';
 import BufferStore from "./BufferStore";
 import TextureStore from "./TextureStore";
 import Desaturate from "../materials/postprocessing/Desaturate";
@@ -15,7 +15,7 @@ class WebGPURenderer {
     private readonly context: GPUCanvasContext;
     private readonly bufferStore: BufferStore;
     private readonly textureStore: TextureStore;
-    private readonly shaderStore: ShaderStore;
+    private readonly pipelineManager: PipelineManager;
 
     private renderPipeline: RenderPipeline;
 
@@ -27,12 +27,12 @@ class WebGPURenderer {
         this.clearColor = DEFAULT_CLEAR_COLOR;
         this.bufferStore = new BufferStore(device);
         this.textureStore = new TextureStore(device);
-        this.shaderStore = new ShaderStore(device);
+        this.pipelineManager = new PipelineManager(device);
 
-        this.renderPipeline = new RenderPipeline(this.device, this.bufferStore, this.shaderStore, this.textureStore);
-            // .addStage(new Inverse())
-            // .addStage(new FlipVertically())
-            // .addStage(new Desaturate());
+        this.renderPipeline = new RenderPipeline(this.device, this.bufferStore, this.pipelineManager, this.textureStore)
+            .addStage(new Inverse())
+            .addStage(new FlipVertically())
+            .addStage(new Desaturate());
     }
 
     render(list : Iterable<Mesh>) {
@@ -44,7 +44,7 @@ class WebGPURenderer {
         this.renderPipeline.destroy();
         this.bufferStore.destroy();
         this.textureStore.destroy();
-        this.shaderStore.destroy();
+        this.pipelineManager.destroy();
     }
 }
 

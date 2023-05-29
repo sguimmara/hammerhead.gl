@@ -1,7 +1,7 @@
 import { Color } from "chroma-js";
 import Mesh from "../objects/Mesh";
 import BufferStore from "./BufferStore";
-import ShaderStore from "./ShaderStore";
+import PipelineManager from "./PipelineManager";
 import TextureStore from "./TextureStore";
 import RenderSceneStage from "./stages/RenderSceneStage";
 import Stage from "./stages/Stage";
@@ -11,7 +11,7 @@ import PostProcessingStage from "./stages/PostProcessingStage";
 class RenderPipeline {
     private readonly stages: Stage[];
     private readonly device: GPUDevice;
-    private readonly shaderStore: ShaderStore;
+    private readonly pipelineManager: PipelineManager;
     private readonly bufferStore: BufferStore;
     private readonly textureStore: TextureStore;
     private readonly sceneStage: RenderSceneStage;
@@ -24,14 +24,14 @@ class RenderPipeline {
     constructor(
         device: GPUDevice,
         bufferStore: BufferStore,
-        shaderStore: ShaderStore,
+        pipelineManager: PipelineManager,
         textureStore: TextureStore
     ) {
         this.device = device;
-        this.shaderStore = shaderStore;
+        this.pipelineManager = pipelineManager;
         this.bufferStore = bufferStore;
         this.textureStore = textureStore;
-        this.sceneStage = new RenderSceneStage(this.device, this.bufferStore, this.shaderStore, this.textureStore);
+        this.sceneStage = new RenderSceneStage(this.device, this.bufferStore, this.pipelineManager, this.textureStore);
         this.stages = [this.sceneStage];
         this.intermediateTextures = [null, null];
     }
@@ -55,7 +55,7 @@ class RenderPipeline {
     }
 
     addStage(material: Material) {
-        const stage = new PostProcessingStage(this.device, this.bufferStore, this.shaderStore, this.textureStore)
+        const stage = new PostProcessingStage(this.device, this.bufferStore, this.pipelineManager, this.textureStore)
             .withMaterial(material);
 
         this.stages.push(stage);

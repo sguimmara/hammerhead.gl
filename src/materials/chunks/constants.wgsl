@@ -1,0 +1,2 @@
+const GLOBAL_UNIFORMS_BIND_GROUP : i32 = 0;
+const TEXTURE_BIND_GROUP : i32 = 1;

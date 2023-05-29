@@ -1,6 +1,6 @@
-import { VertexBufferSlot } from "../../constants";
+import { BindGroups, VertexBufferSlot } from "../../constants";
 import Material from "../../materials/Material";
-import ShaderStore from "../ShaderStore";
+import PipelineManager from "../PipelineManager";
 import Stage from "./Stage";
 import BufferStore from "../BufferStore";
 import TextureStore from "../TextureStore";
@@ -10,14 +10,14 @@ class PostProcessingStage extends Stage {
     private bindGroup: GPUBindGroup;
     private material : Material;
 
-    constructor(device: GPUDevice, bufferStore: BufferStore, shaderStore: ShaderStore, textureStore: TextureStore) {
-        super(device, bufferStore, shaderStore, textureStore);
+    constructor(device: GPUDevice, bufferStore: BufferStore, pipelineManager: PipelineManager, textureStore: TextureStore) {
+        super(device, bufferStore, pipelineManager, textureStore);
     }
 
     withMaterial(material: Material) {
         if (this.material != material) {
             this.material = material;
-            this.pipeline = this.shaderStore.getPipeline(this.material);
+            this.pipeline = this.pipelineManager.getPipeline(this.material);
         }
 
         return this;
@@ -27,14 +27,16 @@ class PostProcessingStage extends Stage {
         const pass = encoder.beginRenderPass(this.renderPassDescriptor);
 
         pass.setPipeline(this.pipeline);
+        this.bindGlobalUniforms(pass);
         this.bindGroup = this.device.createBindGroup({
-            layout: this.pipeline.getBindGroupLayout(0),
+            label: 'stage texture bind group',
+            layout: this.pipeline.getBindGroupLayout(BindGroups.Textures),
             entries: [
                 { binding: 0, resource: this.inputSampler },
                 { binding: 1, resource: this.inputView },
             ]
         });
-        pass.setBindGroup(0, this.bindGroup);
+        pass.setBindGroup(BindGroups.Textures, this.bindGroup);
 
         const vertices = this.bufferStore.getVertexBuffer(this.quad, VertexBufferSlot.Vertex);
         pass.setVertexBuffer(VertexBufferSlot.Vertex, vertices);

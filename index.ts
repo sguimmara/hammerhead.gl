@@ -74,7 +74,6 @@ async function main() {
             const height = entry.contentBoxSize[0].blockSize;
             canvas.width = Math.min(width, context.device.limits.maxTextureDimension2D);
             canvas.height = Math.min(height, context.device.limits.maxTextureDimension2D);
-
             // render();
         }
     });

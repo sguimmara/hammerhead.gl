@@ -1,6 +1,6 @@
 import Stage from './Stage';
 import Mesh from "../../objects/Mesh";
-import ShaderStore from '../ShaderStore';
+import PipelineManager from '../PipelineManager';
 import TextureStore from "../TextureStore";
 import BufferStore from "../BufferStore";
 import { BindGroups, VertexBufferSlot } from "../../constants";
@@ -13,8 +13,9 @@ class RenderSceneStage extends Stage {
     private meshes: Mesh[];
     private pass: GPURenderPassEncoder;
 
-    constructor(device: GPUDevice, bufferStore: BufferStore, shaderStore: ShaderStore, textureStore: TextureStore) {
-        super(device, bufferStore, shaderStore, textureStore);
+
+    constructor(device: GPUDevice, bufferStore: BufferStore, pipelineManager: PipelineManager, textureStore: TextureStore) {
+        super(device, bufferStore, pipelineManager, textureStore);
     }
 
     bindTextures(pipeline: GPURenderPipeline, pass: GPURenderPassEncoder, material: Material) {
@@ -26,12 +27,8 @@ class RenderSceneStage extends Stage {
             for (const [slot, texture] of boundTextures) {
                 const { view, sampler } = this.textureStore.getTexture(texture);
 
-                entries.push({
-                    binding: slot * 2, resource: sampler
-                });
-                entries.push({
-                    binding: slot * 2 + 1, resource: view
-                });
+                entries.push({ binding: slot * 2, resource: sampler });
+                entries.push({ binding: slot * 2 + 1, resource: view });
             }
             const bindGroup = this.device.createBindGroup({
                 layout: pipeline.getBindGroupLayout(BindGroups.Textures),
@@ -46,7 +43,7 @@ class RenderSceneStage extends Stage {
         const material = mesh.material;
         const geometry = mesh.geometry;
 
-        const pipeline = this.shaderStore.getPipeline(material);
+        const pipeline = this.pipelineManager.getPipeline(material);
 
         pass.setPipeline(pipeline);
 
@@ -71,6 +68,7 @@ class RenderSceneStage extends Stage {
 
     execute(encoder: GPUCommandEncoder) {
         this.pass = encoder.beginRenderPass(this.renderPassDescriptor);
+        this.bindGlobalUniforms(this.pass);
 
         for (const mesh of this.meshes) {
             this.renderMesh(mesh, this.pass);

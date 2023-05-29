@@ -2,14 +2,15 @@ import chroma, { Color } from "chroma-js";
 import BufferGeometry from "../../geometries/BufferGeometry";
 import GeometryBuilder from "../../geometries/GeometryBuilder";
 import BufferStore from "../BufferStore";
-import ShaderStore from "../ShaderStore";
+import PipelineManager from "../PipelineManager";
 import TextureStore from "../TextureStore";
+import { BindGroups } from "../../constants";
 
 const DEFAULT_CLEAR_COLOR = chroma('black');
 
 abstract class Stage {
     protected readonly device: GPUDevice;
-    protected readonly shaderStore: ShaderStore;
+    protected readonly pipelineManager: PipelineManager;
     protected readonly bufferStore: BufferStore;
     protected readonly quad: BufferGeometry;
     protected readonly textureStore: TextureStore;
@@ -25,20 +26,47 @@ abstract class Stage {
     protected renderPassDescriptor: GPURenderPassDescriptor;
 
     private needsRecreateRenderPass: boolean;
+    private timeBuffer: GPUBuffer;
 
     constructor(
         device: GPUDevice,
         bufferStore: BufferStore,
-        shaderStore: ShaderStore,
+        pipelineManager: PipelineManager,
         textureStore: TextureStore
     ) {
         this.device = device;
-        this.shaderStore = shaderStore;
+        this.pipelineManager = pipelineManager;
         this.bufferStore = bufferStore;
         this.textureStore = textureStore;
         this.quad = GeometryBuilder.screenQuad();
         this.clearColor = DEFAULT_CLEAR_COLOR;
         this.needsRecreateRenderPass = true;
+
+        this.timeBuffer = device.createBuffer({
+            label: 'time uniform buffer',
+            size: 4,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+        });
+    }
+
+    updateGlobalUniforms() {
+        const data = new Float32Array(1);
+        data[0] = performance.now() / 1000.0;
+        this.device.queue.writeBuffer(this.timeBuffer, 0, data);
+    }
+
+    bindGlobalUniforms(pass: GPURenderPassEncoder) {
+        this.updateGlobalUniforms();
+
+        const bindGroup = this.device.createBindGroup({
+            label: 'global uniforms BindGroup',
+            layout: this.pipelineManager.globalUniformLayout,
+            entries: [
+                { binding: 0, resource: { buffer: this.timeBuffer } },
+            ]
+        });
+
+        pass.setBindGroup(BindGroups.GlobalUniforms, bindGroup);
     }
 
     destroy() {

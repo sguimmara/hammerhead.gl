@@ -1,15 +1,39 @@
 import { VertexBufferSlot } from "../constants";
 import Material from "../materials/Material";
 
-class ShaderStore {
+class PipelineManager {
     private readonly device: GPUDevice;
     private readonly modules: Map<number, GPUShaderModule>;
     private readonly pipelines: Map<number, GPURenderPipeline>;
+    readonly globalUniformLayout: GPUBindGroupLayout;
+    readonly textureLayout: GPUBindGroupLayout;
+    readonly layout: GPUPipelineLayout;
 
     constructor(device: GPUDevice) {
         this.device = device;
         this.modules = new Map<number, GPUShaderModule>();
         this.pipelines = new Map();
+
+        this.globalUniformLayout = device.createBindGroupLayout({
+            label: 'global uniforms BindGroupLayout',
+            entries: [
+                { binding: 0, visibility: GPUShaderStage.FRAGMENT | GPUShaderStage.VERTEX, buffer: {} }
+            ]
+        });
+        this.textureLayout = device.createBindGroupLayout({
+            label: 'texture BindGroupLayout',
+            entries: [
+                { binding: 0, visibility: GPUShaderStage.FRAGMENT, sampler: {} },
+                { binding: 1, visibility: GPUShaderStage.FRAGMENT, texture: {} }
+            ]
+        });
+
+        this.layout = this.device.createPipelineLayout({
+            bindGroupLayouts: [
+                this.globalUniformLayout,
+                this.textureLayout,
+            ]
+        });
     }
 
     destroy() {
@@ -51,12 +75,12 @@ class ShaderStore {
         }
 
         const target: GPUColorTargetState = {
-            format: navigator.gpu.getPreferredCanvasFormat(), // TODO save
+            format: navigator.gpu.getPreferredCanvasFormat(),
         };
 
         const pipeline = this.device.createRenderPipeline({
             label: `pipeline for material ${material.id}`,
-            layout: 'auto',
+            layout: this.layout,
             vertex: {
                 module: shaderModule,
                 entryPoint: 'vs',
@@ -88,4 +112,4 @@ class ShaderStore {
     }
 }
 
-export default ShaderStore;
+export default PipelineManager;

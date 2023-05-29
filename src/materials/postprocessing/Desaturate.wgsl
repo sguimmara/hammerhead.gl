@@ -5,7 +5,11 @@
 
 @fragment fn fs(input: VSOutput) -> @location(0) vec4f {
     var color = textureSample(colorTexture, colorSampler, input.texcoord);
-    var g = (color.r + color.g + color.b) / 3.0;
+    var i = (color.r + color.g + color.b) / 3.0;
+    var r = color.r;
+    var g = color.g;
+    var b = color.b;
+    var t = (sin(globalUniforms.time * 10) + 1) / 2.0;
 
-    return vec4f(g, g, g, 1.0);
+    return vec4f(mix(i, r, t), mix(i, g, t), mix(i, b, t), 1.0);
 }
