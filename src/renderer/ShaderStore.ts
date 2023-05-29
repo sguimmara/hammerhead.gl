@@ -12,6 +12,11 @@ class ShaderStore {
         this.pipelines = new Map();
     }
 
+    destroy() {
+        this.pipelines.clear();
+        this.modules.clear();
+    }
+
     store(id: number, code: string) {
         const shaderModule = this.device.createShaderModule({
             label: `${id}`,

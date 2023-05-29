@@ -24,6 +24,8 @@ abstract class Stage {
     protected outputView: GPUTextureView;
     protected renderPassDescriptor: GPURenderPassDescriptor;
 
+    private needsRecreateRenderPass: boolean;
+
     constructor(
         device: GPUDevice,
         bufferStore: BufferStore,
@@ -36,10 +38,16 @@ abstract class Stage {
         this.textureStore = textureStore;
         this.quad = GeometryBuilder.screenQuad();
         this.clearColor = DEFAULT_CLEAR_COLOR;
+        this.needsRecreateRenderPass = true;
+    }
+
+    destroy() {
+        this.bufferStore.destroyBuffers(this.quad);
     }
 
     withClearColor(color: Color) {
         this.clearColor = color;
+        this.needsRecreateRenderPass = true;
         return this;
     }
 
@@ -51,10 +59,15 @@ abstract class Stage {
         if (this.output != output) {
             this.output = output;
             this.outputView = output.createView();
+            this.needsRecreateRenderPass = true;
+        }
+
+        if (this.needsRecreateRenderPass) {
             const colorAttachment: GPURenderPassColorAttachment = {
                 view: this.outputView,
                 loadOp: 'clear',
-                storeOp: 'store'
+                storeOp: 'store',
+                clearValue: this.clearColor.gl(),
             };
             this.renderPassDescriptor = {
                 label: 'clear renderPass',
@@ -75,9 +88,7 @@ abstract class Stage {
         return this;
     }
 
-    execute(encoder: GPUCommandEncoder) {
-        // Implement in derived classes
-    }
+    abstract execute(encoder: GPUCommandEncoder): void;
 }
 
 export default Stage;

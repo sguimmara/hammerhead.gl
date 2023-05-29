@@ -9,6 +9,13 @@ class TextureStore {
         this.device = device;
     }
 
+    destroy() {
+        this.textures.forEach(t => {
+            t.gpuTexture.destroy();
+        });
+        this.textures.clear();
+    }
+
     getTexture(texture: Texture): { gpuTexture: GPUTexture; sampler: GPUSampler; view: GPUTextureView; } {
         if (this.textures.has(texture.id)) {
             return this.textures.get(texture.id);

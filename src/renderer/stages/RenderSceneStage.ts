@@ -49,23 +49,8 @@ class RenderSceneStage extends Stage {
         return this;
     }
 
-    private createRenderPass(encoder: GPUCommandEncoder) {
-        const colorAttachment : GPURenderPassColorAttachment = {
-            view: this.outputView,
-            clearValue: this.clearColor.gl(),
-            loadOp: 'clear',
-            storeOp: 'store'
-        };
-        const renderPassDescriptor = {
-            label: 'clear renderPass',
-            colorAttachments: [colorAttachment],
-        };
-
-        this.pass = encoder.beginRenderPass(renderPassDescriptor);
-    }
-
     execute(encoder: GPUCommandEncoder) {
-        this.createRenderPass(encoder);
+        this.pass = encoder.beginRenderPass(this.renderPassDescriptor);
 
         for (const mesh of this.meshes) {
             this.renderMesh(mesh, this.pass);

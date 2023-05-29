@@ -12,6 +12,36 @@ class BufferStore {
         this.device = device;
     }
 
+    destroy() {
+        for (const buf of this.indexBuffers.values()) {
+            buf.destroy();
+        }
+
+        for (const map of this.vertexBuffers.values()) {
+            for (const buf of map.values()) {
+                buf.destroy();
+            }
+        }
+
+        this.indexBuffers.clear();
+        this.vertexBuffers.clear();
+    }
+
+    destroyBuffers(quad: BufferGeometry) {
+        if (this.vertexBuffers.has(quad.id)) {
+            const map = this.vertexBuffers.get(quad.id);
+            for (const buf of map.values()) {
+                buf.destroy()
+            }
+
+            this.vertexBuffers.delete(quad.id);
+        }
+        if (this.indexBuffers.has(quad.id)) {
+            this.indexBuffers.get(quad.id).destroy();
+            this.indexBuffers.delete(quad.id);
+        }
+    }
+
     getVertexBuffer(geometry: BufferGeometry, slot: number): GPUBuffer {
         if (!this.vertexBuffers.has(geometry.id)) {
             this.vertexBuffers.set(geometry.id, new Map());

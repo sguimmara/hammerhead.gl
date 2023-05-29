@@ -1,14 +1,12 @@
 import chroma, { Color } from "chroma-js";
-import BufferGeometry from "../../geometries/BufferGeometry";
-import GeometryBuilder from "../../geometries/GeometryBuilder";
-import Mesh from "../../objects/Mesh";
-import BufferStore from "../BufferStore";
-import ShaderStore from "../ShaderStore";
-import TextureStore from "../TextureStore";
-import RenderSceneStage from "./RenderSceneStage";
-import Stage from "./Stage";
-import Material from "../../materials/Material";
-import PostProcessingStage from "./PostProcessingStage";
+import Mesh from "../objects/Mesh";
+import BufferStore from "./BufferStore";
+import ShaderStore from "./ShaderStore";
+import TextureStore from "./TextureStore";
+import RenderSceneStage from "./stages/RenderSceneStage";
+import Stage from "./stages/Stage";
+import Material from "../materials/Material";
+import PostProcessingStage from "./stages/PostProcessingStage";
 
 class RenderPipeline {
     private readonly stages: Stage[];
@@ -16,7 +14,7 @@ class RenderPipeline {
     private readonly shaderStore: ShaderStore;
     private readonly bufferStore: BufferStore;
     private readonly textureStore: TextureStore;
-    private readonly sceneStage: any;
+    private readonly sceneStage: RenderSceneStage;
 
     private finalRenderTexture: GPUTexture;
     private intermediateTextures : GPUTexture[];
@@ -35,8 +33,15 @@ class RenderPipeline {
         this.textureStore = textureStore;
         this.sceneStage = new RenderSceneStage(this.device, this.bufferStore, this.shaderStore, this.textureStore);
         this.stages = [this.sceneStage];
-        this.clearColor = chroma('black'); // TODO Constant
         this.intermediateTextures = [null, null];
+    }
+
+    setClearColor(color: Color) {
+        this.sceneStage.withClearColor(color);
+    }
+
+    destroy() {
+        this.stages.forEach(s => s.destroy());
     }
 
     private createSwapTexture(reference: GPUTexture) {
@@ -54,6 +59,8 @@ class RenderPipeline {
             .withMaterial(material);
 
         this.stages.push(stage);
+
+        return this;
     }
 
     render(meshes: Iterable<Mesh>, target: GPUTexture) {

@@ -15,6 +15,10 @@ class Context {
         this.renderer = new WebGPURenderer(this.device, this.context);
     }
 
+    destroy() {
+        this.renderer.destroy();
+    }
+
     /**
      * Creates a context on the specified canvas.
      * @param canvas The canvas.
