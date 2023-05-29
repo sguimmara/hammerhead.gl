@@ -37,7 +37,7 @@ class TextureStore {
 
         this.device.queue.writeTexture(
             { texture: gpuTexture },
-            texture.getData(),
+            texture.data,
             { bytesPerRow: texture.width * 4 },
             { width: texture.width, height: texture.height });
 

@@ -4,7 +4,7 @@ class Texture {
     readonly width: number;
     readonly height: number;
     readonly id: number;
-    data: BufferSource;
+    readonly data: BufferSource;
 
     constructor(options: {
         width: number,
@@ -15,10 +15,6 @@ class Texture {
         this.width = options.width;
         this.height = options.height;
         this.data = options.data;
-    }
-
-    getData(): BufferSource {
-        return this.data;
     }
 }
 

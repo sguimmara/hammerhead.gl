@@ -7,7 +7,7 @@ class Mesh {
 
     constructor(options: {
         material: Material,
-        geometry?: BufferGeometry
+        geometry: BufferGeometry
     }) {
         this.material = options.material;
         this.geometry = options.geometry;
