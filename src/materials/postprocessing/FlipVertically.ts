@@ -1,6 +1,6 @@
 import Material from "../Material";
 
-import shaderCode from '../../shaders/effects/flipY.wgsl';
+import shaderCode from './FlipVertically.wgsl';
 
 class FlipVertically extends Material {
     constructor() {

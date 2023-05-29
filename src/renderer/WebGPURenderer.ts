@@ -28,10 +28,11 @@ class WebGPURenderer {
         this.bufferStore = new BufferStore(device);
         this.textureStore = new TextureStore(device);
         this.shaderStore = new ShaderStore(device);
-        this.renderPipeline = new RenderPipeline(this.device, this.bufferStore, this.shaderStore, this.textureStore)
-            .addStage(new Inverse())
-            .addStage(new FlipVertically())
-            .addStage(new Desaturate());
+
+        this.renderPipeline = new RenderPipeline(this.device, this.bufferStore, this.shaderStore, this.textureStore);
+            // .addStage(new Inverse())
+            // .addStage(new FlipVertically())
+            // .addStage(new Desaturate());
     }
 
     render(list : Iterable<Mesh>) {

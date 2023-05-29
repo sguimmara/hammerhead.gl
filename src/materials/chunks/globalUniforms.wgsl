@@ -1,0 +1,1 @@
+@group(0) @binding(0) var time: f32;

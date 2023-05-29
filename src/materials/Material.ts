@@ -2,18 +2,28 @@ import Texture from "../textures/Texture";
 
 let MATERIAL_ID = 0;
 
-class Material {
+abstract class Material {
     shaderCode: string;
     id: number;
-    texture?: Texture;
+    textures: Map<number, Texture>;
 
     constructor(options : {
         shaderCode: string,
-        texture?: Texture
     }) {
         this.id = MATERIAL_ID++;
         this.shaderCode = options.shaderCode;
-        this.texture = options.texture;
+        this.textures = null;
+    }
+
+    protected bindTexture(slot: number, texture: Texture) {
+        if (!this.textures) {
+            this.textures = new Map();
+        }
+        this.textures.set(slot, texture);
+    }
+
+    getBoundTextures(): Map<number, Texture> {
+        return this.textures;
     }
 
 }

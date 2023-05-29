@@ -1,4 +1,4 @@
-import chroma, { Color } from "chroma-js";
+import { Color } from "chroma-js";
 import Mesh from "../objects/Mesh";
 import BufferStore from "./BufferStore";
 import ShaderStore from "./ShaderStore";

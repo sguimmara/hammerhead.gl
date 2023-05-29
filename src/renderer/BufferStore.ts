@@ -57,6 +57,8 @@ class BufferStore {
             usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
         });
 
+        console.debug(`create buffer ${gpuBuffer.label}`);
+
         this.vertexBuffers.get(geometry.id).set(slot, gpuBuffer);
 
         this.device.queue.writeBuffer(gpuBuffer, 0, buf);
@@ -70,9 +72,12 @@ class BufferStore {
         }
 
         const gpuBuffer = this.device.createBuffer({
+            label: `geom #${geometry.id} @Index`,
             size: geometry.indexBuffer.byteLength,
             usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
         });
+
+        console.debug(`create buffer ${gpuBuffer.label}`);
 
         this.indexBuffers.set(geometry.id, gpuBuffer);
 

@@ -1,6 +1,6 @@
 import Material from "../Material";
 
-import shaderCode from '../../shaders/effects/invertColor.wgsl';
+import shaderCode from './InvertColors.wgsl';
 
 class InvertColors extends Material {
     constructor() {

@@ -1,10 +1,10 @@
 import Context from './src/Context';
 import Mesh from './src/objects/Mesh';
-import ScreenQuadMaterial from './src/materials/ScreenQuadMaterial';
 import chroma from 'chroma-js';
 import GeometryBuilder from './src/geometries/GeometryBuilder';
 import Vector2 from './src/Vec2';
 import Texture from './src/textures/Texture';
+import BasicMaterial from './src/materials/BasicMaterial';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -43,7 +43,9 @@ async function main() {
 
     const context = await Context.create(canvas);
     const renderer = context.renderer;
-    const material = new ScreenQuadMaterial(texture);
+    const material = new BasicMaterial();
+    material.setColorTexture(texture);
+
     const quad1 = new Mesh({
         material,
         geometry: GeometryBuilder.quad(new Vector2(0.3, 0.3), new Vector2(0.4, 0.4)),
@@ -60,6 +62,7 @@ async function main() {
     function render() {
         renderer.clearColor = chroma('white');
         renderer.render([quad1, quad2, quad3]);
+        requestAnimationFrame(render);
     }
 
     render();
@@ -72,7 +75,7 @@ async function main() {
             canvas.width = Math.min(width, context.device.limits.maxTextureDimension2D);
             canvas.height = Math.min(height, context.device.limits.maxTextureDimension2D);
 
-            render();
+            // render();
         }
     });
 

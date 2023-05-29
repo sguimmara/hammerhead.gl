@@ -3,7 +3,8 @@ import Mesh from "../../objects/Mesh";
 import ShaderStore from '../ShaderStore';
 import TextureStore from "../TextureStore";
 import BufferStore from "../BufferStore";
-import { VertexBufferSlot } from "../../constants";
+import { BindGroups, VertexBufferSlot } from "../../constants";
+import Material from '../../materials/Material';
 
 /**
  * A render pipeline stage that render the scene into a color attachment.
@@ -16,21 +17,40 @@ class RenderSceneStage extends Stage {
         super(device, bufferStore, shaderStore, textureStore);
     }
 
+    bindTextures(pipeline: GPURenderPipeline, pass: GPURenderPassEncoder, material: Material) {
+        const boundTextures = material.getBoundTextures();
+
+        const entries : GPUBindGroupEntry[] = [];
+
+        if (boundTextures) {
+            for (const [slot, texture] of boundTextures) {
+                const { view, sampler } = this.textureStore.getTexture(texture);
+
+                entries.push({
+                    binding: slot * 2, resource: sampler
+                });
+                entries.push({
+                    binding: slot * 2 + 1, resource: view
+                });
+            }
+            const bindGroup = this.device.createBindGroup({
+                layout: pipeline.getBindGroupLayout(BindGroups.Textures),
+                entries,
+            });
+
+            pass.setBindGroup(BindGroups.Textures, bindGroup);
+        }
+    }
+
     renderMesh(mesh: Mesh, pass: GPURenderPassEncoder) {
         const material = mesh.material;
         const geometry = mesh.geometry;
 
         const pipeline = this.shaderStore.getPipeline(material);
-        const { view, sampler } = this.textureStore.getTexture(material.texture);
-        const bindGroup = this.device.createBindGroup({
-            layout: pipeline.getBindGroupLayout(0),
-            entries: [
-                { binding: 0, resource: sampler },
-                { binding: 1, resource: view },
-            ]
-        });
+
         pass.setPipeline(pipeline);
-        pass.setBindGroup(0, bindGroup);
+
+        this.bindTextures(pipeline, pass, material);
 
         const vertices = this.bufferStore.getVertexBuffer(geometry, VertexBufferSlot.Vertex);
         pass.setVertexBuffer(VertexBufferSlot.Vertex, vertices);
