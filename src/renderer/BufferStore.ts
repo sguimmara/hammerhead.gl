@@ -1,14 +1,19 @@
+import Sized from '../Sized';
+import { Visitable } from '../Visitable';
 import { VertexBufferSlot } from '../constants';
 import BufferGeometry from '../geometries/BufferGeometry';
+import BufferWriter from './BufferWriter';
 
 class BufferStore {
     private device: GPUDevice;
     private indexBuffers: Map<number, GPUBuffer>;
     private vertexBuffers: Map<number, Map<number, GPUBuffer>>;
+    private uniformBuffers: Map<Sized & Visitable, BufferWriter>;
 
     constructor(device: GPUDevice) {
         this.indexBuffers = new Map();
         this.vertexBuffers = new Map();
+        this.uniformBuffers = new Map();
         this.device = device;
     }
 
@@ -40,6 +45,24 @@ class BufferStore {
             this.indexBuffers.get(quad.id).destroy();
             this.indexBuffers.delete(quad.id);
         }
+    }
+
+    getUniformBuffer<T extends Sized & Visitable>(t: T) {
+        if (this.uniformBuffers.has(t)) {
+            const bw = this.uniformBuffers.get(t);
+            bw.upload(this.device.queue);
+            return bw.buffer;
+        }
+
+        const gpuBuffer = this.device.createBuffer({
+            label: 'uniform buffer',
+            size: t.getByteSize(),
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+        });
+        const bw = new BufferWriter(t, gpuBuffer);
+        bw.upload(this.device.queue);
+        this.uniformBuffers.set(t, bw);
+        return bw.buffer;
     }
 
     getVertexBuffer(geometry: BufferGeometry, slot: number): GPUBuffer {

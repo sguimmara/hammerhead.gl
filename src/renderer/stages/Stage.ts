@@ -5,6 +5,8 @@ import BufferStore from "../BufferStore";
 import PipelineManager from "../PipelineManager";
 import TextureStore from "../TextureStore";
 import { BindGroups } from "../../constants";
+import GlobalUniforms from '../GlobalUniforms';
+import BufferWriter from "../BufferWriter";
 
 const DEFAULT_CLEAR_COLOR = chroma('black');
 
@@ -26,7 +28,7 @@ abstract class Stage {
     protected renderPassDescriptor: GPURenderPassDescriptor;
 
     private needsRecreateRenderPass: boolean;
-    private timeBuffer: GPUBuffer;
+    private globalUniforms: GlobalUniforms;
 
     constructor(
         device: GPUDevice,
@@ -41,28 +43,23 @@ abstract class Stage {
         this.quad = GeometryBuilder.screenQuad();
         this.clearColor = DEFAULT_CLEAR_COLOR;
         this.needsRecreateRenderPass = true;
-
-        this.timeBuffer = device.createBuffer({
-            label: 'time uniform buffer',
-            size: 4,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
-        });
+        this.globalUniforms = new GlobalUniforms();
     }
 
     updateGlobalUniforms() {
-        const data = new Float32Array(1);
-        data[0] = performance.now() / 1000.0;
-        this.device.queue.writeBuffer(this.timeBuffer, 0, data);
+        this.globalUniforms.time = performance.now() / 1000.0;
     }
 
     bindGlobalUniforms(pass: GPURenderPassEncoder) {
         this.updateGlobalUniforms();
 
+        const gpuBuffer = this.bufferStore.getUniformBuffer(this.globalUniforms);
+
         const bindGroup = this.device.createBindGroup({
             label: 'global uniforms BindGroup',
             layout: this.pipelineManager.globalUniformLayout,
             entries: [
-                { binding: 0, resource: { buffer: this.timeBuffer } },
+                { binding: 0, resource: { buffer: gpuBuffer } },
             ]
         });
 

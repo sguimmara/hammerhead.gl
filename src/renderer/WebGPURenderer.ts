@@ -30,8 +30,8 @@ class WebGPURenderer {
         this.pipelineManager = new PipelineManager(device);
 
         this.renderPipeline = new RenderPipeline(this.device, this.bufferStore, this.pipelineManager, this.textureStore)
-            .addStage(new Inverse())
-            .addStage(new FlipVertically())
+            // .addStage(new Inverse())
+            // .addStage(new FlipVertically())
             .addStage(new Desaturate());
     }
 
