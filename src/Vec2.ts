@@ -10,6 +10,10 @@ class Vec2 implements Sized, Visitable {
         this.y = y;
     }
 
+    static get zero(): Vec2 {
+        return new Vec2();
+    }
+
     visit(visitor: Visitor): void {
         visitor.visitVec2(this);
     }
