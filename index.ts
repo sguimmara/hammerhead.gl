@@ -43,25 +43,34 @@ async function main() {
 
     const context = await Context.create(canvas);
     const renderer = context.renderer;
-    const material = new BasicMaterial();
-    material.setColorTexture(texture);
 
-    const quad1 = new Mesh({
-        material,
-        geometry: GeometryBuilder.quad(new Vector2(0.3, 0.3), new Vector2(0.4, 0.4)),
-    });
-    const quad2 = new Mesh({
-        material,
-        geometry: GeometryBuilder.quad(new Vector2(-0.5, 0.4), new Vector2(0.2, 0.2)),
-    });
-    const quad3 = new Mesh({
-        material,
-        geometry: GeometryBuilder.quad(new Vector2(0.5, 0.8), new Vector2(0.1, 0.1)),
-    });
+    const materials = [
+        new BasicMaterial().withColorTexture(texture).withDiffuseColor(chroma('blue')),
+        new BasicMaterial().withColorTexture(texture).withDiffuseColor(chroma('red')),
+        new BasicMaterial().withColorTexture(texture).withDiffuseColor(chroma('pink')),
+        new BasicMaterial().withColorTexture(texture).withDiffuseColor(chroma('green')),
+        new BasicMaterial().withColorTexture(texture).withDiffuseColor(chroma('cyan')),
+        new BasicMaterial().withColorTexture(texture).withDiffuseColor(chroma('white')),
+        new BasicMaterial().withColorTexture(texture).withDiffuseColor(chroma('black')),
+        new BasicMaterial().withColorTexture(texture).withDiffuseColor(chroma('purple')),
+    ];
+
+    const meshes : Mesh[] = [];
+
+    for (let i = 0; i < 20; i++) {
+        const center = new Vector2((Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2);
+        const size = new Vector2(Math.random() * 0.3, Math.random() * 0.3);
+        const material = materials[Math.round(Math.random() * (materials.length - 1))];
+        const mesh = new Mesh({
+            material,
+            geometry: GeometryBuilder.quad(center, size),
+        });
+        meshes.push(mesh);
+    }
 
     function render() {
         renderer.clearColor = chroma('white');
-        renderer.render([quad1, quad2, quad3]);
+        renderer.render(meshes);
         requestAnimationFrame(render);
     }
 

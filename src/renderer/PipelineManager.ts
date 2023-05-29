@@ -1,37 +1,25 @@
 import { VertexBufferSlot } from "../constants";
 import Material from "../materials/Material";
+import LayoutInfo from '../materials/LayoutInfo';
+import UniformType from "../materials/UniformType";
 
 class PipelineManager {
     private readonly device: GPUDevice;
     private readonly modules: Map<number, GPUShaderModule>;
     private readonly pipelines: Map<number, GPURenderPipeline>;
+    private readonly layouts: Map<string, GPUBindGroupLayout>;
     readonly globalUniformLayout: GPUBindGroupLayout;
-    readonly textureLayout: GPUBindGroupLayout;
-    readonly layout: GPUPipelineLayout;
 
     constructor(device: GPUDevice) {
         this.device = device;
         this.modules = new Map<number, GPUShaderModule>();
         this.pipelines = new Map();
+        this.layouts = new Map();
 
         this.globalUniformLayout = device.createBindGroupLayout({
             label: 'global uniforms BindGroupLayout',
             entries: [
                 { binding: 0, visibility: GPUShaderStage.FRAGMENT | GPUShaderStage.VERTEX, buffer: {} }
-            ]
-        });
-        this.textureLayout = device.createBindGroupLayout({
-            label: 'texture BindGroupLayout',
-            entries: [
-                { binding: 0, visibility: GPUShaderStage.FRAGMENT, sampler: {} },
-                { binding: 1, visibility: GPUShaderStage.FRAGMENT, texture: {} }
-            ]
-        });
-
-        this.layout = this.device.createPipelineLayout({
-            bindGroupLayouts: [
-                this.globalUniformLayout,
-                this.textureLayout,
             ]
         });
     }
@@ -63,6 +51,41 @@ class PipelineManager {
         return shaderModule;
     }
 
+    getMaterialLayout(material: Material): GPUBindGroupLayout {
+        const typeId = material.typeId;
+        if (this.layouts.has(typeId)) {
+            return this.layouts.get(typeId);
+        }
+        const entries = Array(material.layout.length);
+
+        function getEntry(info: LayoutInfo): GPUBindGroupLayoutEntry {
+            switch (info.type) {
+                case UniformType.Texture:
+                    return { binding: info.slot, visibility: GPUShaderStage.FRAGMENT, texture: {} }
+                case UniformType.Sampler:
+                    return { binding: info.slot, visibility: GPUShaderStage.FRAGMENT, sampler: {} }
+                case UniformType.Buffer:
+                    return { binding: info.slot, visibility: GPUShaderStage.FRAGMENT, buffer: {} }
+                default:
+                    throw new Error('unsupported uniform type');
+            }
+        }
+
+        for (let i = 0; i < entries.length; i++) {
+            const element = material.layout[i];
+            entries[i] = getEntry(element);
+        }
+
+        const layout = this.device.createBindGroupLayout({
+            label: 'object uniforms BindGroupLayout',
+            entries,
+        });
+
+        this.layouts.set(typeId, layout);
+
+        return layout;
+    }
+
     getPipeline(material: Material): GPURenderPipeline {
         if (this.pipelines.has(material.id)) {
             return this.pipelines.get(material.id);
@@ -78,9 +101,16 @@ class PipelineManager {
             format: navigator.gpu.getPreferredCanvasFormat(),
         };
 
+        const layout = this.device.createPipelineLayout({
+            bindGroupLayouts: [
+                this.globalUniformLayout,
+                this.getMaterialLayout(material),
+            ]
+        });
+
         const pipeline = this.device.createRenderPipeline({
             label: `pipeline for material ${material.id}`,
-            layout: this.layout,
+            layout,
             vertex: {
                 module: shaderModule,
                 entryPoint: 'vs',

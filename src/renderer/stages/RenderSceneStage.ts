@@ -3,8 +3,8 @@ import Mesh from "../../objects/Mesh";
 import PipelineManager from '../PipelineManager';
 import TextureStore from "../TextureStore";
 import BufferStore from "../BufferStore";
-import { BindGroups, VertexBufferSlot } from "../../constants";
-import Material from '../../materials/Material';
+import { VertexBufferSlot } from "../../constants";
+import BufferGeometry from '../../geometries/BufferGeometry';
 
 /**
  * A render pipeline stage that render the scene into a color attachment.
@@ -12,31 +12,10 @@ import Material from '../../materials/Material';
 class RenderSceneStage extends Stage {
     private meshes: Mesh[];
     private pass: GPURenderPassEncoder;
-
+    private currentPipeline: GPURenderPipeline;
 
     constructor(device: GPUDevice, bufferStore: BufferStore, pipelineManager: PipelineManager, textureStore: TextureStore) {
         super(device, bufferStore, pipelineManager, textureStore);
-    }
-
-    bindTextures(pipeline: GPURenderPipeline, pass: GPURenderPassEncoder, material: Material) {
-        const boundTextures = material.getBoundTextures();
-
-        const entries : GPUBindGroupEntry[] = [];
-
-        if (boundTextures) {
-            for (const [slot, texture] of boundTextures) {
-                const { view, sampler } = this.textureStore.getTexture(texture);
-
-                entries.push({ binding: slot * 2, resource: sampler });
-                entries.push({ binding: slot * 2 + 1, resource: view });
-            }
-            const bindGroup = this.device.createBindGroup({
-                layout: pipeline.getBindGroupLayout(BindGroups.Textures),
-                entries,
-            });
-
-            pass.setBindGroup(BindGroups.Textures, bindGroup);
-        }
     }
 
     renderMesh(mesh: Mesh, pass: GPURenderPassEncoder) {
@@ -44,11 +23,19 @@ class RenderSceneStage extends Stage {
         const geometry = mesh.geometry;
 
         const pipeline = this.pipelineManager.getPipeline(material);
+        if (pipeline != this.currentPipeline) {
+            pass.setPipeline(pipeline);
+            this.currentPipeline = pipeline;
+        }
 
-        pass.setPipeline(pipeline);
+        this.bindObjectUniforms(this.currentPipeline, pass, material);
 
-        this.bindTextures(pipeline, pass, material);
+        this.bindVertexBuffers(geometry, pass);
 
+        pass.drawIndexed(geometry.indexCount);
+    }
+
+    private bindVertexBuffers(geometry: BufferGeometry, pass: GPURenderPassEncoder) {
         const vertices = this.bufferStore.getVertexBuffer(geometry, VertexBufferSlot.Vertex);
         pass.setVertexBuffer(VertexBufferSlot.Vertex, vertices);
         const texcoord = this.bufferStore.getVertexBuffer(geometry, VertexBufferSlot.TexCoord);
@@ -56,12 +43,11 @@ class RenderSceneStage extends Stage {
             pass.setVertexBuffer(VertexBufferSlot.TexCoord, texcoord);
         }
         pass.setIndexBuffer(this.bufferStore.getIndexBuffer(geometry), "uint16");
-
-        pass.drawIndexed(geometry.indexCount);
     }
 
     withMeshes(list: Iterable<Mesh>) {
         this.meshes = [...list];
+        this.meshes.sort((a, b) => a.material.id - b.material.id);
 
         return this;
     }

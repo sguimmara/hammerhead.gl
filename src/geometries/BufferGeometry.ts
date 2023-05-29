@@ -4,6 +4,7 @@ import { VertexBufferSlot } from "../constants";
 class BufferGeometry {
     readonly id: number;
 
+    version: number;
     readonly vertexBuffers: Map<VertexBufferSlot, Float32Array>;
     readonly indexBuffer: Int16Array;
     readonly vertexCount: number;
@@ -29,6 +30,7 @@ class BufferGeometry {
 
     setVertices(positions: number[]) {
         this.vertexBuffers.get(VertexBufferSlot.Vertex).set(positions, 0);
+        this.version++;
     }
 
     setTexCoords(coords: number[]) {
@@ -36,10 +38,12 @@ class BufferGeometry {
             this.vertexBuffers.set(VertexBufferSlot.TexCoord, new Float32Array(this.vertexCount * 2));
         }
         this.vertexBuffers.get(VertexBufferSlot.TexCoord).set(coords, 0);
+        this.version++;
     }
 
     setIndices(indices: number[]) {
         this.indexBuffer.set(indices, 0);
+        this.version++;
     }
 }
 

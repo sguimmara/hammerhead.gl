@@ -1,8 +1,8 @@
-import Sized, { Sizes } from "../Sized";
 import Vec2 from "../Vec2";
-import { Visitable, Visitor } from "../Visitable";
+import { Visitor } from "../Visitable";
+import { BufferUniform } from "./Uniform";
 
-class GlobalUniforms implements Sized, Visitable {
+class GlobalUniforms implements BufferUniform {
     time: number;
     padding0: number;
     screenSize: Vec2;
@@ -13,7 +13,7 @@ class GlobalUniforms implements Sized, Visitable {
     }
 
     getByteSize(): number {
-        return 2 * Sizes.Float32 // time + padding
+        return 2 * 4 // time + padding
             + this.screenSize.getByteSize();
     }
 

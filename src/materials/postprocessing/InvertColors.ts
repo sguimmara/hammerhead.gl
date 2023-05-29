@@ -1,12 +1,9 @@
-import Material from "../Material";
-
 import shaderCode from './InvertColors.wgsl';
+import PostProcessingMaterial from "./PostProcessingMaterial";
 
-class InvertColors extends Material {
+class InvertColors extends PostProcessingMaterial {
     constructor() {
-        super({
-            shaderCode
-        });
+        super(shaderCode, 'InvertColors');
     }
 }
 

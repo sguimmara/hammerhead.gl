@@ -1,13 +1,9 @@
-import Material from "../Material";
-
 import shaderCode from './FlipVertically.wgsl';
+import PostProcessingMaterial from "./PostProcessingMaterial";
 
-class FlipVertically extends Material {
+class FlipVertically extends PostProcessingMaterial {
     constructor() {
-        super({
-            shaderCode
-        });
+        super(shaderCode, 'FlipVertically');
     }
 }
-
 export default FlipVertically;

@@ -1,4 +1,4 @@
-import Sized, { Sizes } from "./Sized";
+import Sized from "./Sized";
 import { Visitable, Visitor } from "./Visitable";
 
 class Vec2 implements Sized, Visitable {
@@ -15,7 +15,7 @@ class Vec2 implements Sized, Visitable {
     }
 
     getByteSize(): number {
-        return 2 * Sizes.Float32;
+        return 2 * 4;
     }
 }
 

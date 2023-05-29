@@ -6,7 +6,8 @@ import PipelineManager from "../PipelineManager";
 import TextureStore from "../TextureStore";
 import { BindGroups } from "../../constants";
 import GlobalUniforms from '../GlobalUniforms';
-import BufferWriter from "../BufferWriter";
+import Material from "../../materials/Material";
+import UniformType from "../../materials/UniformType";
 
 const DEFAULT_CLEAR_COLOR = chroma('black');
 
@@ -44,6 +45,35 @@ abstract class Stage {
         this.clearColor = DEFAULT_CLEAR_COLOR;
         this.needsRecreateRenderPass = true;
         this.globalUniforms = new GlobalUniforms();
+    }
+
+    bindObjectUniforms(pipeline: GPURenderPipeline, pass: GPURenderPassEncoder, material: Material) {
+        const entries : GPUBindGroupEntry[] = [];
+
+        for (const info of material.layout) {
+            const slot = info.slot;
+            switch (info.type) {
+                case UniformType.Texture: {
+                    const uniform = material.getTextureUniform(slot);
+                    const { view, sampler } = this.textureStore.getTexture(uniform.texture);
+                    entries.push({ binding: slot, resource: view });
+                    entries.push({ binding: slot + 1, resource: sampler });
+                    break;
+                }
+                case UniformType.Buffer: {
+                    const uniform = material.getBufferUniforms(slot);
+                    const gpuBuffer = this.bufferStore.getUniformBuffer(uniform);
+                    entries.push({ binding: slot, resource: { buffer: gpuBuffer } });
+                    break;
+                }
+            }
+        }
+
+        const bindGroup = this.device.createBindGroup({
+            layout: pipeline.getBindGroupLayout(BindGroups.ObjectUniforms),
+            entries,
+        });
+        pass.setBindGroup(BindGroups.ObjectUniforms, bindGroup);
     }
 
     updateGlobalUniforms() {

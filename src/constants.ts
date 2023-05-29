@@ -5,5 +5,5 @@ export enum VertexBufferSlot {
 
 export enum BindGroups {
     GlobalUniforms,
-    Textures,
+    ObjectUniforms,
 }

@@ -1,12 +1,9 @@
-import Material from "../Material";
-
 import shaderCode from './Desaturate.wgsl';
+import PostProcessingMaterial from "./PostProcessingMaterial";
 
-class Desaturate extends Material {
+class Desaturate extends PostProcessingMaterial {
     constructor() {
-        super({
-            shaderCode
-        });
+        super(shaderCode, 'Desaturate');
     }
 }
 
