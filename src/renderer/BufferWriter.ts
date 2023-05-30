@@ -2,6 +2,9 @@ import Sized from "../Sized";
 import Vec2 from "../Vec2";
 import { Visitor, Visitable } from "../Visitable";
 
+/**
+ * Serializes objects into buffers.
+ */
 class BufferWriter implements Visitor
 {
     readonly buffer: GPUBuffer;
@@ -15,6 +18,7 @@ class BufferWriter implements Visitor
         this.buffer = buffer;
         const sourceSize = this.source.getByteSize();
         this.data = new Float32Array(sourceSize / 4);
+        this.data.fill(0);
         if (buffer.size != sourceSize) {
             throw new Error(`size mismatch: source is ${sourceSize}, but buffer is ${buffer.size}`);
         }

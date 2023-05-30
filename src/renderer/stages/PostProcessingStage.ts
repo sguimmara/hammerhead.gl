@@ -1,19 +1,24 @@
-import chroma from "chroma-js";
 import { BindGroups, VertexBufferSlot } from "../../constants";
 import PipelineManager from "../PipelineManager";
 import Stage from "./Stage";
 import BufferStore from "../BufferStore";
 import TextureStore from "../TextureStore";
-import { ColorUniform } from "../Uniform";
 import PostProcessingMaterial from "../../materials/postprocessing/PostProcessingMaterial";
+import GlobalUniforms from '../GlobalUniforms';
 
 class PostProcessingStage extends Stage {
     private pipeline: GPURenderPipeline;
     private bindGroup: GPUBindGroup;
     private material : PostProcessingMaterial;
 
-    constructor(device: GPUDevice, bufferStore: BufferStore, pipelineManager: PipelineManager, textureStore: TextureStore) {
-        super(device, bufferStore, pipelineManager, textureStore);
+    constructor(
+        device: GPUDevice,
+        bufferStore: BufferStore,
+        pipelineManager: PipelineManager,
+        textureStore: TextureStore,
+        globalUniforms: GlobalUniforms
+    ) {
+        super(device, bufferStore, pipelineManager, textureStore, globalUniforms);
     }
 
     withMaterial(material: PostProcessingMaterial) {
@@ -29,20 +34,28 @@ class PostProcessingStage extends Stage {
         const pass = encoder.beginRenderPass(this.renderPassDescriptor);
 
         pass.setPipeline(this.pipeline);
-        this.bindGlobalUniforms(pass);
+        const entries : GPUBindGroupEntry[] = [
+            { binding: 0, resource: this.inputView },
+            { binding: 1, resource: this.inputSampler },
+        ];
+
+        if (this.material.layout.length > 2) {
+            for (let i = 2; i < this.material.layout.length; i++) {
+                this.pipelineManager.getBindGroupEntries(this.material, i, entries);
+            }
+        }
+
+        this.pipelineManager.bindGlobalUniforms(pass, this.globalUniforms);
         this.bindGroup = this.device.createBindGroup({
             label: 'stage texture bind group',
             layout: this.pipeline.getBindGroupLayout(BindGroups.ObjectUniforms),
-            entries: [
-                { binding: 0, resource: this.inputView },
-                { binding: 1, resource: this.inputSampler },
-            ]
+            entries
         });
         pass.setBindGroup(BindGroups.ObjectUniforms, this.bindGroup);
 
-        const vertices = this.bufferStore.getVertexBuffer(this.quad, VertexBufferSlot.Vertex);
+        const vertices = this.bufferStore.getOrCreateVertexBuffer(this.quad, VertexBufferSlot.Vertex);
         pass.setVertexBuffer(VertexBufferSlot.Vertex, vertices);
-        const texcoord = this.bufferStore.getVertexBuffer(this.quad, VertexBufferSlot.TexCoord);
+        const texcoord = this.bufferStore.getOrCreateVertexBuffer(this.quad, VertexBufferSlot.TexCoord);
         if (texcoord) {
             pass.setVertexBuffer(VertexBufferSlot.TexCoord, texcoord);
         }

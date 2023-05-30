@@ -1,38 +1,25 @@
 import chroma from "chroma-js";
 import Mesh from "../objects/Mesh";
-import PipelineManager from './PipelineManager';
-import BufferStore from "./BufferStore";
-import TextureStore from "./TextureStore";
-import Desaturate from "../materials/postprocessing/Desaturate";
+import Colorimetry from "../materials/postprocessing/Colorimetry";
 import RenderPipeline from "./RenderPipeline";
-import Inverse from "../materials/postprocessing/InvertColors";
-import FlipVertically from "../materials/postprocessing/FlipVertically";
+import Container from "../Container";
+import PostProcessingMaterial from "../materials/postprocessing/PostProcessingMaterial";
 
-const DEFAULT_CLEAR_COLOR = chroma('pink');
+const DEFAULT_CLEAR_COLOR = chroma('black');
 
 class WebGPURenderer {
     private readonly device: GPUDevice;
     private readonly context: GPUCanvasContext;
-    private readonly bufferStore: BufferStore;
-    private readonly textureStore: TextureStore;
-    private readonly pipelineManager: PipelineManager;
 
     private renderPipeline: RenderPipeline;
 
-    clearColor: chroma.Color;
+    clearColor: chroma.Color = DEFAULT_CLEAR_COLOR;
 
-    constructor(device: GPUDevice, context: GPUCanvasContext) {
+    constructor(device: GPUDevice, context: GPUCanvasContext, container: Container) {
         this.device = device;
         this.context = context;
-        this.clearColor = DEFAULT_CLEAR_COLOR;
-        this.bufferStore = new BufferStore(device);
-        this.textureStore = new TextureStore(device);
-        this.pipelineManager = new PipelineManager(device);
 
-        this.renderPipeline = new RenderPipeline(this.device, this.bufferStore, this.pipelineManager, this.textureStore)
-            // .addStage(new Inverse())
-            // .addStage(new FlipVertically())
-            .addStage(new Desaturate());
+        this.renderPipeline = new RenderPipeline(this.device, container);
     }
 
     render(list : Iterable<Mesh>) {
@@ -40,11 +27,15 @@ class WebGPURenderer {
         this.renderPipeline.render(list, this.context.getCurrentTexture());
     }
 
+    setRenderStages(stages: PostProcessingMaterial[]) {
+        this.renderPipeline.clear();
+        for (const material of stages) {
+            this.renderPipeline.addStage(material);
+        }
+    }
+
     destroy() {
         this.renderPipeline.destroy();
-        this.bufferStore.destroy();
-        this.textureStore.destroy();
-        this.pipelineManager.destroy();
     }
 }
 

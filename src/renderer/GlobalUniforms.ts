@@ -3,14 +3,9 @@ import { Visitor } from "../Visitable";
 import { BufferUniform } from "./Uniform";
 
 class GlobalUniforms implements BufferUniform {
-    time: number;
-    padding0: number;
-    screenSize: Vec2;
-
-    constructor() {
-        this.time = 0;
-        this.screenSize = new Vec2();
-    }
+    time: number = 0;
+    padding0: number = 0;
+    screenSize: Vec2 = Vec2.zero;
 
     getByteSize(): number {
         return 2 * 4 // time + padding

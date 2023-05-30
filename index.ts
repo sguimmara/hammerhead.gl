@@ -5,6 +5,9 @@ import GeometryBuilder from './src/geometries/GeometryBuilder';
 import Vector2 from './src/Vec2';
 import Texture from './src/textures/Texture';
 import BasicMaterial from './src/materials/BasicMaterial';
+import InvertColors from './src/materials/postprocessing/InvertColors';
+import Colorimetry from './src/materials/postprocessing/Colorimetry';
+import ScaleImage from './src/materials/postprocessing/ScaleImage';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -43,6 +46,10 @@ async function main() {
 
     const context = await Context.create(canvas);
     const renderer = context.renderer;
+    renderer.clearColor = chroma('pink');
+    renderer.setRenderStages([
+        new Colorimetry({ saturation: 0.5 }),
+    ]);
 
     const materials = [
         new BasicMaterial().withColorTexture(texture).withDiffuseColor(chroma('blue')),
@@ -69,25 +76,17 @@ async function main() {
     }
 
     function render() {
-        renderer.clearColor = chroma('white');
         renderer.render(meshes);
-        requestAnimationFrame(render);
     }
 
-    render();
+    function renderLoop() {
+        render();
+        requestAnimationFrame(renderLoop);
+    }
 
-    const observer = new ResizeObserver(entries => {
-        for (const entry of entries) {
-            const canvas = entry.target as HTMLCanvasElement;
-            const width = entry.contentBoxSize[0].inlineSize;
-            const height = entry.contentBoxSize[0].blockSize;
-            canvas.width = Math.min(width, context.device.limits.maxTextureDimension2D);
-            canvas.height = Math.min(height, context.device.limits.maxTextureDimension2D);
-            // render();
-        }
-    });
+    requestAnimationFrame(renderLoop);
 
-    observer.observe(canvas);
+    context.on('resized', render);
 }
 
 main();

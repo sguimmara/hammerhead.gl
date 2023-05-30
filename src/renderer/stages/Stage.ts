@@ -4,10 +4,7 @@ import GeometryBuilder from "../../geometries/GeometryBuilder";
 import BufferStore from "../BufferStore";
 import PipelineManager from "../PipelineManager";
 import TextureStore from "../TextureStore";
-import { BindGroups } from "../../constants";
 import GlobalUniforms from '../GlobalUniforms';
-import Material from "../../materials/Material";
-import UniformType from "../../materials/UniformType";
 
 const DEFAULT_CLEAR_COLOR = chroma('black');
 
@@ -29,13 +26,14 @@ abstract class Stage {
     protected renderPassDescriptor: GPURenderPassDescriptor;
 
     private needsRecreateRenderPass: boolean;
-    private globalUniforms: GlobalUniforms;
+    protected globalUniforms: GlobalUniforms;
 
     constructor(
         device: GPUDevice,
         bufferStore: BufferStore,
         pipelineManager: PipelineManager,
-        textureStore: TextureStore
+        textureStore: TextureStore,
+        globalUniforms: GlobalUniforms
     ) {
         this.device = device;
         this.pipelineManager = pipelineManager;
@@ -44,56 +42,7 @@ abstract class Stage {
         this.quad = GeometryBuilder.screenQuad();
         this.clearColor = DEFAULT_CLEAR_COLOR;
         this.needsRecreateRenderPass = true;
-        this.globalUniforms = new GlobalUniforms();
-    }
-
-    bindObjectUniforms(pipeline: GPURenderPipeline, pass: GPURenderPassEncoder, material: Material) {
-        const entries : GPUBindGroupEntry[] = [];
-
-        for (const info of material.layout) {
-            const slot = info.slot;
-            switch (info.type) {
-                case UniformType.Texture: {
-                    const uniform = material.getTextureUniform(slot);
-                    const { view, sampler } = this.textureStore.getTexture(uniform.texture);
-                    entries.push({ binding: slot, resource: view });
-                    entries.push({ binding: slot + 1, resource: sampler });
-                    break;
-                }
-                case UniformType.Buffer: {
-                    const uniform = material.getBufferUniforms(slot);
-                    const gpuBuffer = this.bufferStore.getUniformBuffer(uniform);
-                    entries.push({ binding: slot, resource: { buffer: gpuBuffer } });
-                    break;
-                }
-            }
-        }
-
-        const bindGroup = this.device.createBindGroup({
-            layout: pipeline.getBindGroupLayout(BindGroups.ObjectUniforms),
-            entries,
-        });
-        pass.setBindGroup(BindGroups.ObjectUniforms, bindGroup);
-    }
-
-    updateGlobalUniforms() {
-        this.globalUniforms.time = performance.now() / 1000.0;
-    }
-
-    bindGlobalUniforms(pass: GPURenderPassEncoder) {
-        this.updateGlobalUniforms();
-
-        const gpuBuffer = this.bufferStore.getUniformBuffer(this.globalUniforms);
-
-        const bindGroup = this.device.createBindGroup({
-            label: 'global uniforms BindGroup',
-            layout: this.pipelineManager.globalUniformLayout,
-            entries: [
-                { binding: 0, resource: { buffer: gpuBuffer } },
-            ]
-        });
-
-        pass.setBindGroup(BindGroups.GlobalUniforms, bindGroup);
+        this.globalUniforms = globalUniforms;
     }
 
     destroy() {

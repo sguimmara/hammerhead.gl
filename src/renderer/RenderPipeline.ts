@@ -5,10 +5,12 @@ import PipelineManager from "./PipelineManager";
 import TextureStore from "./TextureStore";
 import RenderSceneStage from "./stages/RenderSceneStage";
 import Stage from "./stages/Stage";
-import Material from "../materials/Material";
 import PostProcessingStage from "./stages/PostProcessingStage";
+import Container from "../Container";
+import GlobalUniforms from './GlobalUniforms';
+import PostProcessingMaterial from "../materials/postprocessing/PostProcessingMaterial";
 
-class RenderPipeline {
+class RenderPipeline implements Destroy {
     private readonly stages: Stage[];
     private readonly device: GPUDevice;
     private readonly pipelineManager: PipelineManager;
@@ -19,21 +21,30 @@ class RenderPipeline {
     private finalRenderTexture: GPUTexture;
     private intermediateTextures : GPUTexture[];
 
+    private globalUniforms: GlobalUniforms;
+
     private clearColor: Color;
 
     constructor(
         device: GPUDevice,
-        bufferStore: BufferStore,
-        pipelineManager: PipelineManager,
-        textureStore: TextureStore
+        container: Container
     ) {
         this.device = device;
-        this.pipelineManager = pipelineManager;
-        this.bufferStore = bufferStore;
-        this.textureStore = textureStore;
-        this.sceneStage = new RenderSceneStage(this.device, this.bufferStore, this.pipelineManager, this.textureStore);
+        this.globalUniforms = new GlobalUniforms();
+        this.pipelineManager = container.get<PipelineManager>('PipelineManager');
+        this.bufferStore = container.get<BufferStore>('BufferStore');
+        this.textureStore = container.get<TextureStore>('TextureStore');
+        this.sceneStage = new RenderSceneStage(this.device, this.bufferStore, this.pipelineManager, this.textureStore, this.globalUniforms);
         this.stages = [this.sceneStage];
         this.intermediateTextures = [null, null];
+    }
+
+    /**
+     * Removes all stage (except for the default render stage).
+     */
+    clear() {
+        this.stages.forEach(s => s.destroy());
+        this.stages.length = 1;
     }
 
     setClearColor(color: Color) {
@@ -54,13 +65,25 @@ class RenderPipeline {
         });
     }
 
-    addStage(material: Material) {
-        const stage = new PostProcessingStage(this.device, this.bufferStore, this.pipelineManager, this.textureStore)
-            .withMaterial(material);
+    addStage(material: PostProcessingMaterial) {
+        const stage = new PostProcessingStage(
+            this.device,
+            this.bufferStore,
+            this.pipelineManager,
+            this.textureStore,
+            this.globalUniforms
+        )
+        .withMaterial(material);
 
         this.stages.push(stage);
 
         return this;
+    }
+
+    updateGlobalUniforms(target: GPUTexture) {
+        this.globalUniforms.time = performance.now() / 1000.0;
+        this.globalUniforms.screenSize.x = target.width;
+        this.globalUniforms.screenSize.y = target.height;
     }
 
     render(meshes: Iterable<Mesh>, target: GPUTexture) {
@@ -74,6 +97,8 @@ class RenderPipeline {
             this.intermediateTextures[1] = this.createSwapTexture(target);
             this.finalRenderTexture = target;
         }
+
+        this.updateGlobalUniforms(target);
 
         this.sceneStage
             .withOutput(this.stages.length > 1 ? this.intermediateTextures[0] : target)

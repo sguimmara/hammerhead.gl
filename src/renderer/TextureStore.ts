@@ -1,6 +1,8 @@
 import Texture from "../textures/Texture";
 
-class TextureStore {
+class TextureStore implements Service {
+    readonly type: string = 'TextureStore';
+
     private readonly textures: Map<number, { gpuTexture: GPUTexture, sampler: GPUSampler, view: GPUTextureView }>;
     private readonly device: GPUDevice;
 
@@ -16,10 +18,16 @@ class TextureStore {
         this.textures.clear();
     }
 
+    getTextureCount(): number {
+        return this.textures.size;
+    }
+
     getTexture(texture: Texture): { gpuTexture: GPUTexture; sampler: GPUSampler; view: GPUTextureView; } {
         if (this.textures.has(texture.id)) {
             return this.textures.get(texture.id);
         }
+
+        texture.on('destroy', () => this.onTextureDestroyed(texture));
 
         const gpuTexture = this.device.createTexture({
             size: [texture.width, texture.height],
@@ -42,6 +50,14 @@ class TextureStore {
             { width: texture.width, height: texture.height });
 
         return result;
+    }
+
+    onTextureDestroyed(texture: Texture): void {
+        const entry = this.textures.get(texture.id);
+        if (entry) {
+            entry.gpuTexture.destroy();
+            this.textures.delete(texture.id);
+        }
     }
 }
 

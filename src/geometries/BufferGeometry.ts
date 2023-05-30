@@ -1,7 +1,9 @@
 let BUFFER_GEOMETRY_ID = 0;
+import { EventDispatcher, EventHandler, Observable } from "../EventDispatcher";
 import { VertexBufferSlot } from "../constants";
 
-class BufferGeometry {
+class BufferGeometry implements Observable, Destroy {
+    private readonly dispatcher: EventDispatcher<BufferGeometry>;
     readonly id: number;
 
     version: number;
@@ -22,6 +24,15 @@ class BufferGeometry {
         this.indexBuffer = new Int16Array(options.indexCount);
         this.vertexCount = options.vertexCount;
         this.indexCount = options.indexCount;
+        this.dispatcher = new EventDispatcher<BufferGeometry>(this);
+    }
+
+    on(type: string, handler: EventHandler): void {
+        this.dispatcher.on(type, handler);
+    }
+
+    destroy() {
+        this.dispatcher.dispatch('destroy');
     }
 
     getVertexBuffer(slot: VertexBufferSlot): Float32Array | null {

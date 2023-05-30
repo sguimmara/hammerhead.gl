@@ -21,12 +21,12 @@ class BasicMaterial extends Material {
     }
 
     withDiffuseColor(color: Color) {
-        this.bindColor(2, color);
+        this.setColor(2, color);
         return this;
     }
 
     withColorTexture(texture: Texture) {
-        this.bindTexture(0, texture);
+        this.setTexture(0, texture);
         return this;
     }
 }

@@ -5,17 +5,18 @@ import TextureStore from "../TextureStore";
 import BufferStore from "../BufferStore";
 import { VertexBufferSlot } from "../../constants";
 import BufferGeometry from '../../geometries/BufferGeometry';
+import GlobalUniforms from '../GlobalUniforms';
 
 /**
  * A render pipeline stage that render the scene into a color attachment.
  */
 class RenderSceneStage extends Stage {
-    private meshes: Mesh[];
+    private renderList: Mesh[];
     private pass: GPURenderPassEncoder;
     private currentPipeline: GPURenderPipeline;
 
-    constructor(device: GPUDevice, bufferStore: BufferStore, pipelineManager: PipelineManager, textureStore: TextureStore) {
-        super(device, bufferStore, pipelineManager, textureStore);
+    constructor(device: GPUDevice, bufferStore: BufferStore, pipelineManager: PipelineManager, textureStore: TextureStore, globalUniforms: GlobalUniforms) {
+        super(device, bufferStore, pipelineManager, textureStore, globalUniforms);
     }
 
     renderMesh(mesh: Mesh, pass: GPURenderPassEncoder) {
@@ -28,7 +29,7 @@ class RenderSceneStage extends Stage {
             this.currentPipeline = pipeline;
         }
 
-        this.bindObjectUniforms(this.currentPipeline, pass, material);
+        this.pipelineManager.bindPipeline(this.currentPipeline, material, pass);
 
         this.bindVertexBuffers(geometry, pass);
 
@@ -36,9 +37,9 @@ class RenderSceneStage extends Stage {
     }
 
     private bindVertexBuffers(geometry: BufferGeometry, pass: GPURenderPassEncoder) {
-        const vertices = this.bufferStore.getVertexBuffer(geometry, VertexBufferSlot.Vertex);
+        const vertices = this.bufferStore.getOrCreateVertexBuffer(geometry, VertexBufferSlot.Vertex);
         pass.setVertexBuffer(VertexBufferSlot.Vertex, vertices);
-        const texcoord = this.bufferStore.getVertexBuffer(geometry, VertexBufferSlot.TexCoord);
+        const texcoord = this.bufferStore.getOrCreateVertexBuffer(geometry, VertexBufferSlot.TexCoord);
         if (texcoord) {
             pass.setVertexBuffer(VertexBufferSlot.TexCoord, texcoord);
         }
@@ -46,17 +47,20 @@ class RenderSceneStage extends Stage {
     }
 
     withMeshes(list: Iterable<Mesh>) {
-        this.meshes = [...list];
-        this.meshes.sort((a, b) => a.material.id - b.material.id);
+        this.renderList = [...list];
+        this.renderList.sort((a, b) => a.material.id - b.material.id);
 
         return this;
     }
 
     execute(encoder: GPUCommandEncoder) {
+        if (!this.output) {
+            throw new Error('no output texture to render into');
+        }
         this.pass = encoder.beginRenderPass(this.renderPassDescriptor);
-        this.bindGlobalUniforms(this.pass);
+        this.pipelineManager.bindGlobalUniforms(this.pass, this.globalUniforms);
 
-        for (const mesh of this.meshes) {
+        for (const mesh of this.renderList) {
             this.renderMesh(mesh, this.pass);
         }
 
