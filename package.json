@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "build": "tsc && vite build",
+    "build": "tsc",
     "start": "vite"
   },
   "author": "Sébastien Guimmara",
@@ -22,5 +22,6 @@
     "@types/chroma-js": "^2.4.0",
     "@webgpu/types": "^0.1.32",
     "chroma-js": "^2.4.2"
-  }
+  },
+  "files": ["dist/**"]
 }
