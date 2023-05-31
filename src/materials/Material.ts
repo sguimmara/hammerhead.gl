@@ -12,6 +12,8 @@ import ScalarUniform from "../renderer/ScalarUniform";
 import Uniform from "../renderer/Uniform";
 import Vec4Uniform from "../renderer/Vec4Uniform";
 import Vec4 from "../Vec4";
+import SamplerUniform from "../renderer/SamplerUniform";
+import Sampler from "../textures/Sampler";
 
 let MATERIAL_ID = 0;
 
@@ -29,8 +31,8 @@ function parseUniformType(text: string): UniformType {
             return UniformType.Vec2;
         case "texture_2d":
             return UniformType.Texture2D;
-        case "GlobalUniforms":
-            return UniformType.GlobalUniforms;
+        case "GlobalValues":
+            return UniformType.GlobalValues;
         default:
             throw new ShaderError(`invalid uniform type: ${text}`);
     }
@@ -45,7 +47,7 @@ class ShaderError extends Error {
 function parseGroup(text: string): number {
     switch (text) {
         case "GLOBAL_UNIFORMS_BIND_GROUP":
-            return BindGroups.GlobalUniforms;
+            return BindGroups.GlobalValues;
         case "OBJECT_UNIFORMS_BIND_GROUP":
             return BindGroups.ObjectUniforms;
         default:
@@ -90,7 +92,7 @@ function allocateUniform(type: UniformType) {
         case UniformType.Texture2D:
             return new TextureUniform();
         case UniformType.Sampler:
-            return null; // TODO
+            return new SamplerUniform();
         case UniformType.Scalar:
             return new ScalarUniform();
         case UniformType.Vec2:
@@ -99,9 +101,18 @@ function allocateUniform(type: UniformType) {
             throw new Error("not implemented");
         case UniformType.Vec4:
             return new Vec4Uniform();
-        case UniformType.GlobalUniforms:
+        case UniformType.GlobalValues:
             throw new Error("not implemented");
     }
+}
+
+function allocateUniforms(layout: UniformInfo[]): Uniform[] {
+    const uniforms = Array(layout.length);
+    for (let i = 0; i < layout.length; i++) {
+        const info = layout[i];
+        uniforms[info.binding] = allocateUniform(info.type);
+    }
+    return uniforms;
 }
 
 abstract class Material implements Observable, Destroy {
@@ -122,15 +133,7 @@ abstract class Material implements Observable, Destroy {
         this.shaderCode = options.shaderCode;
         this.layout = options.layout;
         this.dispatcher = new EventDispatcher<Material>(this);
-        this.uniforms = Array(this.layout.length);
-        this.setDefaultValues();
-    }
-
-    private setDefaultValues() {
-        for (let i = 0; i < this.layout.length; i++) {
-            const info = this.layout[i];
-            this.uniforms[info.binding] = allocateUniform(info.type);
-        }
+        this.uniforms = allocateUniforms(this.layout);
     }
 
     destroy() {
@@ -147,6 +150,15 @@ abstract class Material implements Observable, Destroy {
      * @param value The value.
      */
     protected setScalar(binding: number, value: number) {
+        this.uniforms[binding].value = value;
+    }
+
+    /**
+     * Sets the value of a sampler uniform.
+     * @param binding The binding number of the uniform.
+     * @param value The value.
+     */
+    protected setSampler(binding: number, value: Sampler) {
         this.uniforms[binding].value = value;
     }
 
@@ -192,6 +204,10 @@ abstract class Material implements Observable, Destroy {
 
     getTexture(binding: number): TextureUniform {
         return this.uniforms[binding] as TextureUniform;
+    }
+
+    getSampler(binding: number): SamplerUniform {
+        return this.uniforms[binding] as SamplerUniform;
     }
 }
 

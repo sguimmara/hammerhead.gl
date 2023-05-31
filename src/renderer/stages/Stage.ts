@@ -4,7 +4,7 @@ import GeometryBuilder from "../../geometries/GeometryBuilder";
 import BufferStore from "../BufferStore";
 import PipelineManager from "../PipelineManager";
 import TextureStore from "../TextureStore";
-import GlobalUniforms from '../GlobalUniforms';
+import ObjectUniform from "../ObjectUniform";
 
 const DEFAULT_CLEAR_COLOR = chroma('black');
 
@@ -26,14 +26,14 @@ abstract class Stage {
     protected renderPassDescriptor: GPURenderPassDescriptor;
 
     private needsRecreateRenderPass: boolean;
-    protected globalUniforms: GlobalUniforms;
+    protected GlobalValues: ObjectUniform;
 
     constructor(
         device: GPUDevice,
         bufferStore: BufferStore,
         pipelineManager: PipelineManager,
         textureStore: TextureStore,
-        globalUniforms: GlobalUniforms
+        GlobalValues: ObjectUniform
     ) {
         this.device = device;
         this.pipelineManager = pipelineManager;
@@ -42,7 +42,7 @@ abstract class Stage {
         this.quad = GeometryBuilder.screenQuad();
         this.clearColor = DEFAULT_CLEAR_COLOR;
         this.needsRecreateRenderPass = true;
-        this.globalUniforms = globalUniforms;
+        this.GlobalValues = GlobalValues;
     }
 
     destroy() {

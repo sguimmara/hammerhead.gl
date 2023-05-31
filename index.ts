@@ -9,6 +9,7 @@ import InvertColors from './src/materials/postprocessing/InvertColors';
 import Colorimetry from './src/materials/postprocessing/Colorimetry';
 import ScaleImage from './src/materials/postprocessing/ScaleImage';
 import SinWave from './src/materials/postprocessing/SinWave';
+import Material from './src/materials/Material';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -49,8 +50,8 @@ async function main() {
     const renderer = context.renderer;
     renderer.clearColor = chroma('pink');
     renderer.setRenderStages([
-        new SinWave({ speed: 2 }),
-        new Colorimetry({ saturation: 0.5 }),
+        new SinWave({ speed: 4 }),
+        // new Colorimetry({ saturation: 0.5 }),
     ]);
 
     const materials = [
@@ -66,16 +67,23 @@ async function main() {
 
     const meshes : Mesh[] = [];
 
-    for (let i = 0; i < 20; i++) {
-        const center = new Vec2((Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2);
-        const size = new Vec2(Math.random() * 0.3, Math.random() * 0.3);
-        const material = materials[Math.round(Math.random() * (materials.length - 1))];
-        const mesh = new Mesh({
-            material,
-            geometry: GeometryBuilder.quad(center, size),
-        });
-        meshes.push(mesh);
-    }
+    const fullScreen = new Mesh({
+        material: new BasicMaterial().withColorTexture(mouche).withDiffuseColor(chroma('orange')),
+        geometry: GeometryBuilder.screenQuad(),
+    });
+
+    meshes.push(fullScreen);
+
+    // for (let i = 0; i < 1000; i++) {
+    //     const center = new Vec2((Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2);
+    //     const size = new Vec2(Math.random() * 0.3, Math.random() * 0.3);
+    //     const material = materials[Math.round(Math.random() * (materials.length - 1))];
+    //     const mesh = new Mesh({
+    //         material: new BasicMaterial().withColorTexture(mouche),
+    //         geometry: GeometryBuilder.quad(center, size),
+    //     });
+    //     meshes.push(mesh);
+    // }
 
     function render() {
         renderer.render(meshes);

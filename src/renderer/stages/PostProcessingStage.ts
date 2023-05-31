@@ -4,7 +4,8 @@ import Stage from "./Stage";
 import BufferStore from "../BufferStore";
 import TextureStore from "../TextureStore";
 import PostProcessingMaterial from "../../materials/postprocessing/PostProcessingMaterial";
-import GlobalUniforms from '../GlobalUniforms';
+import GlobalValues from '../GlobalValues';
+import ObjectUniform from "../ObjectUniform";
 
 class PostProcessingStage extends Stage {
     private pipeline: GPURenderPipeline;
@@ -16,9 +17,9 @@ class PostProcessingStage extends Stage {
         bufferStore: BufferStore,
         pipelineManager: PipelineManager,
         textureStore: TextureStore,
-        globalUniforms: GlobalUniforms
+        GlobalValues: ObjectUniform,
     ) {
-        super(device, bufferStore, pipelineManager, textureStore, globalUniforms);
+        super(device, bufferStore, pipelineManager, textureStore, GlobalValues);
     }
 
     withMaterial(material: PostProcessingMaterial) {
@@ -45,7 +46,7 @@ class PostProcessingStage extends Stage {
             }
         }
 
-        this.pipelineManager.bindGlobalUniforms(pass, this.globalUniforms);
+        this.pipelineManager.bindGlobalValues(pass, this.GlobalValues);
         this.bindGroup = this.device.createBindGroup({
             label: 'stage texture bind group',
             layout: this.pipeline.getBindGroupLayout(BindGroups.ObjectUniforms),

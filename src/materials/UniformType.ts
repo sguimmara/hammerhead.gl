@@ -5,7 +5,7 @@ enum UniformType {
     Vec3,
     Vec4,
     Scalar,
-    GlobalUniforms
+    GlobalValues
 }
 
 export default UniformType;

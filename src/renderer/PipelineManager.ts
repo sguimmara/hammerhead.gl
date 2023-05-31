@@ -4,8 +4,9 @@ import UniformInfo from '../materials/UniformInfo';
 import UniformType from "../materials/UniformType";
 import TextureStore from "./TextureStore";
 import BufferStore from "./BufferStore";
-import GlobalUniforms from './GlobalUniforms';
+import GlobalValues from './GlobalValues';
 import Container from "../Container";
+import ObjectUniform from "./ObjectUniform";
 
 class PipelineManager implements Service {
     readonly type: string = 'PipelineManager';
@@ -69,7 +70,7 @@ class PipelineManager implements Service {
             case UniformType.Vec2:
             case UniformType.Vec3:
             case UniformType.Vec4:
-            case UniformType.GlobalUniforms:
+            case UniformType.GlobalValues:
                 return { binding: uniform.binding, visibility: GPUShaderStage.FRAGMENT, buffer: {} }
             default:
                 throw new Error('unsupported uniform type');
@@ -98,11 +99,11 @@ class PipelineManager implements Service {
         return layout;
     }
 
-    bindGlobalUniforms(pass: GPURenderPassEncoder, globalUniforms: GlobalUniforms) {
-        const gpuBuffer = this.bufferStore.getOrCreateUniformBuffer(globalUniforms, 'GlobalUniforms');
+    bindGlobalValues(pass: GPURenderPassEncoder, GlobalValues: ObjectUniform) {
+        const gpuBuffer = this.bufferStore.getOrCreateUniformBuffer(GlobalValues, 'GlobalValues');
 
         let bindGroup;
-        if (!this.bindGroups.has(globalUniforms)) {
+        if (!this.bindGroups.has(GlobalValues)) {
             bindGroup = this.device.createBindGroup({
                 label: 'global uniforms BindGroup',
                 layout: this.globalUniformLayout,
@@ -111,10 +112,10 @@ class PipelineManager implements Service {
                 ]
             });
         } else {
-            bindGroup = this.bindGroups.get(globalUniforms);
+            bindGroup = this.bindGroups.get(GlobalValues);
         }
 
-        pass.setBindGroup(BindGroups.GlobalUniforms, bindGroup);
+        pass.setBindGroup(BindGroups.GlobalValues, bindGroup);
     }
 
     getBindGroupEntries(material: Material, binding: number, entries: GPUBindGroupEntry[]) {
@@ -123,13 +124,15 @@ class PipelineManager implements Service {
         switch (info.type) {
             case UniformType.Texture2D: {
                 const uniform = material.getTexture(slot);
-                const { view, sampler } = this.textureStore.getOrCreateTexture(uniform.value);
-                entries.push({ binding: slot, resource: view });
-                entries.push({ binding: slot + 1, resource: sampler });
+                const texture = this.textureStore.getOrCreateTexture(uniform.value);
+                // TODO don't create a new view each time
+                entries.push({ binding: slot, resource: texture.createView() });
                 break;
             }
             case UniformType.Sampler:
-                // TODO separate textures and samplers (see case above)
+                const uniform = material.getSampler(slot);
+                const sampler = this.textureStore.getOrCreateSampler(uniform.value);
+                entries.push({ binding: slot, resource: sampler });
                 break;
             case UniformType.Scalar:
             case UniformType.Vec2:

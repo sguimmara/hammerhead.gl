@@ -5,7 +5,7 @@ import TextureStore from "../TextureStore";
 import BufferStore from "../BufferStore";
 import { VertexBufferSlot } from "../../constants";
 import BufferGeometry from '../../geometries/BufferGeometry';
-import GlobalUniforms from '../GlobalUniforms';
+import ObjectUniform from '../ObjectUniform';
 
 /**
  * A render pipeline stage that render the scene into a color attachment.
@@ -13,10 +13,16 @@ import GlobalUniforms from '../GlobalUniforms';
 class RenderSceneStage extends Stage {
     private renderList: Mesh[];
     private pass: GPURenderPassEncoder;
-    private currentPipeline: GPURenderPipeline;
+    private currentPipeline: GPURenderPipeline = null;
 
-    constructor(device: GPUDevice, bufferStore: BufferStore, pipelineManager: PipelineManager, textureStore: TextureStore, globalUniforms: GlobalUniforms) {
-        super(device, bufferStore, pipelineManager, textureStore, globalUniforms);
+    constructor(
+        device: GPUDevice,
+        bufferStore: BufferStore,
+        pipelineManager: PipelineManager,
+        textureStore: TextureStore,
+        globalValues: ObjectUniform
+    ) {
+        super(device, bufferStore, pipelineManager, textureStore, globalValues);
     }
 
     renderMesh(mesh: Mesh, pass: GPURenderPassEncoder) {
@@ -24,7 +30,7 @@ class RenderSceneStage extends Stage {
         const geometry = mesh.geometry;
 
         const pipeline = this.pipelineManager.getPipeline(material);
-        if (pipeline != this.currentPipeline) {
+        if (this.currentPipeline == null || pipeline != this.currentPipeline) {
             pass.setPipeline(pipeline);
             this.currentPipeline = pipeline;
         }
@@ -57,8 +63,9 @@ class RenderSceneStage extends Stage {
         if (!this.output) {
             throw new Error('no output texture to render into');
         }
+        this.currentPipeline = null;
         this.pass = encoder.beginRenderPass(this.renderPassDescriptor);
-        this.pipelineManager.bindGlobalUniforms(this.pass, this.globalUniforms);
+        this.pipelineManager.bindGlobalValues(this.pass, this.GlobalValues);
 
         for (const mesh of this.renderList) {
             this.renderMesh(mesh, this.pass);

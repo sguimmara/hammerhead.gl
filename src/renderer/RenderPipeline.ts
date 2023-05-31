@@ -7,8 +7,9 @@ import RenderSceneStage from "./stages/RenderSceneStage";
 import Stage from "./stages/Stage";
 import PostProcessingStage from "./stages/PostProcessingStage";
 import Container from "../Container";
-import GlobalUniforms from './GlobalUniforms';
+import GlobalValues from './GlobalValues';
 import PostProcessingMaterial from "../materials/postprocessing/PostProcessingMaterial";
+import ObjectUniform from "./ObjectUniform";
 
 class RenderPipeline implements Destroy {
     private readonly stages: Stage[];
@@ -21,20 +22,23 @@ class RenderPipeline implements Destroy {
     private finalRenderTexture: GPUTexture;
     private intermediateTextures : GPUTexture[];
 
-    private globalUniforms: GlobalUniforms;
+    private globalUniform: ObjectUniform;
+    private globalValues: GlobalValues;
 
     private clearColor: Color;
+    private lastFrame: number;
 
     constructor(
         device: GPUDevice,
         container: Container
     ) {
         this.device = device;
-        this.globalUniforms = new GlobalUniforms();
+        this.globalValues = new GlobalValues();
+        this.globalUniform = new ObjectUniform(this.globalValues);
         this.pipelineManager = container.get<PipelineManager>('PipelineManager');
         this.bufferStore = container.get<BufferStore>('BufferStore');
         this.textureStore = container.get<TextureStore>('TextureStore');
-        this.sceneStage = new RenderSceneStage(this.device, this.bufferStore, this.pipelineManager, this.textureStore, this.globalUniforms);
+        this.sceneStage = new RenderSceneStage(this.device, this.bufferStore, this.pipelineManager, this.textureStore, this.globalUniform);
         this.stages = [this.sceneStage];
         this.intermediateTextures = [null, null];
     }
@@ -71,7 +75,7 @@ class RenderPipeline implements Destroy {
             this.bufferStore,
             this.pipelineManager,
             this.textureStore,
-            this.globalUniforms
+            this.globalUniform
         )
         .withMaterial(material);
 
@@ -80,10 +84,13 @@ class RenderPipeline implements Destroy {
         return this;
     }
 
-    updateGlobalUniforms(target: GPUTexture) {
-        this.globalUniforms.time = performance.now() / 1000.0;
-        this.globalUniforms.screenSize.x = target.width;
-        this.globalUniforms.screenSize.y = target.height;
+    updateGlobalValues(target: GPUTexture) {
+        const now = performance.now() / 1000.0;
+        this.globalValues.time = now;
+        this.globalValues.deltaTime = now - this.lastFrame;
+        this.lastFrame = now;
+        this.globalValues.screenSize.x = target.width;
+        this.globalValues.screenSize.y = target.height;
     }
 
     render(meshes: Iterable<Mesh>, target: GPUTexture) {
@@ -98,7 +105,7 @@ class RenderPipeline implements Destroy {
             this.finalRenderTexture = target;
         }
 
-        this.updateGlobalUniforms(target);
+        this.updateGlobalValues(target);
 
         this.sceneStage
             .withOutput(this.stages.length > 1 ? this.intermediateTextures[0] : target)
