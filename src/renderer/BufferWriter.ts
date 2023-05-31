@@ -4,6 +4,7 @@ import { Visitor, Visitable } from "../Visitable";
 
 /**
  * Serializes objects into buffers.
+ * The serialized object must implement `Visitable` and `Sized`.
  */
 class BufferWriter implements Visitor
 {
