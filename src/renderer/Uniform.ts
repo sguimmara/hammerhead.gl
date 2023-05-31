@@ -1,1 +1,3 @@
-export default interface Uniform {}
+export default interface Uniform {
+    value: unknown;
+}

@@ -1,8 +1,9 @@
 import Vec2 from "../Vec2";
 import { Visitor } from "../Visitable";
-import { BufferUniform } from "./BufferUniform";
+import BufferUniform from "./BufferUniform";
 
 class GlobalUniforms implements BufferUniform {
+    value: unknown; // TODO
     time: number = 0;
     padding0: number = 0;
     screenSize: Vec2 = Vec2.zero;

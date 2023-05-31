@@ -4,7 +4,7 @@ import BufferUniform from "./BufferUniform";
 export default class ScalarUniform extends BufferUniform {
     value: number;
 
-    constructor(value: number) {
+    constructor(value?: number) {
         super();
         this.value = value;
     }

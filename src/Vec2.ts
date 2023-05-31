@@ -1,5 +1,5 @@
 import Sized from "./Sized";
-import { Visitable, Visitor } from "./Visitable";
+import { Visitable, Visitor } from "./Visitable";
 
 class Vec2 implements Sized, Visitable {
     x: number;

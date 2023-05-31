@@ -123,7 +123,7 @@ class PipelineManager implements Service {
         switch (info.type) {
             case UniformType.Texture2D: {
                 const uniform = material.getTexture(slot);
-                const { view, sampler } = this.textureStore.getTexture(uniform.texture);
+                const { view, sampler } = this.textureStore.getOrCreateTexture(uniform.value);
                 entries.push({ binding: slot, resource: view });
                 entries.push({ binding: slot + 1, resource: sampler });
                 break;

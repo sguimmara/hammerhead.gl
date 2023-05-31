@@ -1,5 +1,7 @@
+import { Color } from "chroma-js";
 import Sized from "../Sized";
 import Vec2 from "../Vec2";
+import Vec4 from "../Vec4";
 import { Visitor, Visitable } from "../Visitable";
 
 /**
@@ -32,6 +34,21 @@ class BufferWriter implements Visitor
     visitVec2(vec2: Vec2): void {
         this.data[this.offset++] = vec2.x;
         this.data[this.offset++] = vec2.y;
+    }
+
+    visitVec4(vec4: Vec4): void {
+        this.data[this.offset++] = vec4.x;
+        this.data[this.offset++] = vec4.y;
+        this.data[this.offset++] = vec4.z;
+        this.data[this.offset++] = vec4.w;
+    }
+
+    visitColor(color: Color): void {
+        const [r, g, b, a] = color.gl();
+        this.data[this.offset++] = r;
+        this.data[this.offset++] = g;
+        this.data[this.offset++] = b;
+        this.data[this.offset++] = a;
     }
 
     upload(queue: GPUQueue) {

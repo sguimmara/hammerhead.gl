@@ -22,7 +22,7 @@ class TextureStore implements Service {
         return this.textures.size;
     }
 
-    getTexture(texture: Texture): { gpuTexture: GPUTexture; sampler: GPUSampler; view: GPUTextureView; } {
+    getOrCreateTexture(texture: Texture): { gpuTexture: GPUTexture; sampler: GPUSampler; view: GPUTextureView; } {
         if (this.textures.has(texture.id)) {
             return this.textures.get(texture.id);
         }

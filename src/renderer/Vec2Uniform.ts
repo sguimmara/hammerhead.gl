@@ -3,11 +3,11 @@ import Vec2 from "../Vec2";
 import BufferUniform from "./BufferUniform";
 
 export default class Vec2Uniform extends BufferUniform {
-    vec2: Vec2;
+    value: Vec2;
 
-    constructor(vec2: Vec2) {
+    constructor(vec2: Vec2 = Vec2.zero) {
         super();
-        this.vec2 = vec2;
+        this.value = vec2;
     }
 
     getByteSize(): number {
@@ -15,6 +15,6 @@ export default class Vec2Uniform extends BufferUniform {
     }
 
     visit(visitor: Visitor): void {
-        visitor.visitVec2(this.vec2);
+        visitor.visitVec2(this.value);
     }
 }
