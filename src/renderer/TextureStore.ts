@@ -5,10 +5,20 @@ class TextureStore implements Service {
 
     private readonly textures: Map<number, { gpuTexture: GPUTexture, sampler: GPUSampler, view: GPUTextureView }>;
     private readonly device: GPUDevice;
+    private readonly emptyTexture: GPUTexture;
+    private readonly defaultSampler: GPUSampler;
 
     constructor(device: GPUDevice) {
         this.textures = new Map();
         this.device = device;
+        this.defaultSampler = device.createSampler();
+        this.emptyTexture = device.createTexture({
+            label: 'empty texture',
+            dimension: '2d',
+            format: 'rgba8unorm',
+            size: [1, 1],
+            usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING
+        });
     }
 
     destroy() {
@@ -23,6 +33,14 @@ class TextureStore implements Service {
     }
 
     getOrCreateTexture(texture: Texture): { gpuTexture: GPUTexture; sampler: GPUSampler; view: GPUTextureView; } {
+        if (texture == null) {
+            return {
+                gpuTexture: this.emptyTexture,
+                sampler: this.defaultSampler,
+                view: this.emptyTexture.createView()
+            };
+        }
+
         if (this.textures.has(texture.id)) {
             return this.textures.get(texture.id);
         }
