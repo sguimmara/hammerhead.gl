@@ -1,14 +1,9 @@
 import shaderCode from './Colorimetry.wgsl';
 import PostProcessingMaterial from "./PostProcessingMaterial";
 import Vec2 from '../../Vec2';
-import LayoutInfo from '../LayoutInfo';
-import UniformType from '../UniformType';
+import { getUniforms } from '../Material';
 
-const layout = [
-    new LayoutInfo(0, UniformType.Texture),
-    new LayoutInfo(1, UniformType.Sampler),
-    new LayoutInfo(2, UniformType.Buffer),
-];
+const layout = getUniforms(shaderCode);
 
 class Colorimetry extends PostProcessingMaterial {
     private saturationBrightness: Vec2 = new Vec2(1, 1);

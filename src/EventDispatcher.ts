@@ -7,13 +7,15 @@ export class ObservableEvent {
 }
 
 export type EventHandler = (event: ObservableEvent) => void;
-export type EventType = 'disposed' | string;
+export type EventType = string;
 
 export interface Observable {
     /**
      * Registers an event handler on this object.
      * @param type The event type.
      * @param handler The event handler.
+     * @example
+     * myObservable.on('destroy', evt => console.info(`${evt.emitter} was destroyed`));
      */
     on(type: EventType, handler: EventHandler): void;
 }

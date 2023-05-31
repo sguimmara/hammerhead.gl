@@ -1,6 +1,6 @@
 import Vec2 from "../Vec2";
 import { Visitor } from "../Visitable";
-import { BufferUniform } from "./Uniform";
+import { BufferUniform } from "./BufferUniform";
 
 class GlobalUniforms implements BufferUniform {
     time: number = 0;

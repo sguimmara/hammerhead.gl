@@ -8,6 +8,7 @@ import BasicMaterial from './src/materials/BasicMaterial';
 import InvertColors from './src/materials/postprocessing/InvertColors';
 import Colorimetry from './src/materials/postprocessing/Colorimetry';
 import ScaleImage from './src/materials/postprocessing/ScaleImage';
+import SinWave from './src/materials/postprocessing/SinWave';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -48,6 +49,7 @@ async function main() {
     const renderer = context.renderer;
     renderer.clearColor = chroma('pink');
     renderer.setRenderStages([
+        new SinWave(),
         new Colorimetry({ saturation: 0.5 }),
     ]);
 

@@ -1,8 +1,8 @@
 import { Visitor } from "../Visitable";
 import Vec2 from "../Vec2";
-import { BufferUniform } from "./Uniform";
+import BufferUniform from "./BufferUniform";
 
-class Vec2Uniform extends BufferUniform {
+export default class Vec2Uniform extends BufferUniform {
     vec2: Vec2;
 
     constructor(vec2: Vec2) {
@@ -18,5 +18,3 @@ class Vec2Uniform extends BufferUniform {
         visitor.visitVec2(this.vec2);
     }
 }
-
-export default Vec2Uniform;

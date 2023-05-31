@@ -1,14 +1,9 @@
 import shaderCode from './ScaleImage.wgsl';
 import PostProcessingMaterial from "./PostProcessingMaterial";
-import LayoutInfo from '../LayoutInfo';
-import UniformType from '../UniformType';
 import Vec2 from '../../Vec2';
+import { getUniforms } from '../Material';
 
-const layout = [
-    new LayoutInfo(0, UniformType.Texture),
-    new LayoutInfo(1, UniformType.Sampler),
-    new LayoutInfo(2, UniformType.Buffer),
-];
+const layout = getUniforms(shaderCode);
 
 class ScaleImage extends PostProcessingMaterial {
     private scale: Vec2 = new Vec2(1, 1);
