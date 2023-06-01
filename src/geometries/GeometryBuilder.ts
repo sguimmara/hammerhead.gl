@@ -1,5 +1,5 @@
 import BufferGeometry from "./BufferGeometry";
-import Vec2 from '../Vec2';
+import Vec2 from '../core/Vec2';
 
 class GeometryBuilder {
     static quad(center: Vec2, size: Vec2): BufferGeometry {

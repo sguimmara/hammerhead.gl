@@ -1,12 +1,12 @@
 import shaderCode from './SinWave.wgsl';
 import PostProcessingMaterial from "./PostProcessingMaterial";
-import { getUniforms } from '../Material';
+import { ShaderLayout } from '../ShaderLayout';
 
-const layout = getUniforms(shaderCode);
+const layout = ShaderLayout.parse(shaderCode);
 
 class SinWave extends PostProcessingMaterial {
     constructor({ speed = 1 } = {}) {
-        super(shaderCode, 'SinWave', layout);
+        super(shaderCode, layout);
         this.setScalar(2, speed);
     }
 

@@ -1,4 +1,4 @@
-import { Visitor } from "../Visitable";
+import { Visitor } from "../core/Visitable";
 import BufferUniform from "./BufferUniform";
 
 export default class ScalarUniform extends BufferUniform {

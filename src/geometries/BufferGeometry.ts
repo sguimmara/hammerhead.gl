@@ -1,6 +1,6 @@
 let BUFFER_GEOMETRY_ID = 0;
-import { EventDispatcher, EventHandler, Observable } from "../EventDispatcher";
-import { VertexBufferSlot } from "../constants";
+import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatcher";
+import { VertexBufferSlot } from "../core/constants";
 
 class BufferGeometry implements Observable, Destroy {
     private readonly dispatcher: EventDispatcher<BufferGeometry>;

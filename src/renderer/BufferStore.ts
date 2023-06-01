@@ -1,7 +1,7 @@
-import { VertexBufferSlot } from '../constants';
+import { VertexBufferSlot } from '../core/constants';
 import BufferGeometry from '../geometries/BufferGeometry';
 import BufferWriter from './BufferWriter';
-import { BufferUniform } from "./BufferUniform";
+import BufferUniform from "./BufferUniform";
 
 /**
  * Manages GPU buffers.
@@ -19,6 +19,22 @@ class BufferStore implements Service {
         this.vertexBuffers = new Map();
         this.uniformBuffers = new Map();
         this.device = device;
+    }
+
+    private onGeometryDestroyed(geometry: BufferGeometry): void {
+        const vertexBuffers = this.vertexBuffers.get(geometry.id);
+        if (vertexBuffers) {
+            vertexBuffers.forEach(gpuBuffer => {
+                gpuBuffer.destroy();
+            })
+            this.vertexBuffers.delete(geometry.id);
+        }
+
+        const indexBuffer = this.indexBuffers.get(geometry.id);
+        if (indexBuffer) {
+            indexBuffer.destroy();
+            this.indexBuffers.delete(geometry.id);
+        }
     }
 
     getBufferCount() {
@@ -109,22 +125,6 @@ class BufferStore implements Service {
         this.device.queue.writeBuffer(gpuBuffer, 0, buf);
 
         return gpuBuffer;
-    }
-
-    onGeometryDestroyed(geometry: BufferGeometry): void {
-        const vertexBuffers = this.vertexBuffers.get(geometry.id);
-        if (vertexBuffers) {
-            vertexBuffers.forEach(gpuBuffer => {
-                gpuBuffer.destroy();
-            })
-            this.vertexBuffers.delete(geometry.id);
-        }
-
-        const indexBuffer = this.indexBuffers.get(geometry.id);
-        if (indexBuffer) {
-            indexBuffer.destroy();
-            this.indexBuffers.delete(geometry.id);
-        }
     }
 
     getIndexBuffer(geometry: BufferGeometry): GPUBuffer {

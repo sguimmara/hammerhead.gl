@@ -6,7 +6,7 @@ import TextureStore from "./TextureStore";
 import RenderSceneStage from "./stages/RenderSceneStage";
 import Stage from "./stages/Stage";
 import PostProcessingStage from "./stages/PostProcessingStage";
-import Container from "../Container";
+import Container from "../core/Container";
 import GlobalValues from './GlobalValues';
 import PostProcessingMaterial from "../materials/postprocessing/PostProcessingMaterial";
 import ObjectUniform from "./ObjectUniform";

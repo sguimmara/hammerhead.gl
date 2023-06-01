@@ -1,8 +1,6 @@
 import { Color } from "chroma-js";
-import Sized from "./Sized";
-import { Visitable, Visitor } from "./Visitable";
 
-class Vec4 implements Sized, Visitable {
+class Vec4 {
     x: number;
     y: number;
     z: number;
@@ -17,14 +15,6 @@ class Vec4 implements Sized, Visitable {
 
     static get zero(): Vec4 {
         return new Vec4();
-    }
-
-    visit(visitor: Visitor): void {
-        visitor.visitVec4(this);
-    }
-
-    getByteSize(): number {
-        return 2 * 4;
     }
 
     static fromColor(color: Color) {

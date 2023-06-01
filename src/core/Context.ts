@@ -1,9 +1,9 @@
 import Container from "./Container";
 import { EventDispatcher, EventHandler, Observable } from "./EventDispatcher";
-import BufferStore from "./renderer/BufferStore";
-import PipelineManager from "./renderer/PipelineManager";
-import TextureStore from "./renderer/TextureStore";
-import WebGPURenderer from "./renderer/WebGPURenderer";
+import BufferStore from "../renderer/BufferStore";
+import PipelineManager from "../renderer/PipelineManager";
+import TextureStore from "../renderer/TextureStore";
+import WebGPURenderer from "../renderer/WebGPURenderer";
 
 class ContextInfo {
     buffers: number;

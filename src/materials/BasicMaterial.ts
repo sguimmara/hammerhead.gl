@@ -1,12 +1,13 @@
-import Material, { getUniforms } from "./Material";
+import Material from "./Material";
 import chroma, { Color } from "chroma-js";
 
 import shaderCode from './BasicMaterial.wgsl';
 import Texture from "../textures/Texture";
+import { ShaderLayout } from "./ShaderLayout";
 
 const WHITE = chroma('white');
 
-const layout = getUniforms(shaderCode);
+const layout = ShaderLayout.parse(shaderCode);
 
 class BasicMaterial extends Material {
     constructor() {

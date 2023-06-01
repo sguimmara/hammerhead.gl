@@ -1,15 +1,15 @@
 import shaderCode from './ScaleImage.wgsl';
 import PostProcessingMaterial from "./PostProcessingMaterial";
-import Vec2 from '../../Vec2';
-import { getUniforms } from '../Material';
+import Vec2 from '../../core/Vec2';
+import { ShaderLayout } from '../ShaderLayout';
 
-const layout = getUniforms(shaderCode);
+const layout = ShaderLayout.parse(shaderCode);
 
 class ScaleImage extends PostProcessingMaterial {
     private scale: Vec2 = new Vec2(1, 1);
 
     constructor({ scaleX = 1, scaleY = 1 } = {}) {
-        super(shaderCode, 'ScaleImage', layout);
+        super(shaderCode, layout);
         this.scale.x = scaleX;
         this.scale.y = scaleY;
         this.setVec2(2, this.scale);

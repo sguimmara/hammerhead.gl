@@ -1,5 +1,5 @@
-import { Visitor } from "../Visitable";
-import Vec2 from "../Vec2";
+import { Visitor } from "../core/Visitable";
+import Vec2 from "../core/Vec2";
 import BufferUniform from "./BufferUniform";
 
 export default class Vec2Uniform extends BufferUniform {

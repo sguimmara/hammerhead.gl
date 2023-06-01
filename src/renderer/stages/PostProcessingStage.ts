@@ -1,4 +1,4 @@
-import { BindGroups, VertexBufferSlot } from "../../constants";
+import { BindGroups, VertexBufferSlot } from "../../core/constants";
 import PipelineManager from "../PipelineManager";
 import Stage from "./Stage";
 import BufferStore from "../BufferStore";

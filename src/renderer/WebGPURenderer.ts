@@ -1,8 +1,7 @@
 import chroma from "chroma-js";
 import Mesh from "../objects/Mesh";
-import Colorimetry from "../materials/postprocessing/Colorimetry";
 import RenderPipeline from "./RenderPipeline";
-import Container from "../Container";
+import Container from "../core/Container";
 import PostProcessingMaterial from "../materials/postprocessing/PostProcessingMaterial";
 
 const DEFAULT_CLEAR_COLOR = chroma('black');
@@ -22,7 +21,7 @@ class WebGPURenderer {
         this.renderPipeline = new RenderPipeline(this.device, container);
     }
 
-    render(list : Iterable<Mesh>) {
+    render(list?: Iterable<Mesh>) {
         this.renderPipeline.setClearColor(this.clearColor);
         this.renderPipeline.render(list, this.context.getCurrentTexture());
     }

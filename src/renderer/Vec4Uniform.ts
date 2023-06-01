@@ -1,5 +1,5 @@
-import { Visitor } from "../Visitable";
-import Vec4 from "../Vec4";
+import { Visitor } from "../core/Visitable";
+import Vec4 from "../core/Vec4";
 import BufferUniform from "./BufferUniform";
 import { Color } from "chroma-js";
 

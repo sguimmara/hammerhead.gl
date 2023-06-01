@@ -1,4 +1,4 @@
-import { EventDispatcher, EventHandler, Observable } from "../EventDispatcher";
+import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatcher";
 
 let TEXTURE_ID = 0;
 

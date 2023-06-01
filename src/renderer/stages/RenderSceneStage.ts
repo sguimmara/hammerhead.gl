@@ -3,7 +3,7 @@ import Mesh from "../../objects/Mesh";
 import PipelineManager from '../PipelineManager';
 import TextureStore from "../TextureStore";
 import BufferStore from "../BufferStore";
-import { VertexBufferSlot } from "../../constants";
+import { VertexBufferSlot } from "../../core/constants";
 import BufferGeometry from '../../geometries/BufferGeometry';
 import ObjectUniform from '../ObjectUniform';
 
@@ -52,9 +52,13 @@ class RenderSceneStage extends Stage {
         pass.setIndexBuffer(this.bufferStore.getIndexBuffer(geometry), "uint16");
     }
 
-    withMeshes(list: Iterable<Mesh>) {
-        this.renderList = [...list];
-        this.renderList.sort((a, b) => a.material.id - b.material.id);
+    withMeshes(list: Iterable<Mesh> | null) {
+        if (list) {
+            this.renderList = [...list];
+            this.renderList.sort((a, b) => a.material.id - b.material.id);
+        } else {
+            this.renderList = [];
+        }
 
         return this;
     }

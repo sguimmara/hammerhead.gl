@@ -1,12 +1,12 @@
-import { getUniforms } from '../Material';
+import { ShaderLayout } from '../ShaderLayout';
 import shaderCode from './InvertColors.wgsl';
 import PostProcessingMaterial from "./PostProcessingMaterial";
 
-const layout = getUniforms(shaderCode);
+const layout = ShaderLayout.parse(shaderCode);
 
 class InvertColors extends PostProcessingMaterial {
     constructor() {
-        super(shaderCode, 'InvertColors', layout);
+        super(shaderCode, layout);
     }
 }
 

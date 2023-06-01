@@ -1,8 +1,8 @@
 import { Color } from "chroma-js";
-import Sized from "../Sized";
-import Vec2 from "../Vec2";
-import Vec4 from "../Vec4";
-import { Visitor, Visitable } from "../Visitable";
+import Sized from "../core/Sized";
+import Vec2 from "../core/Vec2";
+import Vec4 from "../core/Vec4";
+import { Visitor, Visitable } from "../core/Visitable";
 
 /**
  * Serializes objects into buffers.

@@ -1,12 +1,10 @@
-import { BindGroups, VertexBufferSlot } from "../constants";
+import { BindGroups } from "../core/constants";
 import Material from "../materials/Material";
-import UniformInfo from '../materials/UniformInfo';
-import UniformType from "../materials/UniformType";
 import TextureStore from "./TextureStore";
 import BufferStore from "./BufferStore";
-import GlobalValues from './GlobalValues';
-import Container from "../Container";
+import Container from "../core/Container";
 import ObjectUniform from "./ObjectUniform";
+import { UniformType, UniformInfo, AttributeInfo, AttributeType } from "../materials/ShaderLayout";
 
 class PipelineManager implements Service {
     readonly type: string = 'PipelineManager';
@@ -60,6 +58,25 @@ class PipelineManager implements Service {
         return shaderModule;
     }
 
+    private onMaterialDestroyed(material: Material) {
+        const uniforms = material.layout.uniforms;
+        this.pipelines.delete(material.id);
+        for (let i = 0; i < uniforms.length; i++) {
+            const info = uniforms[i];
+            const slot = info.binding;
+            switch (info.type) {
+                case UniformType.Scalar:
+                case UniformType.Vec2:
+                case UniformType.Vec3:
+                case UniformType.Vec4: {
+                    const uniform = material.getBufferUniforms(slot);
+                    this.bufferStore.destroyUniformBuffer(uniform);
+                    break;
+                }
+            }
+        }
+    }
+
     getBindGroupLayoutEntry(uniform: UniformInfo): GPUBindGroupLayoutEntry {
         switch (uniform.type) {
             case UniformType.Texture2D:
@@ -78,14 +95,15 @@ class PipelineManager implements Service {
     }
 
     private getMaterialLayout(material: Material): GPUBindGroupLayout {
-        const typeId = material.typeId;
-        if (this.layouts.has(typeId)) {
-            return this.layouts.get(typeId);
+        const key = material.shaderCode;
+        if (this.layouts.has(key)) {
+            return this.layouts.get(key);
         }
-        const entries = Array(material.layout.length);
+        const uniforms = material.layout.uniforms;
+        const entries = Array(uniforms.length);
 
         for (let i = 0; i < entries.length; i++) {
-            const element = material.layout[i];
+            const element = uniforms[i];
             entries[i] = this.getBindGroupLayoutEntry(element);
         }
 
@@ -94,7 +112,7 @@ class PipelineManager implements Service {
             entries,
         });
 
-        this.layouts.set(typeId, layout);
+        this.layouts.set(key, layout);
 
         return layout;
     }
@@ -119,7 +137,8 @@ class PipelineManager implements Service {
     }
 
     getBindGroupEntries(material: Material, binding: number, entries: GPUBindGroupEntry[]) {
-        const info = material.layout[binding];
+        const uniforms = material.layout.uniforms;
+        const info = uniforms[binding];
         const slot = info.binding;
         switch (info.type) {
             case UniformType.Texture2D: {
@@ -148,7 +167,8 @@ class PipelineManager implements Service {
     bindPipeline(pipeline: GPURenderPipeline, material: Material, pass: GPURenderPassEncoder) {
         const entries: GPUBindGroupEntry[] = [];
 
-        for (let i = 0; i < material.layout.length; i++) {
+        const uniforms = material.layout.uniforms;
+        for (let i = 0; i < uniforms.length; i++) {
             this.getBindGroupEntries(material, i, entries);
         }
 
@@ -160,22 +180,25 @@ class PipelineManager implements Service {
         pass.setBindGroup(BindGroups.ObjectUniforms, bindGroup);
     }
 
-    onMaterialDestroyed(material: Material) {
-        this.pipelines.delete(material.id);
-        for (let i = 0; i < material.layout.length; i++) {
-            const info = material.layout[i];
-            const slot = info.binding;
-            switch (info.type) {
-                case UniformType.Scalar:
-                case UniformType.Vec2:
-                case UniformType.Vec3:
-                case UniformType.Vec4: {
-                    const uniform = material.getBufferUniforms(slot);
-                    this.bufferStore.destroyUniformBuffer(uniform);
-                    break;
-                }
-            }
+    getVertexBufferLayout(info: AttributeInfo): GPUVertexBufferLayout {
+        let arrayStride;
+        const shaderLocation = info.location;
+        let format: GPUVertexFormat;
+        switch (info.type) {
+            case AttributeType.Vec2:
+                arrayStride = 2 * 4;
+                format = 'float32x2'
+                break;
+            case AttributeType.Vec3:
+                arrayStride = 3 * 4;
+                format = 'float32x3';
+                break;
         }
+
+        return {
+            arrayStride,
+            attributes: [{ shaderLocation, offset: 0, format }]
+        };
     }
 
     getPipeline(material: Material): GPURenderPipeline {
@@ -202,26 +225,16 @@ class PipelineManager implements Service {
             ]
         });
 
+        const attributes = material.layout.attributes;
+        const buffers = attributes.map(attr => this.getVertexBufferLayout(attr));
+
         const pipeline = this.device.createRenderPipeline({
             label: `pipeline for material ${material.id}`,
             layout,
             vertex: {
                 module: shaderModule,
                 entryPoint: 'vs',
-                buffers: [
-                    {
-                        arrayStride: 3 * 4,
-                        attributes: [
-                            { shaderLocation: VertexBufferSlot.Vertex, offset: 0, format: 'float32x3' }, // position
-                        ]
-                    },
-                    {
-                        arrayStride: 2 * 4,
-                        attributes: [
-                            { shaderLocation: VertexBufferSlot.TexCoord, offset: 0, format: 'float32x2' } // texcoord
-                        ]
-                    }
-                ]
+                buffers
             },
             fragment: {
                 module: shaderModule,
