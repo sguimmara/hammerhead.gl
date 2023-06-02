@@ -1,7 +1,7 @@
 import { VertexBufferSlot } from '../core/constants';
 import BufferGeometry from '../geometries/BufferGeometry';
 import BufferWriter from './BufferWriter';
-import BufferUniform from "./BufferUniform";
+import BufferUniform from "../materials/uniforms/BufferUniform";
 
 /**
  * Manages GPU buffers.

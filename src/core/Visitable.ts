@@ -1,6 +1,5 @@
 import { Color } from "chroma-js";
-import Vec2 from "./Vec2";
-import Vec4 from "./Vec4";
+import { Vec2, Vec3, Vec4 } from "../index";
 
 /**
  * Visitor.
@@ -8,6 +7,7 @@ import Vec4 from "./Vec4";
 interface Visitor {
     visitNumber(number: number): void;
     visitVec2(vec2: Vec2): void;
+    visitVec3(vec2: Vec3): void;
     visitVec4(vec4: Vec4): void;
     visitColor(color: Color): void;
 }

@@ -3,7 +3,7 @@ import Material from "../materials/Material";
 import TextureStore from "./TextureStore";
 import BufferStore from "./BufferStore";
 import Container from "../core/Container";
-import ObjectUniform from "./ObjectUniform";
+import ObjectUniform from "../materials/uniforms/ObjectUniform";
 import { UniformType, UniformInfo, AttributeInfo, AttributeType } from "../materials/ShaderLayout";
 import BufferGeometry from "../geometries/BufferGeometry";
 

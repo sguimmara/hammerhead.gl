@@ -9,7 +9,7 @@ import PostProcessingStage from "./stages/PostProcessingStage";
 import Container from "../core/Container";
 import GlobalValues from './GlobalValues';
 import PostProcessingMaterial from "../materials/postprocessing/PostProcessingMaterial";
-import ObjectUniform from "./ObjectUniform";
+import ObjectUniform from "../materials/uniforms/ObjectUniform";
 
 class RenderPipeline implements Destroy {
     private readonly stages: Stage[];

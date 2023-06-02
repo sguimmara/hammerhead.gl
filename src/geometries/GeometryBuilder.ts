@@ -1,5 +1,5 @@
+import { Vec2 } from "../../node_modules/gl-matrix/dist/esm/vec2";
 import BufferGeometry from "./BufferGeometry";
-import Vec2 from '../core/Vec2';
 import chroma from "chroma-js";
 
 class GeometryBuilder {

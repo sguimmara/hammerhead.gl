@@ -5,7 +5,7 @@ import BufferStore from "../BufferStore";
 import TextureStore from "../TextureStore";
 import PostProcessingMaterial from "../../materials/postprocessing/PostProcessingMaterial";
 import GlobalValues from '../GlobalValues';
-import ObjectUniform from "../ObjectUniform";
+import ObjectUniform from "../../materials/uniforms/ObjectUniform";
 
 class PostProcessingStage extends Stage {
     private pipeline: GPURenderPipeline;

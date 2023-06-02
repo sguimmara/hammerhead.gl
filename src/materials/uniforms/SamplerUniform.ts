@@ -1,4 +1,4 @@
-import Sampler from "../textures/Sampler";
+import Sampler from "../../textures/Sampler";
 import Uniform from "./Uniform";
 
 export default class SamplerUniform implements Uniform {

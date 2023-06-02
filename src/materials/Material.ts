@@ -1,17 +1,16 @@
-import BufferUniform from "../renderer/BufferUniform";
-import TextureUniform from "../renderer/TextureUniform";
+import BufferUniform from "./uniforms/BufferUniform";
+import TextureUniform from "./uniforms/TextureUniform";
 import Texture from "../textures/Texture";
 import { Color } from "chroma-js";
 import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatcher";
-import Vec2 from "../core/Vec2";
-import Vec2Uniform from "../renderer/Vec2Uniform";
-import ScalarUniform from "../renderer/ScalarUniform";
-import Uniform from "../renderer/Uniform";
-import Vec4Uniform from "../renderer/Vec4Uniform";
-import Vec4 from "../core/Vec4";
-import SamplerUniform from "../renderer/SamplerUniform";
+import ScalarUniform from "./uniforms/ScalarUniform";
 import Sampler from "../textures/Sampler";
 import { UniformType, UniformInfo, ShaderLayout } from "./ShaderLayout";
+import { Vec2, Vec4 } from "../index";
+import SamplerUniform from "./uniforms/SamplerUniform";
+import Uniform from "./uniforms/Uniform";
+import Vec2Uniform from "./uniforms/Vec2Uniform";
+import Vec4Uniform from "./uniforms/Vec4Uniform";
 
 let MATERIAL_ID = 0;
 
@@ -96,7 +95,8 @@ abstract class Material implements Observable, Destroy {
      * @param value The value.
      */
     protected setColor(binding: number, color: Color) {
-        this.uniforms[binding].value = Vec4.fromColor(color);
+        const [r, g, b, a] = color.gl();
+        this.uniforms[binding].value = new Vec4(r, g, b, a);
     }
 
     /**

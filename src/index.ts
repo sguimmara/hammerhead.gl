@@ -1,6 +1,3 @@
-import Vec2 from "./core/Vec2";
-import Vec3 from "./core/Vec3";
-import Vec4 from './core/Vec4';
 import Context from './core/Context';
 import { EventDispatcher } from './core/EventDispatcher';
 import BufferGeometry from './geometries/BufferGeometry';
@@ -15,6 +12,9 @@ import InvertColors from './materials/postprocessing/InvertColors';
 import Mesh from './objects/Mesh';
 import Object3D from './objects/Object3D';
 import Scene from './objects/Scene';
+import { Vec2 } from '../node_modules/gl-matrix/dist/esm/vec2';
+import { Vec3 } from '../node_modules/gl-matrix/dist/esm/vec3';
+import { Vec4 } from '../node_modules/gl-matrix/dist/esm/vec4';
 
 export {
     Vec2,

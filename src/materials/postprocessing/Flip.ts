@@ -1,7 +1,7 @@
 import shaderCode from './Flip.wgsl';
 import PostProcessingMaterial from "./PostProcessingMaterial";
-import Vec2 from '../../core/Vec2';
 import { ShaderLayout } from '../ShaderLayout';
+import { Vec2 } from '../../index';
 
 const layout = ShaderLayout.parse(shaderCode);
 

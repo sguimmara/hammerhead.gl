@@ -5,7 +5,7 @@ import TextureStore from "../TextureStore";
 import BufferStore from "../BufferStore";
 import { VertexBufferSlot } from "../../core/constants";
 import BufferGeometry from '../../geometries/BufferGeometry';
-import ObjectUniform from '../ObjectUniform';
+import ObjectUniform from '../../materials/uniforms/ObjectUniform';
 
 /**
  * A render pipeline stage that render the scene into a color attachment.

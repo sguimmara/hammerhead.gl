@@ -4,7 +4,7 @@ import GeometryBuilder from "../../geometries/GeometryBuilder";
 import BufferStore from "../BufferStore";
 import PipelineManager from "../PipelineManager";
 import TextureStore from "../TextureStore";
-import ObjectUniform from "../ObjectUniform";
+import ObjectUniform from "../../materials/uniforms/ObjectUniform";
 
 const DEFAULT_CLEAR_COLOR = chroma('black');
 

@@ -1,8 +1,7 @@
 import { Color } from "chroma-js";
 import Sized from "../core/Sized";
-import Vec2 from "../core/Vec2";
-import Vec4 from "../core/Vec4";
 import { Visitor, Visitable } from "../core/Visitable";
+import { Vec2, Vec3, Vec4 } from "../index";
 
 /**
  * Serializes objects into buffers.
@@ -31,16 +30,22 @@ class BufferWriter implements Visitor
         this.data[this.offset++] = number;
     }
 
-    visitVec2(vec2: Vec2): void {
-        this.data[this.offset++] = vec2.x;
-        this.data[this.offset++] = vec2.y;
+    visitVec2(v: Vec2): void {
+        this.data[this.offset++] = v.x;
+        this.data[this.offset++] = v.y;
     }
 
-    visitVec4(vec4: Vec4): void {
-        this.data[this.offset++] = vec4.x;
-        this.data[this.offset++] = vec4.y;
-        this.data[this.offset++] = vec4.z;
-        this.data[this.offset++] = vec4.w;
+    visitVec3(v: Vec3): void {
+        this.data[this.offset++] = v.x;
+        this.data[this.offset++] = v.y;
+        this.data[this.offset++] = v.z;
+    }
+
+    visitVec4(v: Vec4): void {
+        this.data[this.offset++] = v.x;
+        this.data[this.offset++] = v.y;
+        this.data[this.offset++] = v.z;
+        this.data[this.offset++] = v.w;
     }
 
     visitColor(color: Color): void {
