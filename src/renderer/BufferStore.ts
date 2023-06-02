@@ -84,6 +84,11 @@ class BufferStore implements Service {
         }
     }
 
+    updateUniform(uniform: BufferUniform) {
+        const bw = this.uniformBuffers.get(uniform);
+        bw.upload(this.device.queue);
+    }
+
     getOrCreateUniformBuffer(uniform: BufferUniform, label: string = 'uniform buffer') {
         if (this.uniformBuffers.has(uniform)) {
             const bw = this.uniformBuffers.get(uniform);

@@ -33,9 +33,8 @@ class RenderSceneStage extends Stage {
             this.currentPipeline = pipeline;
         }
 
-        this.pipelineManager.bindPipeline(this.currentPipeline, material, pass);
-
-        this.pipelineManager.bindObjectUniforms(pass, mesh);
+        this.pipelineManager.bindPerMaterialUniforms(material, pass);
+        this.pipelineManager.bindPerObjectUniforms(pass, mesh);
         this.pipelineManager.bindVertexBuffers(geometry, pass);
 
         pass.drawIndexed(geometry.indexCount);
@@ -58,7 +57,7 @@ class RenderSceneStage extends Stage {
         }
         this.currentPipeline = null;
         this.pass = encoder.beginRenderPass(this.renderPassDescriptor);
-        this.pipelineManager.bindGlobalValues(this.pass, this.GlobalValues);
+        this.pipelineManager.bindGlobalUniforms(this.pass, this.GlobalValues);
 
         for (const mesh of this.renderList) {
             this.renderMesh(mesh, this.pass);

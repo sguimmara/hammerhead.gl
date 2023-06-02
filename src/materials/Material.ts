@@ -12,6 +12,7 @@ import TextureUniform from "./uniforms/TextureUniform";
 import Uniform from "./uniforms/Uniform";
 import Vec2Uniform from "./uniforms/Vec2Uniform";
 import Vec4Uniform from "./uniforms/Vec4Uniform";
+import Mat4Uniform from "./uniforms/Mat4Uniform";
 
 let MATERIAL_ID = 0;
 
@@ -29,6 +30,8 @@ function allocateUniform(type: UniformType) {
             throw new Error("not implemented");
         case UniformType.Vec4:
             return new Vec4Uniform();
+        case UniformType.Mat4:
+            return new Mat4Uniform();
         case UniformType.GlobalValues:
             throw new Error("not implemented");
     }
