@@ -149,6 +149,8 @@ class PipelineManager implements Service {
             this.bufferStore.updateUniform(perObject.worldMatrix);
         }
 
+        // TODO handle destroy event of mesh
+
         pass.setBindGroup(BindGroups.ObjectUniforms, perObject.bindGroup);
     }
 
