@@ -3,6 +3,7 @@ import Mesh from "../objects/Mesh";
 import RenderPipeline from "./RenderPipeline";
 import Container from "../core/Container";
 import PostProcessingMaterial from "../materials/postprocessing/PostProcessingMaterial";
+import { Object3D } from "../index";
 
 const DEFAULT_CLEAR_COLOR = chroma('black');
 
@@ -21,9 +22,29 @@ class WebGPURenderer {
         this.renderPipeline = new RenderPipeline(this.device, container);
     }
 
-    render(list?: Iterable<Mesh>) {
+    private getMeshes(graph: Object3D): Mesh[] {
+        const meshes: Mesh[] = [];
+
+        if (graph) {
+            graph.traverse(obj => {
+                if (obj.type === 'Mesh') {
+                    meshes.push(obj as Mesh);
+                }
+            });
+        }
+
+        return meshes;
+    }
+
+    /**
+     * Renders a scene graph.
+     * @param root The root of the object graph to render. If unspecified, the rendered result is
+     * simply the clear color and optional post-processing effects.
+     */
+    render(root?: Object3D) {
         this.renderPipeline.setClearColor(this.clearColor);
-        this.renderPipeline.render(list, this.context.getCurrentTexture());
+        const renderList = this.getMeshes(root);
+        this.renderPipeline.render(renderList, this.context.getCurrentTexture());
     }
 
     setRenderStages(stages: PostProcessingMaterial[]) {

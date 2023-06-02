@@ -25,7 +25,7 @@ async function main() {
     mesh.geometry.setColors(chroma('red'));
 
     function render() {
-        renderer.render([mesh]);
+        renderer.render(mesh);
     }
 
     render();

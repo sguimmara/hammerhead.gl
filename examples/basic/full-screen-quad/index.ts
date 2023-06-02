@@ -22,7 +22,7 @@ async function main() {
     });
 
     function render() {
-        renderer.render([mesh]);
+        renderer.render(mesh);
     }
 
     render();
