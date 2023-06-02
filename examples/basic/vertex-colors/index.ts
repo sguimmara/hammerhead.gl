@@ -22,7 +22,12 @@ async function main() {
         geometry: GeometryBuilder.screenQuad(),
     });
 
-    mesh.geometry.setColors(chroma('red'));
+    mesh.geometry.setColors([
+        chroma('red'),
+        chroma('green'),
+        chroma('blue'),
+        chroma('cyan'),
+    ]);
 
     function render() {
         renderer.render(mesh);
