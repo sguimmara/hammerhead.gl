@@ -108,12 +108,13 @@ class BufferStore implements Service {
             return this.vertexBuffers.get(geometry.id).get(slot);
         }
 
+        // TODO will be called multiple times for each buffer
         geometry.on('destroy', evt => this.onGeometryDestroyed(evt.emitter as BufferGeometry));
 
         const buf = geometry.getVertexBuffer(slot);
 
         const gpuBuffer = this.device.createBuffer({
-            label: `geom #${geometry.id} @${VertexBufferSlot[slot]}`,
+            label: `BufferGeometry ${geometry.id} @${VertexBufferSlot[slot]}`,
             size: buf.byteLength,
             usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
         });

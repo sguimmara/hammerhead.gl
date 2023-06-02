@@ -1,5 +1,6 @@
 import BufferGeometry from "./BufferGeometry";
 import Vec2 from '../core/Vec2';
+import chroma from "chroma-js";
 
 class GeometryBuilder {
     static quad(center: Vec2, size: Vec2): BufferGeometry {
@@ -26,6 +27,9 @@ class GeometryBuilder {
             1.0, 0.0, // top right
             1.0, 1.0, // bottom right
         ]);
+
+        // TODO
+        buf.setColors(chroma('white'));
 
         return buf;
     }

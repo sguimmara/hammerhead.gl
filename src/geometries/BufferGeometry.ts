@@ -1,4 +1,5 @@
 let BUFFER_GEOMETRY_ID = 0;
+import { Color } from "chroma-js";
 import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatcher";
 import { VertexBufferSlot } from "../core/constants";
 
@@ -19,7 +20,7 @@ class BufferGeometry implements Observable, Destroy {
         this.id = BUFFER_GEOMETRY_ID++;
         this.vertexBuffers = new Map();
         this.vertexBuffers.set(
-            VertexBufferSlot.Vertex,
+            VertexBufferSlot.Position,
             new Float32Array(options.vertexCount * 3));
         this.indexBuffer = new Int16Array(options.indexCount);
         this.vertexCount = options.vertexCount;
@@ -40,15 +41,35 @@ class BufferGeometry implements Observable, Destroy {
     }
 
     setVertices(positions: number[]) {
-        this.vertexBuffers.get(VertexBufferSlot.Vertex).set(positions, 0);
+        this.vertexBuffers.get(VertexBufferSlot.Position).set(positions, 0);
         this.version++;
     }
 
-    setTexCoords(coords: number[]) {
+    setColors(colors?: Color[] | Color) {
+        if (!this.vertexBuffers.has(VertexBufferSlot.Color)) {
+            this.vertexBuffers.set(VertexBufferSlot.Color, new Float32Array(this.vertexCount * 4));
+        }
+
+        if (Array.isArray(colors)) {
+            const values = colors.flatMap(c => c.gl());
+            this.vertexBuffers.get(VertexBufferSlot.Color).set(values);
+        } else if (colors) {
+            const gl = colors.gl();
+            for (let i = 0; i < this.vertexCount; i++) {
+                this.vertexBuffers.get(VertexBufferSlot.Color).set(gl, i * 4);
+            }
+        }
+        this.version++;
+    }
+
+    setTexCoords(coords?: number[]) {
         if (!this.vertexBuffers.has(VertexBufferSlot.TexCoord)) {
             this.vertexBuffers.set(VertexBufferSlot.TexCoord, new Float32Array(this.vertexCount * 2));
         }
-        this.vertexBuffers.get(VertexBufferSlot.TexCoord).set(coords, 0);
+
+        if (coords) {
+            this.vertexBuffers.get(VertexBufferSlot.TexCoord).set(coords, 0);
+        }
         this.version++;
     }
 

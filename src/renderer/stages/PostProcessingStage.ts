@@ -40,8 +40,9 @@ class PostProcessingStage extends Stage {
             { binding: 1, resource: this.inputSampler },
         ];
 
-        if (this.material.layout.length > 2) {
-            for (let i = 2; i < this.material.layout.length; i++) {
+        const uniforms = this.material.layout.uniforms;
+        if (uniforms.length > 2) {
+            for (let i = 2; i < uniforms.length; i++) {
                 this.pipelineManager.getBindGroupEntries(this.material, i, entries);
             }
         }
@@ -54,13 +55,7 @@ class PostProcessingStage extends Stage {
         });
         pass.setBindGroup(BindGroups.ObjectUniforms, this.bindGroup);
 
-        const vertices = this.bufferStore.getOrCreateVertexBuffer(this.quad, VertexBufferSlot.Vertex);
-        pass.setVertexBuffer(VertexBufferSlot.Vertex, vertices);
-        const texcoord = this.bufferStore.getOrCreateVertexBuffer(this.quad, VertexBufferSlot.TexCoord);
-        if (texcoord) {
-            pass.setVertexBuffer(VertexBufferSlot.TexCoord, texcoord);
-        }
-        pass.setIndexBuffer(this.bufferStore.getIndexBuffer(this.quad), "uint16");
+        this.pipelineManager.bindVertexBuffers(this.quad, pass);
 
         pass.drawIndexed(this.quad.indexCount);
 

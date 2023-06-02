@@ -70,7 +70,7 @@ function getAttributes(shaderCode: string): AttributeInfo[] {
         const result: AttributeInfo[] = [];
         for (const line of lines) {
             const match = line.match(attrRegex);
-            if (match) {
+            if (match) {
                 const location = Number.parseInt(match[1]);
                 const type = match[3];
                 let attrType;

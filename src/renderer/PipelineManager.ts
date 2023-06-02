@@ -1,10 +1,11 @@
-import { BindGroups } from "../core/constants";
+import { BindGroups, VertexBufferSlot } from "../core/constants";
 import Material from "../materials/Material";
 import TextureStore from "./TextureStore";
 import BufferStore from "./BufferStore";
 import Container from "../core/Container";
 import ObjectUniform from "./ObjectUniform";
 import { UniformType, UniformInfo, AttributeInfo, AttributeType } from "../materials/ShaderLayout";
+import BufferGeometry from "../geometries/BufferGeometry";
 
 class PipelineManager implements Service {
     readonly type: string = 'PipelineManager';
@@ -180,7 +181,7 @@ class PipelineManager implements Service {
         pass.setBindGroup(BindGroups.ObjectUniforms, bindGroup);
     }
 
-    getVertexBufferLayout(info: AttributeInfo): GPUVertexBufferLayout {
+    private getVertexBufferLayout(info: AttributeInfo): GPUVertexBufferLayout {
         let arrayStride;
         const shaderLocation = info.location;
         let format: GPUVertexFormat;
@@ -193,12 +194,24 @@ class PipelineManager implements Service {
                 arrayStride = 3 * 4;
                 format = 'float32x3';
                 break;
+            case AttributeType.Vec4:
+                arrayStride = 4 * 4;
+                format = 'float32x4';
+                break;
         }
 
         return {
             arrayStride,
             attributes: [{ shaderLocation, offset: 0, format }]
         };
+    }
+
+    bindVertexBuffers(geometry: BufferGeometry, pass: GPURenderPassEncoder) {
+        for (const [key, value] of geometry.vertexBuffers.entries()) {
+            const gpuBuffer = this.bufferStore.getOrCreateVertexBuffer(geometry, key);
+            pass.setVertexBuffer(key, gpuBuffer);
+        }
+        pass.setIndexBuffer(this.bufferStore.getIndexBuffer(geometry), "uint16");
     }
 
     getPipeline(material: Material): GPURenderPipeline {
@@ -229,7 +242,7 @@ class PipelineManager implements Service {
         const buffers = attributes.map(attr => this.getVertexBufferLayout(attr));
 
         const pipeline = this.device.createRenderPipeline({
-            label: `pipeline for material ${material.id}`,
+            label: `Material ${material.id}`,
             layout,
             vertex: {
                 module: shaderModule,

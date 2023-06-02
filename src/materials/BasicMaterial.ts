@@ -11,7 +11,7 @@ const layout = ShaderLayout.parse(shaderCode);
 
 class BasicMaterial extends Material {
     constructor() {
-        super({ shaderCode, layout, typeId: 'BasicMaterial' });
+        super({ shaderCode, layout });
         this.withDiffuseColor(WHITE);
     }
 

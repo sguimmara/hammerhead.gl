@@ -37,19 +37,9 @@ class RenderSceneStage extends Stage {
 
         this.pipelineManager.bindPipeline(this.currentPipeline, material, pass);
 
-        this.bindVertexBuffers(geometry, pass);
+        this.pipelineManager.bindVertexBuffers(geometry, pass);
 
         pass.drawIndexed(geometry.indexCount);
-    }
-
-    private bindVertexBuffers(geometry: BufferGeometry, pass: GPURenderPassEncoder) {
-        const vertices = this.bufferStore.getOrCreateVertexBuffer(geometry, VertexBufferSlot.Vertex);
-        pass.setVertexBuffer(VertexBufferSlot.Vertex, vertices);
-        const texcoord = this.bufferStore.getOrCreateVertexBuffer(geometry, VertexBufferSlot.TexCoord);
-        if (texcoord) {
-            pass.setVertexBuffer(VertexBufferSlot.TexCoord, texcoord);
-        }
-        pass.setIndexBuffer(this.bufferStore.getIndexBuffer(geometry), "uint16");
     }
 
     withMeshes(list: Iterable<Mesh> | null) {
