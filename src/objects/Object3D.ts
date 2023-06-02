@@ -8,14 +8,17 @@ let ID = 0;
 export default class Object3D implements Observable {
     readonly id: number;
     readonly dispatcher: EventDispatcher<Object3D>;
-    readonly type: string;
+
+    /**
+     * The active state of the object. An inactive object is not renderable and not traversable.
+     */
+    active: boolean = true;
 
     parent: Object3D;
     children: Object3D[];
 
-    constructor(type: string = 'Object3D') {
+    constructor() {
         this.id = ID++;
-        this.type = type;
     }
 
     on(type: string, handler: EventHandler): void {
@@ -40,10 +43,12 @@ export default class Object3D implements Observable {
      * @param callback The callback called for each visited object in the hierarchy.
      */
     traverse(callback: (obj: Object3D) => void) {
-        callback(this);
-        if (this.children) {
-            for (let i = 0; i < this.children.length; i++) {
-                callback(this.children[i]);
+        if (this.active) {
+            callback(this);
+            if (this.children) {
+                for (let i = 0; i < this.children.length; i++) {
+                    callback(this.children[i]);
+                }
             }
         }
     }

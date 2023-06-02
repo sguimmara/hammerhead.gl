@@ -13,6 +13,7 @@ class WebGPURenderer {
 
     private renderPipeline: RenderPipeline;
 
+    /** The clear color. */
     clearColor: chroma.Color = DEFAULT_CLEAR_COLOR;
 
     constructor(device: GPUDevice, context: GPUCanvasContext, container: Container) {
@@ -27,8 +28,11 @@ class WebGPURenderer {
 
         if (graph) {
             graph.traverse(obj => {
-                if (obj.type === 'Mesh') {
-                    meshes.push(obj as Mesh);
+                const mesh = obj as Mesh;
+                if (mesh.isMesh) {
+                    if (mesh.material && mesh.material.active) {
+                        meshes.push(mesh);
+                    }
                 }
             });
         }
@@ -47,10 +51,17 @@ class WebGPURenderer {
         this.renderPipeline.render(renderList, this.context.getCurrentTexture());
     }
 
-    setRenderStages(stages: PostProcessingMaterial[]) {
+    /**
+     * Specifies the render stages of the post-processing pipeline.
+     * @param stages The stages, in first-to-last order. If unspecified, this simply removes
+     * all post-processing stages.
+     */
+    setRenderStages(stages?: PostProcessingMaterial[]) {
         this.renderPipeline.clear();
-        for (const material of stages) {
-            this.renderPipeline.addStage(material);
+        if (stages) {
+            for (const material of stages) {
+                this.renderPipeline.addStage(material);
+            }
         }
     }
 

@@ -11,7 +11,7 @@ export default class Mesh extends Object3D {
         material: Material,
         geometry: BufferGeometry
     }) {
-        super('Mesh');
+        super();
         this.material = options.material;
         this.geometry = options.geometry;
     }

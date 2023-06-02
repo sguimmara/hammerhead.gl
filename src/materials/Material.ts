@@ -50,6 +50,9 @@ abstract class Material implements Observable, Destroy {
     readonly shaderCode: string;
     readonly layout: ShaderLayout;
 
+    /** The active state of this material. An inactive material will not be rendered. */
+    active: boolean = true;
+
     constructor(options: {
         shaderCode: string;
         layout: ShaderLayout;
