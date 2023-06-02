@@ -1,9 +1,9 @@
 import chroma from "chroma-js";
-import Mesh from "../objects/Mesh";
-import RenderPipeline from "./RenderPipeline";
 import Container from "../core/Container";
 import PostProcessingMaterial from "../materials/postprocessing/PostProcessingMaterial";
-import { Object3D } from "../index";
+import Mesh from "../objects/Mesh";
+import Object3D from "../objects/Object3D";
+import RenderPipeline from "./RenderPipeline";
 
 const DEFAULT_CLEAR_COLOR = chroma('black');
 

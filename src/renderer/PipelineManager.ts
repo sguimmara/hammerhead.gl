@@ -1,11 +1,12 @@
-import { BindGroups, VertexBufferSlot } from "../core/constants";
-import Material from "../materials/Material";
-import TextureStore from "./TextureStore";
-import BufferStore from "./BufferStore";
 import Container from "../core/Container";
-import ObjectUniform from "../materials/uniforms/ObjectUniform";
-import { UniformType, UniformInfo, AttributeInfo, AttributeType } from "../materials/ShaderLayout";
+import Service from "../core/Service";
+import { BindGroups } from "../core/constants";
 import BufferGeometry from "../geometries/BufferGeometry";
+import Material from "../materials/Material";
+import { UniformType, UniformInfo, AttributeInfo, AttributeType } from "../materials/ShaderLayout";
+import ObjectUniform from "../materials/uniforms/ObjectUniform";
+import BufferStore from "./BufferStore";
+import TextureStore from "./TextureStore";
 
 class PipelineManager implements Service {
     readonly type: string = 'PipelineManager';

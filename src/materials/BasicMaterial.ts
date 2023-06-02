@@ -1,9 +1,8 @@
-import Material from "./Material";
-import chroma, { Color } from "chroma-js";
-
+import chroma, { Color } from 'chroma-js';
 import shaderCode from './BasicMaterial.wgsl';
-import Texture from "../textures/Texture";
-import { ShaderLayout } from "./ShaderLayout";
+import Texture from '../textures/Texture';
+import { ShaderLayout } from './ShaderLayout';
+import Material from './Material';
 
 const WHITE = chroma('white');
 

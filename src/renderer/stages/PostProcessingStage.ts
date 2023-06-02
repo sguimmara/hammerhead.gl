@@ -1,11 +1,10 @@
-import { BindGroups, VertexBufferSlot } from "../../core/constants";
-import PipelineManager from "../PipelineManager";
-import Stage from "./Stage";
-import BufferStore from "../BufferStore";
-import TextureStore from "../TextureStore";
+import { BindGroups } from "../../core/constants";
 import PostProcessingMaterial from "../../materials/postprocessing/PostProcessingMaterial";
-import GlobalValues from '../GlobalValues';
 import ObjectUniform from "../../materials/uniforms/ObjectUniform";
+import BufferStore from "../BufferStore";
+import PipelineManager from "../PipelineManager";
+import TextureStore from "../TextureStore";
+import Stage from "./Stage";
 
 class PostProcessingStage extends Stage {
     private pipeline: GPURenderPipeline;

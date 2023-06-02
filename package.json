@@ -1,6 +1,7 @@
 {
   "name": "wgpu-exercises",
   "version": "0.0.1",
+  "type": "module",
   "description": "A simple WebGPU exercise",
   "main": "index.js",
   "scripts": {
@@ -22,8 +23,7 @@
     "@types/chroma-js": "^2.4.0",
     "@webgpu/types": "^0.1.32",
     "chroma-js": "^2.4.2",
-    "gl-matrix": "^4.0.0-beta.1",
-    "npm": "^9.6.7"
+    "wgpu-matrix": "^2.4.0"
   },
   "files": [
     "dist/**"

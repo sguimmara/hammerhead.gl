@@ -1,11 +1,11 @@
+import { Vec2, vec2 } from "wgpu-matrix";
 import Sized from "../core/Sized";
 import { Visitable, Visitor } from "../core/Visitable";
-import { Vec2 } from "../index";
 
 class GlobalValues implements Sized, Visitable {
     time: number = 0;
     deltaTime: number = 0;
-    screenSize: Vec2 = new Vec2(0, 0);
+    screenSize: Vec2 = vec2.zero();
 
     getByteSize(): number {
         const f32 = 4;

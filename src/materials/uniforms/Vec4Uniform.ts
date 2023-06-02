@@ -1,19 +1,19 @@
-import { Visitor } from "../../core/Visitable";
-import { Vec4 } from "../../index";
-import BufferUniform from "./BufferUniform";
 import { Color } from "chroma-js";
+import { Vec4, vec4 } from "wgpu-matrix";
+import { Visitor } from "../../core/Visitable";
+import BufferUniform from "./BufferUniform";
 
 export default class Vec4Uniform extends BufferUniform {
     value: Vec4;
 
-    constructor(vec4: Vec4 = new Vec4(0, 0, 0, 0)) {
+    constructor(v: Vec4 = vec4.create(0, 0, 0, 0)) {
         super();
-        this.value = vec4;
+        this.value = v;
     }
 
     fromColor(color: Color) {
         const [r, g, b, a] = color.gl();
-        this.value = new Vec4(r, g, b, a);
+        this.value = vec4.create(r, g, b, a);
     }
 
     getByteSize(): number {

@@ -1,3 +1,4 @@
+import Destroy from "../core/Destroy";
 import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatcher";
 
 let TEXTURE_ID = 0;

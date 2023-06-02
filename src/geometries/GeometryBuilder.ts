@@ -1,4 +1,4 @@
-import { Vec2 } from "../../node_modules/gl-matrix/dist/esm/vec2";
+import { Vec2, vec2 } from "wgpu-matrix";
 import BufferGeometry from "./BufferGeometry";
 import chroma from "chroma-js";
 
@@ -9,11 +9,15 @@ class GeometryBuilder {
             indexCount: 6
         });
 
+        const x = size[0];
+        const y = size[1];
+        const cx = center[0];
+        const cy = center[1];
         buf.setVertices([
-            -1.0 * size.x + center.x, -1.0 * size.y + center.y, 0.0, // bottom left
-            -1.0 * size.x + center.x,  1.0 * size.y + center.y, 0.0, // top left
-             1.0 * size.x + center.x,  1.0 * size.y + center.y, 0.0, // top right
-             1.0 * size.x + center.x, -1.0 * size.y + center.y, 0.0, // bottom right
+            -1.0 * x + cx, -1.0 * y + cy, 0.0, // bottom left
+            -1.0 * x + cx,  1.0 * y + cy, 0.0, // top left
+             1.0 * x + cx,  1.0 * y + cy, 0.0, // top right
+             1.0 * x + cx, -1.0 * y + cy, 0.0, // bottom right
         ]);
 
         buf.setIndices([
@@ -35,7 +39,7 @@ class GeometryBuilder {
     }
 
     static screenQuad(): BufferGeometry {
-        return this.quad(new Vec2(0, 0), new Vec2(1, 1));
+        return this.quad(vec2.create(0, 0), vec2.create(1, 1));
     }
 }
 

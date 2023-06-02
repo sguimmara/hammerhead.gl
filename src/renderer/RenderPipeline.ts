@@ -1,15 +1,16 @@
 import { Color } from "chroma-js";
-import Mesh from "../objects/Mesh";
-import BufferStore from "./BufferStore";
-import PipelineManager from "./PipelineManager";
-import TextureStore from "./TextureStore";
-import RenderSceneStage from "./stages/RenderSceneStage";
-import Stage from "./stages/Stage";
-import PostProcessingStage from "./stages/PostProcessingStage";
 import Container from "../core/Container";
-import GlobalValues from './GlobalValues';
+import Destroy from "../core/Destroy";
 import PostProcessingMaterial from "../materials/postprocessing/PostProcessingMaterial";
 import ObjectUniform from "../materials/uniforms/ObjectUniform";
+import Mesh from "../objects/Mesh";
+import BufferStore from "./BufferStore";
+import GlobalValues from "./GlobalValues";
+import PipelineManager from "./PipelineManager";
+import TextureStore from "./TextureStore";
+import PostProcessingStage from "./stages/PostProcessingStage";
+import RenderSceneStage from "./stages/RenderSceneStage";
+import Stage from "./stages/Stage";
 
 class RenderPipeline implements Destroy {
     private readonly stages: Stage[];
@@ -89,8 +90,8 @@ class RenderPipeline implements Destroy {
         this.globalValues.time = now;
         this.globalValues.deltaTime = now - this.lastFrame;
         this.lastFrame = now;
-        this.globalValues.screenSize.x = target.width;
-        this.globalValues.screenSize.y = target.height;
+        this.globalValues.screenSize[0] = target.width;
+        this.globalValues.screenSize[1] = target.height;
     }
 
     render(meshes: Iterable<Mesh>, target: GPUTexture) {

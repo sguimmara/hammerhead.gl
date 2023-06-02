@@ -1,13 +1,14 @@
-import BufferUniform from "./uniforms/BufferUniform";
-import TextureUniform from "./uniforms/TextureUniform";
-import Texture from "../textures/Texture";
 import { Color } from "chroma-js";
-import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatcher";
-import ScalarUniform from "./uniforms/ScalarUniform";
+import { Vec4, Vec2, vec4 } from "wgpu-matrix";
+import Destroy from "../core/Destroy";
+import { Observable, EventHandler, EventDispatcher } from "../core/EventDispatcher";
 import Sampler from "../textures/Sampler";
+import Texture from "../textures/Texture";
 import { UniformType, UniformInfo, ShaderLayout } from "./ShaderLayout";
-import { Vec2, Vec4 } from "../index";
+import BufferUniform from "./uniforms/BufferUniform";
 import SamplerUniform from "./uniforms/SamplerUniform";
+import ScalarUniform from "./uniforms/ScalarUniform";
+import TextureUniform from "./uniforms/TextureUniform";
 import Uniform from "./uniforms/Uniform";
 import Vec2Uniform from "./uniforms/Vec2Uniform";
 import Vec4Uniform from "./uniforms/Vec4Uniform";
@@ -96,7 +97,7 @@ abstract class Material implements Observable, Destroy {
      */
     protected setColor(binding: number, color: Color) {
         const [r, g, b, a] = color.gl();
-        this.uniforms[binding].value = new Vec4(r, g, b, a);
+        this.uniforms[binding].value = vec4.create(r, g, b, a);
     }
 
     /**

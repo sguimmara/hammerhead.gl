@@ -2,6 +2,7 @@ let BUFFER_GEOMETRY_ID = 0;
 import { Color } from "chroma-js";
 import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatcher";
 import { VertexBufferSlot } from "../core/constants";
+import Destroy from "../core/Destroy";
 
 class BufferGeometry implements Observable, Destroy {
     private readonly dispatcher: EventDispatcher<BufferGeometry>;

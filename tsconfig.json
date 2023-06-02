@@ -2,7 +2,8 @@
   "compilerOptions": {
     "lib": ["ES2020", "DOM"],
     "target": "ES2017",
-    "module": "system",
+    "module": "ES2020",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "noImplicitAny": true,
     "removeComments": true,

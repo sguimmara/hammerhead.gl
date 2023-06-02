@@ -1,13 +1,13 @@
+import { Vec2, vec2 } from "wgpu-matrix";
 import { Visitor } from "../../core/Visitable";
-import { Vec2 } from "../../index";
 import BufferUniform from "./BufferUniform";
 
 export default class Vec2Uniform extends BufferUniform {
     value: Vec2;
 
-    constructor(vec2: Vec2 = new Vec2(0, 0)) {
+    constructor(v: Vec2 = vec2.create(0, 0)) {
         super();
-        this.value = vec2;
+        this.value = v;
     }
 
     getByteSize(): number {

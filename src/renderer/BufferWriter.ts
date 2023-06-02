@@ -1,7 +1,7 @@
 import { Color } from "chroma-js";
+import { Vec2, Vec3, Vec4 } from "wgpu-matrix";
 import Sized from "../core/Sized";
 import { Visitor, Visitable } from "../core/Visitable";
-import { Vec2, Vec3, Vec4 } from "../index";
 
 /**
  * Serializes objects into buffers.
@@ -31,21 +31,21 @@ class BufferWriter implements Visitor
     }
 
     visitVec2(v: Vec2): void {
-        this.data[this.offset++] = v.x;
-        this.data[this.offset++] = v.y;
+        this.data[this.offset++] = v[0];
+        this.data[this.offset++] = v[1];
     }
 
     visitVec3(v: Vec3): void {
-        this.data[this.offset++] = v.x;
-        this.data[this.offset++] = v.y;
-        this.data[this.offset++] = v.z;
+        this.data[this.offset++] = v[0];
+        this.data[this.offset++] = v[1];
+        this.data[this.offset++] = v[2];
     }
 
     visitVec4(v: Vec4): void {
-        this.data[this.offset++] = v.x;
-        this.data[this.offset++] = v.y;
-        this.data[this.offset++] = v.z;
-        this.data[this.offset++] = v.w;
+        this.data[this.offset++] = v[0];
+        this.data[this.offset++] = v[1];
+        this.data[this.offset++] = v[2];
+        this.data[this.offset++] = v[3];
     }
 
     visitColor(color: Color): void {

@@ -1,11 +1,9 @@
-import Stage from './Stage';
+import ObjectUniform from "../../materials/uniforms/ObjectUniform";
 import Mesh from "../../objects/Mesh";
-import PipelineManager from '../PipelineManager';
-import TextureStore from "../TextureStore";
 import BufferStore from "../BufferStore";
-import { VertexBufferSlot } from "../../core/constants";
-import BufferGeometry from '../../geometries/BufferGeometry';
-import ObjectUniform from '../../materials/uniforms/ObjectUniform';
+import PipelineManager from "../PipelineManager";
+import TextureStore from "../TextureStore";
+import Stage from "./Stage";
 
 /**
  * A render pipeline stage that render the scene into a color attachment.

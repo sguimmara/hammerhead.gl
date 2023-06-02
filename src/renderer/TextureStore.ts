@@ -1,3 +1,4 @@
+import Service from "../core/Service";
 import Sampler, { FilterMode, AddressMode } from "../textures/Sampler";
 import Texture from "../textures/Texture";
 
