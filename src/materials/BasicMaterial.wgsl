@@ -7,6 +7,6 @@
 
 #include ./chunks/screenQuad.vert.wgsl;
 
-@fragment fn fs(input: VSOutput) -> @location(0) vec4f {
-    return color * textureSample(colorTexture, colorSampler, input.texcoord);
+@fragment fn fs(vertex: VSOutput) -> @location(0) vec4f {
+    return vertex.color * color * textureSample(colorTexture, colorSampler, vertex.texcoord);
 }

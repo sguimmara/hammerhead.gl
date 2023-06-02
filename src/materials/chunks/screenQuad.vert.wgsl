@@ -5,6 +5,7 @@
 
     output.position = vec4f(vertex.position, 1.0);
     output.texcoord = vertex.texcoord;
+    output.color = vertex.color;
 
     return output;
 }
