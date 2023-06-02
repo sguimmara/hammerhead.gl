@@ -1,4 +1,5 @@
 import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatcher";
+import { Mat4, mat4 } from 'wgpu-matrix';
 
 let ID = 0;
 
@@ -8,6 +9,9 @@ let ID = 0;
 export default class Object3D implements Observable {
     readonly id: number;
     readonly dispatcher: EventDispatcher<Object3D>;
+
+    worldMatrix: Mat4 = mat4.identity();
+    localMatrix: Mat4 = mat4.identity();
 
     /**
      * The active state of the object. An inactive object is not renderable and not traversable.

@@ -4,6 +4,9 @@ import BufferUniform from "./BufferUniform";
 
 type ObjectValue = Sized & Visitable;
 
+/**
+ * A uniform type for arbitrary objects.
+ */
 export default class ObjectUniform extends BufferUniform {
     value: ObjectValue;
 

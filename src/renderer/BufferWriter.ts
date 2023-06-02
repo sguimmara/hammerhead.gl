@@ -1,5 +1,5 @@
 import { Color } from "chroma-js";
-import { Vec2, Vec3, Vec4 } from "wgpu-matrix";
+import { Mat4, Vec2, Vec3, Vec4 } from "wgpu-matrix";
 import Sized from "../core/Sized";
 import { Visitor, Visitable } from "../core/Visitable";
 
@@ -54,6 +54,14 @@ class BufferWriter implements Visitor
         this.data[this.offset++] = g;
         this.data[this.offset++] = b;
         this.data[this.offset++] = a;
+    }
+
+    visitMat4(value: Mat4): void {
+        // TODO unroll loop
+        for (let i = 0; i < value.length; i++) {
+            const element = value[i];
+            this.data[this.offset++] = element;
+        }
     }
 
     upload(queue: GPUQueue) {
