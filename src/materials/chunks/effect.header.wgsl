@@ -1,4 +1,4 @@
 #include GlobalValues.wgsl;
 
-@group(OBJECT_UNIFORMS_BIND_GROUP) @binding(0) var colorTexture: texture_2d<f32>;
-@group(OBJECT_UNIFORMS_BIND_GROUP) @binding(1) var colorSampler: sampler;
+@group(MATERIAL_UNIFORMS) @binding(0) var colorTexture: texture_2d<f32>;
+@group(MATERIAL_UNIFORMS) @binding(1) var colorSampler: sampler;

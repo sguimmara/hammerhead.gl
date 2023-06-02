@@ -3,7 +3,7 @@
 #include ../chunks/VSOutput.wgsl;
 #include ../chunks/screenQuad.vert.wgsl;
 
-@group(OBJECT_UNIFORMS_BIND_GROUP) @binding(2) var<uniform> flip: vec2f;
+@group(MATERIAL_UNIFORMS) @binding(2) var<uniform> flip: vec2f;
 
 @fragment fn fs(input: VSOutput) -> @location(0) vec4f {
     var u = input.texcoord.x;

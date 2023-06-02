@@ -35,6 +35,7 @@ class RenderSceneStage extends Stage {
 
         this.pipelineManager.bindPipeline(this.currentPipeline, material, pass);
 
+        this.pipelineManager.bindObjectUniforms(pass, mesh);
         this.pipelineManager.bindVertexBuffers(geometry, pass);
 
         pass.drawIndexed(geometry.indexCount);

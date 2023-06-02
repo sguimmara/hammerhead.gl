@@ -20,6 +20,7 @@ export enum UniformType {
     Vec2,
     Vec3,
     Vec4,
+    Mat4,
     Scalar,
     GlobalValues
 }
@@ -109,6 +110,8 @@ function parseUniformType(text: string): UniformType {
             return UniformType.Vec3;
         case "vec2f":
             return UniformType.Vec2;
+        case "mat4x4f":
+            return UniformType.Mat4;
         case "texture_2d":
             return UniformType.Texture2D;
         case "GlobalValues":
@@ -126,10 +129,10 @@ class ShaderError extends Error {
 
 function parseGroup(text: string): number {
     switch (text) {
-        case "GLOBAL_UNIFORMS_BIND_GROUP":
+        case "GLOBAL_UNIFORMS":
             return BindGroups.GlobalValues;
-        case "OBJECT_UNIFORMS_BIND_GROUP":
-            return BindGroups.ObjectUniforms;
+        case "MATERIAL_UNIFORMS":
+            return BindGroups.MaterialUniforms;
         default:
             throw new ShaderError(`invalid group: ${text}`);
     }
@@ -137,7 +140,7 @@ function parseGroup(text: string): number {
 
 function parseUniforms(shaderCode: string): UniformInfo[] {
     const bindingRegex =
-        /^\s*@group\((GLOBAL_UNIFORMS_BIND_GROUP|OBJECT_UNIFORMS_BIND_GROUP)\)\s*@binding\((\d+)\)\s*var(<uniform>)?\s*(\w+)\s*:\s*(\w+)(<f32>)?\s*;\s*$/;
+        /^\s*@group\((GLOBAL_UNIFORMS|MATERIAL_UNIFORMS)\)\s*@binding\((\d+)\)\s*var(<uniform>)?\s*(\w+)\s*:\s*(\w+)(<f32>)?\s*;\s*$/;
     const lines = shaderCode.split("\n");
     const result = [];
     for (const line of lines) {
@@ -158,7 +161,7 @@ function parseUniforms(shaderCode: string): UniformInfo[] {
             const info = new UniformInfo(group, binding, type, name);
 
             // TODO we ignore the global binding for now
-            if (group === BindGroups.ObjectUniforms) {
+            if (group === BindGroups.MaterialUniforms) {
                 result.push(info);
             }
         }

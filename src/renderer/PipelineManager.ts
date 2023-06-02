@@ -1,12 +1,21 @@
+import { mat4, vec3, vec4 } from "wgpu-matrix";
 import Container from "../core/Container";
 import Service from "../core/Service";
 import { BindGroups } from "../core/constants";
 import BufferGeometry from "../geometries/BufferGeometry";
 import Material from "../materials/Material";
 import { UniformType, UniformInfo, AttributeInfo, AttributeType } from "../materials/ShaderLayout";
+import Mat4Uniform from "../materials/uniforms/Mat4Uniform";
 import ObjectUniform from "../materials/uniforms/ObjectUniform";
 import BufferStore from "./BufferStore";
 import TextureStore from "./TextureStore";
+import Mesh from "../objects/Mesh";
+
+class PerObject {
+    worldMatrix: Mat4Uniform;
+    worldMatrixBuffer: GPUBuffer;
+    bindGroup: GPUBindGroup;
+}
 
 class PipelineManager implements Service {
     readonly type: string = 'PipelineManager';
@@ -16,7 +25,9 @@ class PipelineManager implements Service {
     private readonly pipelines: Map<number, GPURenderPipeline>;
     private readonly layouts: Map<string, GPUBindGroupLayout>;
     private readonly bindGroups: Map<object, GPUBindGroup>;
+    private readonly perObjectMap: Map<number, PerObject>;
     private readonly globalUniformLayout: GPUBindGroupLayout;
+    private readonly objectUniformLayout: GPUBindGroupLayout;
     private readonly textureStore: TextureStore;
     private readonly bufferStore: BufferStore;
 
@@ -26,13 +37,22 @@ class PipelineManager implements Service {
         this.pipelines = new Map();
         this.layouts = new Map();
         this.bindGroups = new Map();
+        this.perObjectMap = new Map();
         this.textureStore = container.get<TextureStore>('TextureStore');
         this.bufferStore = container.get<BufferStore>('BufferStore');
 
         this.globalUniformLayout = device.createBindGroupLayout({
             label: 'global uniforms BindGroupLayout',
             entries: [
-                { binding: 0, visibility: GPUShaderStage.FRAGMENT | GPUShaderStage.VERTEX, buffer: {} }
+                { binding: 0, visibility: GPUShaderStage.FRAGMENT | GPUShaderStage.VERTEX, buffer: {} },
+                { binding: 1, visibility: GPUShaderStage.VERTEX, buffer: {} }
+            ]
+        });
+
+        this.objectUniformLayout = device.createBindGroupLayout({
+            label: 'worldMatrix BindGroupLayout',
+            entries: [
+                { binding: 0, visibility: GPUShaderStage.VERTEX, buffer: {} }
             ]
         });
     }
@@ -119,8 +139,31 @@ class PipelineManager implements Service {
         return layout;
     }
 
+    bindObjectUniforms(pass: GPURenderPassEncoder, mesh: Mesh) {
+        let perObject = this.perObjectMap.get(mesh.id);
+        if (!perObject) {
+            perObject = new PerObject();
+            perObject.worldMatrix = new Mat4Uniform(mesh.worldMatrix);
+            perObject.worldMatrixBuffer = this.bufferStore.getOrCreateUniformBuffer(perObject.worldMatrix, 'worldMatrix');
+            perObject.bindGroup = this.device.createBindGroup({
+                label: 'worldMatrix BindGroup',
+                layout: this.objectUniformLayout,
+                entries: [
+                    { binding: 0, resource: { buffer: perObject.worldMatrixBuffer } },
+                ]
+            });
+            this.perObjectMap.set(mesh.id, perObject);
+        }
+
+        pass.setBindGroup(BindGroups.ObjectUniforms, perObject.bindGroup);
+    }
+
     bindGlobalValues(pass: GPURenderPassEncoder, GlobalValues: ObjectUniform) {
         const gpuBuffer = this.bufferStore.getOrCreateUniformBuffer(GlobalValues, 'GlobalValues');
+        const mat4x4 = new Mat4Uniform();
+        // mat4.rotateZ(mat4x4.value, 0.5, mat4x4.value);
+        mat4.translate(mat4x4.value, vec3.create(0.5, 0, 0), mat4x4.value);
+        const worldMatrix = this.bufferStore.getOrCreateUniformBuffer(mat4x4, 'worldMatrix');
 
         let bindGroup;
         if (!this.bindGroups.has(GlobalValues)) {
@@ -129,6 +172,7 @@ class PipelineManager implements Service {
                 layout: this.globalUniformLayout,
                 entries: [
                     { binding: 0, resource: { buffer: gpuBuffer } },
+                    { binding: 1, resource: { buffer: worldMatrix } },
                 ]
             });
         } else {
@@ -175,11 +219,11 @@ class PipelineManager implements Service {
         }
 
         const bindGroup = this.device.createBindGroup({
-            layout: pipeline.getBindGroupLayout(BindGroups.ObjectUniforms),
+            layout: pipeline.getBindGroupLayout(BindGroups.MaterialUniforms),
             entries,
         });
 
-        pass.setBindGroup(BindGroups.ObjectUniforms, bindGroup);
+        pass.setBindGroup(BindGroups.MaterialUniforms, bindGroup);
     }
 
     private getVertexBufferLayout(info: AttributeInfo): GPUVertexBufferLayout {
@@ -236,6 +280,7 @@ class PipelineManager implements Service {
             bindGroupLayouts: [
                 this.globalUniformLayout,
                 this.getMaterialLayout(material),
+                this.objectUniformLayout,
             ]
         });
 

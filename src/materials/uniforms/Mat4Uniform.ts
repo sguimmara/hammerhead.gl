@@ -5,9 +5,11 @@ import { Visitor } from "../../core/Visitable";
 export default class Mat4Uniform extends BufferUniform {
     value: Mat4 = mat4.identity();
 
-    constructor(value: Mat4) {
+    constructor(value?: Mat4) {
         super();
-        this.value = value;
+        if (value) {
+            this.value = value;
+        }
     }
 
     getByteSize(): number {

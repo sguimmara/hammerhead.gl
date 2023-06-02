@@ -3,8 +3,8 @@
 #include ../chunks/VSOutput.wgsl;
 #include ../chunks/screenQuad.vert.wgsl;
 
-@group(OBJECT_UNIFORMS_BIND_GROUP) @binding(2) var<uniform> saturation: f32;
-@group(OBJECT_UNIFORMS_BIND_GROUP) @binding(3) var<uniform> brightness: f32;
+@group(MATERIAL_UNIFORMS) @binding(2) var<uniform> saturation: f32;
+@group(MATERIAL_UNIFORMS) @binding(3) var<uniform> brightness: f32;
 
 @fragment fn fs(input: VSOutput) -> @location(0) vec4f {
     var color = textureSample(colorTexture, colorSampler, input.texcoord);

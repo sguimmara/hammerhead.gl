@@ -3,6 +3,7 @@ import Mesh from '../../../src/objects/Mesh';
 import GeometryBuilder from '../../../src/geometries/GeometryBuilder';
 import BasicMaterial from '../../../src/materials/BasicMaterial';
 import { load8bitImage } from '../../lib';
+import { mat4, vec3 } from 'wgpu-matrix';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 

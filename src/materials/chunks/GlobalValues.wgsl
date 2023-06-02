@@ -6,4 +6,4 @@ struct GlobalValues {
     screenSize: vec2f,
 };
 
-@group(GLOBAL_UNIFORMS_BIND_GROUP) @binding(0) var<uniform> globals: GlobalValues;
+@group(GLOBAL_UNIFORMS) @binding(0) var<uniform> globals: GlobalValues;

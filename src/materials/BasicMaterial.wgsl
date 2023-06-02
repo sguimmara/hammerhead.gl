@@ -1,9 +1,9 @@
 #include ./chunks/VSOutput.wgsl;
 #include ./chunks/GlobalValues.wgsl;
 
-@group(OBJECT_UNIFORMS_BIND_GROUP) @binding(0) var colorTexture: texture_2d<f32>;
-@group(OBJECT_UNIFORMS_BIND_GROUP) @binding(1) var colorSampler: sampler;
-@group(OBJECT_UNIFORMS_BIND_GROUP) @binding(2) var<uniform> color: vec4f;
+@group(MATERIAL_UNIFORMS) @binding(0) var colorTexture: texture_2d<f32>;
+@group(MATERIAL_UNIFORMS) @binding(1) var colorSampler: sampler;
+@group(MATERIAL_UNIFORMS) @binding(2) var<uniform> color: vec4f;
 
 #include ./chunks/screenQuad.vert.wgsl;
 
