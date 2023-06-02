@@ -1,4 +1,4 @@
-import Context from '../../src/core/Context';
+import Context from '../../../src/core/Context';
 import chroma from 'chroma-js';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;

@@ -3,9 +3,14 @@ import Texture from "../src/textures/Texture";
 export function bindSlider(elementId: string, fn: Function) {
     const slider = document.getElementById(elementId) as HTMLInputElement;
     if (slider) {
-        slider.oninput = () => {
-            fn(slider.value);
-        }
+        slider.oninput = () => fn(Number.parseFloat(slider.value));
+    }
+}
+
+export function bindToggle(elementId: string, fn: Function) {
+    const toggle = document.getElementById(elementId) as HTMLInputElement;
+    if (toggle) {
+        toggle.oninput = () => fn(toggle.checked);
     }
 }
 
