@@ -25,6 +25,10 @@ export default class Object3D implements Observable {
         this.dispatcher.on(type, handler);
     }
 
+    protected dispatch(type: string) {
+        this.dispatcher.dispatch(type);
+    }
+
     /**
      * Adds an object as a child of this object.
      * @param child The child to add.
@@ -36,6 +40,7 @@ export default class Object3D implements Observable {
         } else {
             this.children.push(child);
         }
+        child.dispatch('added');
     }
 
     /**

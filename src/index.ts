@@ -5,7 +5,7 @@ import Context from './core/Context';
 import { EventDispatcher } from './core/EventDispatcher';
 import BufferGeometry from './geometries/BufferGeometry';
 import GeometryBuilder from './geometries/GeometryBuilder';
-import WebGPURenderer from './renderer/WebGPURenderer';
+import WebGPURenderer from './renderer/Renderer';
 import Material from './materials/Material';
 import BasicMaterial from './materials/BasicMaterial';
 import PostProcessingMaterial from './materials/postprocessing/PostProcessingMaterial';

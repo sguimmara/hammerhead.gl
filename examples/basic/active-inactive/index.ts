@@ -2,7 +2,7 @@ import Context from '../../../src/core/Context';
 import Mesh from '../../../src/objects/Mesh';
 import GeometryBuilder from '../../../src/geometries/GeometryBuilder';
 import BasicMaterial from '../../../src/materials/BasicMaterial';
-import { bindSlider, bindToggle, load8bitImage } from '../../lib';
+import { bindToggle, load8bitImage } from '../../lib';
 import Flip from '../../../src/materials/postprocessing/Flip';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;

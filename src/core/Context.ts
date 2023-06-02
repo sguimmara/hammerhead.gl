@@ -3,7 +3,7 @@ import { EventDispatcher, EventHandler, Observable } from "./EventDispatcher";
 import BufferStore from "../renderer/BufferStore";
 import PipelineManager from "../renderer/PipelineManager";
 import TextureStore from "../renderer/TextureStore";
-import WebGPURenderer from "../renderer/WebGPURenderer";
+import Renderer from "../renderer/Renderer";
 
 class ContextInfo {
     buffers: number;
@@ -22,7 +22,7 @@ class Context implements Observable {
     private readonly dispatcher: EventDispatcher<Context>;
 
     readonly device: GPUDevice;
-    readonly renderer: WebGPURenderer;
+    readonly renderer: Renderer;
 
     private constructor(context: GPUCanvasContext, device: GPUDevice, canvas: HTMLCanvasElement) {
         this.context = context;
@@ -37,7 +37,7 @@ class Context implements Observable {
         this.container.register(this.textureStore);
         this.container.register(new PipelineManager(device, this.container));
 
-        this.renderer = new WebGPURenderer(this.device, this.context, this.container);
+        this.renderer = new Renderer(this.device, this.context, this.container);
 
         const observer = new ResizeObserver(entries => {
             for (const entry of entries) {
