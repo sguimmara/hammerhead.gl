@@ -1,8 +1,9 @@
-import Context from '../../src/core/Context';
-import Mesh from '../../src/objects/Mesh';
-import GeometryBuilder from '../../src/geometries/GeometryBuilder';
-import BasicMaterial from '../../src/materials/BasicMaterial';
-import { load8bitImage } from '../lib';
+import Context from '../../../src/core/Context';
+import Mesh from '../../../src/objects/Mesh';
+import GeometryBuilder from '../../../src/geometries/GeometryBuilder';
+import BasicMaterial from '../../../src/materials/BasicMaterial';
+import { load8bitImage } from '../../lib';
+import chroma from 'chroma-js';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -20,6 +21,8 @@ async function main() {
         material,
         geometry: GeometryBuilder.screenQuad(),
     });
+
+    mesh.geometry.setColors(chroma('red'));
 
     function render() {
         renderer.render([mesh]);

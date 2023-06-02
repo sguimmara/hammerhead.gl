@@ -1,5 +1,14 @@
 import Texture from "../src/textures/Texture";
 
+export function bindSlider(elementId: string, fn: Function) {
+    const slider = document.getElementById(elementId) as HTMLInputElement;
+    if (slider) {
+        slider.oninput = () => {
+            fn(slider.value);
+        }
+    }
+}
+
 export function load8bitImage(img: HTMLImageElement, url: string): Promise<Texture> {
     return new Promise((resolve, reject) => {
         img.crossOrigin = 'anonymous';
