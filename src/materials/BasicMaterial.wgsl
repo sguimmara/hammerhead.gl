@@ -9,5 +9,6 @@
 #include ./chunks/default.vert.wgsl;
 
 @fragment fn fs(vertex: VSOutput) -> @location(0) vec4f {
-    return vertex.color * color * textureSample(colorTexture, colorSampler, vertex.texcoord);
+    var textureColor = textureSample(colorTexture, colorSampler, vertex.texcoord);
+    return vertex.color * color * textureColor;
 }

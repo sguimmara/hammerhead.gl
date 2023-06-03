@@ -263,8 +263,21 @@ class PipelineManager implements Service {
             perMaterial.material = material;
             perMaterial.shaderModule = this.createShaderModule(material.id, material.shaderCode);
 
+            // TODO get blending mode from material.
             const colorTarget: GPUColorTargetState = {
                 format: navigator.gpu.getPreferredCanvasFormat(),
+                blend: {
+                    color: {
+                        operation: 'add',
+                        srcFactor: 'src-alpha',
+                        dstFactor: 'one-minus-src-alpha'
+                    },
+                    alpha: {
+                        operation: 'subtract',
+                        srcFactor: 'src-alpha',
+                        dstFactor: 'one-minus-src-alpha'
+                    }
+                }
             };
 
             // TODO refactor
@@ -288,18 +301,19 @@ class PipelineManager implements Service {
             const attributes = material.layout.attributes;
             const buffers = attributes.map(attr => this.getVertexBufferLayout(attr));
 
+            // TODO get depth buffer behaviour from material
             const pipeline = this.device.createRenderPipeline({
                 label: `Material ${material.id}`,
                 layout,
                 depthStencil: {
-                    format: 'depth32float',
-                    depthWriteEnabled: true,
-                    depthCompare: "less-equal"
+                    format: 'depth32float', // TODO expose as global config
+                    depthWriteEnabled: true, // TODO get from material
+                    depthCompare: "less-equal" // TODO get from material
                 },
                 primitive: {
-                    topology: 'triangle-list',
-                    frontFace: 'cw',
-                    cullMode: 'back',
+                    topology: 'triangle-list', // TODO get from geometry
+                    frontFace: 'cw', // TODO get from geometry
+                    cullMode: 'back', // TODO get from geometry
                 },
                 vertex: {
                     module: perMaterial.shaderModule,

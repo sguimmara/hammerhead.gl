@@ -10,7 +10,7 @@ class BufferGeometry implements Observable, Destroy {
 
     version: number;
     readonly vertexBuffers: Map<VertexBufferSlot, Float32Array>;
-    readonly indexBuffer: Int16Array;
+    readonly indexBuffer: Uint16Array;
     readonly vertexCount: number;
     readonly indexCount: number;
 
@@ -23,7 +23,7 @@ class BufferGeometry implements Observable, Destroy {
         this.vertexBuffers.set(
             VertexBufferSlot.Position,
             new Float32Array(options.vertexCount * 3));
-        this.indexBuffer = new Int16Array(options.indexCount);
+        this.indexBuffer = new Uint16Array(options.indexCount);
         this.vertexCount = options.vertexCount;
         this.indexCount = options.indexCount;
         this.dispatcher = new EventDispatcher<BufferGeometry>(this);
