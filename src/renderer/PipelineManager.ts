@@ -294,6 +294,11 @@ class PipelineManager implements Service {
             const pipeline = this.device.createRenderPipeline({
                 label: `Material ${material.id}`,
                 layout,
+                primitive: {
+                    topology: 'triangle-list',
+                    frontFace: 'cw',
+                    cullMode: 'back',
+                },
                 vertex: {
                     module: perMaterial.shaderModule,
                     entryPoint: 'vs',

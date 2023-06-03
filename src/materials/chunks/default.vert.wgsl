@@ -5,7 +5,11 @@
 ) -> VSOutput {
     var output: VSOutput;
 
-    var transform = globals.projectionMatrix * globals.viewMatrix * modelMatrix;
+    var m = modelMatrix;
+    var v = globals.viewMatrix;
+    var p = globals.projectionMatrix;
+    // var transform = globals.projectionMatrix * globals.viewMatrix * modelMatrix;
+    var transform = p * v * m;
     output.position = transform * vec4f(vertex.position, 1.0);
     output.texcoord = vertex.texcoord;
     output.color = vertex.color;

@@ -5,6 +5,7 @@ import BasicMaterial from '../../../src/materials/BasicMaterial';
 import { bindSlider, bindToggle, load8bitImage } from '../../lib';
 import Flip from '../../../src/materials/postprocessing/Flip';
 import { mat4, vec3 } from 'wgpu-matrix';
+import Camera from '../../../src/objects/Camera';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -27,8 +28,10 @@ async function main() {
         geometry: GeometryBuilder.screenQuad(),
     });
 
+    const camera = new Camera('orthographic');
+
     function render() {
-        renderer.render(mesh);
+        renderer.render(mesh, camera);
     }
 
     render();

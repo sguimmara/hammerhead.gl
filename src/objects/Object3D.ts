@@ -1,6 +1,6 @@
 import Destroy from "../core/Destroy";
 import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatcher";
-import { Mat4, mat4 } from 'wgpu-matrix';
+import { Mat4, Vec3, mat4 } from 'wgpu-matrix';
 
 let ID = 0;
 
@@ -25,6 +25,26 @@ export default class Object3D implements Observable, Destroy {
     constructor() {
         this.id = ID++;
         this.dispatcher = new EventDispatcher<Object3D>(this);
+    }
+
+    setPosition(x: number|Vec3, y?: number, z?: number) {
+        let v;
+        if (typeof x === 'number') {
+            v = [x, y ?? 0, z ?? 0];
+        } else {
+            v = x;
+        }
+        mat4.setTranslation(this.localMatrix, v, this.localMatrix);
+    }
+
+    setScale(x: number|Vec3, y?: number, z?: number) {
+        let v;
+        if (typeof x === 'number') {
+            v = [x, y ?? 1, z ?? 1];
+        } else {
+            v = x;
+        }
+        mat4.scaling(v, this.localMatrix);
     }
 
     on(type: string, handler: EventHandler): void {

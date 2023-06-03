@@ -1,9 +1,10 @@
-import { Mat4, mat4 } from "wgpu-matrix";
+import { Mat4, Vec3, mat4 } from "wgpu-matrix";
 import { deg2rad } from "../core/MathUtils";
 
 type CameraMode = 'orthographic' | 'perspective';``
 
 const DEFAULT_FOV = deg2rad(45);
+const DEFAULT_UP = [0, 1, 0];
 
 export default class Camera {
     mode: CameraMode;
@@ -17,6 +18,14 @@ export default class Camera {
     constructor(mode : CameraMode) {
         this.mode = mode;
         this.setPosition(0, 0, 0);
+    }
+
+    get position(): Vec3 {
+        return mat4.getTranslation(this.viewMatrix);
+    }
+
+    lookAt(x: number, y: number, z: number) {
+        mat4.cameraAim(this.position, [x, y, z], DEFAULT_UP, this.viewMatrix);
     }
 
     setPosition(x: number, y: number, z: number) {

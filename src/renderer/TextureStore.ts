@@ -19,8 +19,11 @@ class TextureStore implements Service {
             dimension: '2d',
             format: 'rgba8unorm',
             size: [1, 1],
-            usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING
+            usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST | GPUTextureUsage.TEXTURE_BINDING
         });
+        const white = new Uint8ClampedArray(4);
+        white.set([255, 255, 255, 255]);
+        this.updateTexture(white,  this.emptyTexture);
     }
 
     destroy() {
@@ -70,6 +73,16 @@ class TextureStore implements Service {
         return this.textures.size;
     }
 
+    private updateTexture(data: BufferSource | SharedArrayBuffer, dst: GPUTexture) {
+        this.device.queue.writeTexture(
+            { texture: dst },
+            data,
+            { bytesPerRow: dst.width * 4 },
+            { width: dst.width, height: dst.height }
+        );
+
+    }
+
     getOrCreateTexture(texture: Texture): GPUTexture {
         if (texture == null) {
             return this.emptyTexture;
@@ -89,11 +102,7 @@ class TextureStore implements Service {
 
         this.textures.set(texture.id, gpuTexture);
 
-        this.device.queue.writeTexture(
-            { texture: gpuTexture },
-            texture.data,
-            { bytesPerRow: texture.width * 4 },
-            { width: texture.width, height: texture.height });
+        this.updateTexture(texture.data, gpuTexture);
 
         return gpuTexture;
     }

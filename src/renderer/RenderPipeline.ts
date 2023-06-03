@@ -13,6 +13,7 @@ import RenderSceneStage from "./stages/RenderSceneStage";
 import Stage from "./stages/Stage";
 import RenderCommand from "./RenderCommand";
 import Camera from "../objects/Camera";
+import { mat4 } from "wgpu-matrix";
 
 class RenderPipeline implements Destroy {
     private readonly stages: Stage[];
@@ -92,9 +93,12 @@ class RenderPipeline implements Destroy {
         this.globalValues.time = now;
         this.globalValues.deltaTime = now - this.lastFrame;
         this.lastFrame = now;
+
         this.globalValues.screenSize[0] = target.width;
         this.globalValues.screenSize[1] = target.height;
-        this.globalValues.viewMatrix = camera.viewMatrix;
+
+        this.globalValues.viewMatrix = mat4.inverse(camera.viewMatrix);
+
         const aspect = target.width / target.height;
         this.globalValues.projectionMatrix = camera.updateProjectionMatrix(aspect);
     }

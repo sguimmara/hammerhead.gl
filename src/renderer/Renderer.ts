@@ -6,6 +6,7 @@ import Object3D from "../objects/Object3D";
 import RenderPipeline from "./RenderPipeline";
 import Camera from '../objects/Camera';
 import RenderCommand from "./RenderCommand";
+import { mat4 } from "wgpu-matrix";
 
 const DEFAULT_CLEAR_COLOR = chroma('black');
 
@@ -25,21 +26,24 @@ class WebGPURenderer {
         this.renderPipeline = new RenderPipeline(this.device, container);
     }
 
-    private getMeshes(graph: Object3D): Mesh[] {
-        const meshes: Mesh[] = [];
+    private getMeshes(graph: Object3D): { opaque: Mesh[] } {
+        const opaque: Mesh[] = [];
 
         if (graph) {
             graph.traverse(obj => {
+                // TODO scene graph matrix transformations
+                mat4.copy(obj.localMatrix, obj.worldMatrix);
                 const mesh = obj as Mesh;
                 if (mesh.isMesh) {
                     if (mesh.material && mesh.material.active) {
-                        meshes.push(mesh);
+                        // TODO transparent queue
+                        opaque.push(mesh);
                     }
                 }
             });
         }
 
-        return meshes;
+        return { opaque };
     }
 
     /**
@@ -54,10 +58,10 @@ class WebGPURenderer {
         }
 
         this.renderPipeline.setClearColor(this.clearColor);
-        const opaqueList = this.getMeshes(root);
+        const { opaque } = this.getMeshes(root);
         const command = new RenderCommand({
             camera,
-            opaqueList,
+            opaqueList: opaque,
             target: this.context.getCurrentTexture(),
         })
         this.renderPipeline.render(command);
@@ -69,7 +73,7 @@ class WebGPURenderer {
      * all post-processing stages.
      */
     setRenderStages(stages?: PostProcessingMaterial[]) {
-        this.renderPipeline.clear();
+        this.renderPipeline.resetPipeline();
         if (stages) {
             for (const material of stages) {
                 this.renderPipeline.addStage(material);

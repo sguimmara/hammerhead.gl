@@ -11,34 +11,48 @@ import Camera from '../../../src/objects/Camera';
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
 async function main() {
-    const img = new Image();
-
-    const logo = await load8bitImage(img, '/webgpu.png');
-
     const context = await Context.create(canvas);
     const renderer = context.renderer;
 
-    const material = new BasicMaterial().withColorTexture(logo);
+    const material = new BasicMaterial();
 
     const mesh = new Mesh({
         material,
-        geometry: GeometryBuilder.screenQuad(),
+        geometry: GeometryBuilder.pyramid(),
     });
 
     mesh.geometry.setColors([
         chroma('red'),
         chroma('green'),
         chroma('blue'),
-        chroma('cyan'),
+        chroma('yellow'),
     ]);
 
-    const camera = new Camera('orthographic');
+    const camera = new Camera('perspective');
+    camera.setPosition(0, 3, 5);
+    camera.lookAt(0, 0, 0);
 
     function render() {
         renderer.render(mesh, camera);
     }
 
-    render();
+    let now = performance.now();
+    let rotation = 0;
+
+    mesh.setScale(1.2, 1.2, 1.2);
+
+    function renderLoop() {
+        render();
+        const current = performance.now();
+        const dt = (current - now) / 1000;
+        const degrees = 40 * dt;
+        rotation += degrees;
+        now = current;
+        mat4.rotateY(mesh.localMatrix, deg2rad(degrees), mesh.localMatrix);
+        requestAnimationFrame(renderLoop);
+    }
+
+    requestAnimationFrame(renderLoop);
 
     context.on('resized', render);
 }

@@ -30,7 +30,7 @@ async function main() {
         geometry: GeometryBuilder.screenQuad(),
     });
 
-    const camera = new Camera('perspective');
+    const camera = new Camera('orthographic');
 
     function render() {
         renderer.render(mesh, camera);

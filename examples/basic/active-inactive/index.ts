@@ -24,8 +24,7 @@ async function main() {
         geometry: GeometryBuilder.screenQuad(),
     });
 
-    const camera = new Camera('perspective');
-    camera.setPosition(0, 0, -5);
+    const camera = new Camera('orthographic');
 
     function render() {
         renderer.render(mesh, camera);
