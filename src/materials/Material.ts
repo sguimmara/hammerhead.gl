@@ -91,8 +91,10 @@ abstract class Material implements Observable, Destroy {
      * @param binding The binding number of the uniform.
      * @param value The value.
      */
-    protected setScalar(binding: number, value: number) {
-        this.uniforms[binding].value = value;
+    protected setScalar(binding: number, v: number) {
+        const uniform = this.uniforms[binding] as BufferUniform;
+        uniform.value = v;
+        uniform.needsUpdate();
     }
 
     /**
