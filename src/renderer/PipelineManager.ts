@@ -61,7 +61,6 @@ class PipelineManager implements Service {
     }
 
     destroy() {
-        // this.pipelines.clear();
         this.perObjectMap.forEach(o => {
             this.bufferStore.destroyUniformBuffer(o.worldMatrix);
         });
@@ -171,8 +170,6 @@ class PipelineManager implements Service {
             this.bufferStore.updateUniform(perObject.worldMatrix);
         }
 
-        // TODO handle destroy event of mesh
-
         pass.setBindGroup(BindGroups.ObjectUniforms, perObject.bindGroup);
     }
 
@@ -252,7 +249,7 @@ class PipelineManager implements Service {
     }
 
     bindVertexBuffers(geometry: BufferGeometry, pass: GPURenderPassEncoder) {
-        for (const [key, value] of geometry.vertexBuffers.entries()) {
+        for (const key of geometry.vertexBuffers.keys()) {
             const gpuBuffer = this.bufferStore.getOrCreateVertexBuffer(geometry, key);
             pass.setVertexBuffer(key, gpuBuffer);
         }
@@ -266,7 +263,7 @@ class PipelineManager implements Service {
             perMaterial.material = material;
             perMaterial.shaderModule = this.createShaderModule(material.id, material.shaderCode);
 
-            const target: GPUColorTargetState = {
+            const colorTarget: GPUColorTargetState = {
                 format: navigator.gpu.getPreferredCanvasFormat(),
             };
 
@@ -294,6 +291,11 @@ class PipelineManager implements Service {
             const pipeline = this.device.createRenderPipeline({
                 label: `Material ${material.id}`,
                 layout,
+                depthStencil: {
+                    format: 'depth32float',
+                    depthWriteEnabled: true,
+                    depthCompare: "less-equal"
+                },
                 primitive: {
                     topology: 'triangle-list',
                     frontFace: 'cw',
@@ -307,7 +309,7 @@ class PipelineManager implements Service {
                 fragment: {
                     module: perMaterial.shaderModule,
                     entryPoint: 'fs',
-                    targets: [target]
+                    targets: [colorTarget]
                 }
             });
 

@@ -27,6 +27,8 @@ abstract class Stage {
 
     private needsRecreateRenderPass: boolean;
     protected GlobalValues: ObjectUniform;
+    protected depthBuffer: GPUTexture;
+    depthBufferView: GPUTextureView;
 
     constructor(
         device: GPUDevice,
@@ -66,6 +68,23 @@ abstract class Stage {
             this.needsRecreateRenderPass = true;
         }
 
+        const recreateDepthBuffer = !this.depthBuffer
+            || this.depthBuffer.width != output.width
+            || this.depthBuffer.height != output.height;
+
+        if (recreateDepthBuffer) {
+            this.depthBuffer?.destroy();
+
+            this.depthBuffer = this.device.createTexture({
+                dimension: '2d',
+                size: [output.width, output.height],
+                usage: GPUTextureUsage.RENDER_ATTACHMENT,
+                format: 'depth32float'
+            });
+
+            this.depthBufferView = this.depthBuffer.createView();
+        }
+
         if (this.needsRecreateRenderPass) {
             const colorAttachment: GPURenderPassColorAttachment = {
                 view: this.outputView,
@@ -73,9 +92,16 @@ abstract class Stage {
                 storeOp: 'store',
                 clearValue: this.clearColor.gl(),
             };
+            const depthAttachment: GPURenderPassDepthStencilAttachment = {
+                view: this.depthBufferView,
+                depthClearValue: 1,
+                depthLoadOp: 'clear',
+                depthStoreOp: 'discard',
+            };
             this.renderPassDescriptor = {
-                label: 'clear renderPass',
+                label: 'Stage renderPass',
                 colorAttachments: [colorAttachment],
+                depthStencilAttachment: depthAttachment,
             };
         }
 

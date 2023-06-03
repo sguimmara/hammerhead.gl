@@ -37,14 +37,14 @@ async function main() {
 
     const root = new Object3D();
 
-    root.add(makePyramid(0, 0, 0));
-    root.add(makePyramid(2, 0, 0));
-    root.add(makePyramid(0, 0, 2));
-    root.add(makePyramid(0, 2, 0));
+    root.add(makePyramid(-0.87, 0, -1));
+    root.add(makePyramid(0.87, 0, -1));
+    root.add(makePyramid(0, 1.4, -0.5));
+    root.add(makePyramid(0,  0, 0.55));
 
     const camera = new Camera('perspective');
-    camera.setPosition(0, 7, 10);
-    camera.lookAt(0, 0, 0);
+    camera.setPosition(0, 10, 10);
+    camera.lookAt(0, 3, 0);
 
     function render() {
         renderer.render(root, camera);
@@ -60,6 +60,7 @@ async function main() {
         const degrees = 40 * dt;
         now = current;
         root.transform.rotateY(deg2rad(degrees));
+        root.transform.rotateX(deg2rad(degrees));
         render();
         requestAnimationFrame(renderLoop);
     }
