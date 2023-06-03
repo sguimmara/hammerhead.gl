@@ -22,12 +22,12 @@ class BufferStore implements Service {
         this.device = device;
     }
 
-    onGeometryDestroyed(geometry: BufferGeometry): void {
+    private onGeometryDestroyed(geometry: BufferGeometry): void {
         const vertexBuffers = this.vertexBuffers.get(geometry.id);
         if (vertexBuffers) {
             vertexBuffers.forEach(gpuBuffer => {
                 gpuBuffer.destroy();
-            })
+            });
             this.vertexBuffers.delete(geometry.id);
         }
 
