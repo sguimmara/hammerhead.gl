@@ -6,6 +6,7 @@ import { load8bitImage } from '../../lib';
 import chroma from 'chroma-js';
 import { mat4, vec3 } from 'wgpu-matrix';
 import { deg2rad } from '../../../src/core/MathUtils';
+import Camera from '../../../src/objects/Camera';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -32,9 +33,11 @@ async function main() {
         chroma('cyan'),
     ]);
 
+    const camera = new Camera('perspective');
+    camera.setPosition(0, 0, -10);
 
     function render() {
-        renderer.render(mesh);
+        renderer.render(mesh, camera);
     }
 
     let now = performance.now();

@@ -52,6 +52,7 @@ abstract class Material implements Observable, Destroy {
     readonly id: number;
     readonly shaderCode: string;
     readonly layout: ShaderLayout;
+    readonly requiresObjectUniforms: boolean;
 
     /** The active state of this material. An inactive material will not be rendered. */
     active: boolean = true;
@@ -59,8 +60,10 @@ abstract class Material implements Observable, Destroy {
     constructor(options: {
         shaderCode: string;
         layout: ShaderLayout;
+        requiresObjectUniforms?: boolean,
     }) {
         this.id = MATERIAL_ID++;
+        this.requiresObjectUniforms = options.requiresObjectUniforms ?? true;
         this.shaderCode = options.shaderCode;
         this.layout = options.layout;
         this.dispatcher = new EventDispatcher<Material>(this);

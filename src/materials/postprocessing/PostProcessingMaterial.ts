@@ -3,7 +3,7 @@ import { ShaderLayout } from "../ShaderLayout";
 
 class PostProcessingMaterial extends Material {
     constructor(shaderCode: string, layout : ShaderLayout) {
-        super({ shaderCode, layout });
+        super({ shaderCode, layout, requiresObjectUniforms: false });
     }
 }
 

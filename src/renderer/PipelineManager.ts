@@ -192,7 +192,7 @@ class PipelineManager implements Service {
         pass.setBindGroup(BindGroups.GlobalValues, this.globalUniformBindGroup);
     }
 
-    private getBindGroupEntries(material: Material, binding: number, entries: GPUBindGroupEntry[]) {
+    getBindGroupEntries(material: Material, binding: number, entries: GPUBindGroupEntry[]) {
         const uniforms = material.layout.uniforms;
         const info = uniforms[binding];
         const slot = info.binding;
@@ -270,12 +270,22 @@ class PipelineManager implements Service {
                 format: navigator.gpu.getPreferredCanvasFormat(),
             };
 
-            const layout = this.device.createPipelineLayout({
-                bindGroupLayouts: [
+            // TODO refactor
+            const bindGroupLayouts = material.requiresObjectUniforms
+                ? [
                     this.globalUniformLayout,
                     this.getMaterialLayout(material),
                     this.objectUniformLayout,
                 ]
+                :
+                [
+                    this.globalUniformLayout,
+                    this.getMaterialLayout(material),
+                ];
+
+
+            const layout = this.device.createPipelineLayout({
+                bindGroupLayouts
             });
 
             const attributes = material.layout.attributes;

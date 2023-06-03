@@ -4,6 +4,8 @@ import PostProcessingMaterial from "../materials/postprocessing/PostProcessingMa
 import Mesh from "../objects/Mesh";
 import Object3D from "../objects/Object3D";
 import RenderPipeline from "./RenderPipeline";
+import Camera from '../objects/Camera';
+import RenderCommand from "./RenderCommand";
 
 const DEFAULT_CLEAR_COLOR = chroma('black');
 
@@ -44,11 +46,21 @@ class WebGPURenderer {
      * Renders a scene graph.
      * @param root The root of the object graph to render. If unspecified, the rendered result is
      * simply the clear color and optional post-processing effects.
+     * @param camera The camera to render.
      */
-    render(root?: Object3D) {
+    render(root: Object3D | null, camera: Camera) {
+        if (!camera) {
+            throw new Error('no camera specified');
+        }
+
         this.renderPipeline.setClearColor(this.clearColor);
-        const renderList = this.getMeshes(root);
-        this.renderPipeline.render(renderList, this.context.getCurrentTexture());
+        const opaqueList = this.getMeshes(root);
+        const command = new RenderCommand({
+            camera,
+            opaqueList,
+            target: this.context.getCurrentTexture(),
+        })
+        this.renderPipeline.render(command);
     }
 
     /**

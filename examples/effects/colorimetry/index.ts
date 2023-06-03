@@ -4,6 +4,7 @@ import GeometryBuilder from '../../../src/geometries/GeometryBuilder';
 import BasicMaterial from '../../../src/materials/BasicMaterial';
 import { bindSlider, load8bitImage } from '../../lib';
 import Colorimetry from '../../../src/materials/postprocessing/Colorimetry';
+import Camera from '../../../src/objects/Camera';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -29,8 +30,10 @@ async function main() {
         geometry: GeometryBuilder.screenQuad(),
     });
 
+    const camera = new Camera('perspective');
+
     function render() {
-        renderer.render(mesh);
+        renderer.render(mesh, camera);
     }
 
     render();

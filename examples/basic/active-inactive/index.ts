@@ -5,6 +5,7 @@ import BasicMaterial from '../../../src/materials/BasicMaterial';
 import { bindToggle, load8bitImage } from '../../lib';
 import Flip from '../../../src/materials/postprocessing/Flip';
 import { mat4, vec3 } from 'wgpu-matrix';
+import Camera from '../../../src/objects/Camera';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -23,8 +24,11 @@ async function main() {
         geometry: GeometryBuilder.screenQuad(),
     });
 
+    const camera = new Camera('perspective');
+    camera.setPosition(0, 0, -5);
+
     function render() {
-        renderer.render(mesh);
+        renderer.render(mesh, camera);
     }
 
     render();

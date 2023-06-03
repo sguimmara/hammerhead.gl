@@ -13,11 +13,12 @@ class GeometryBuilder {
         const y = size[1];
         const cx = center[0];
         const cy = center[1];
+        const z = 0.0;
         buf.setVertices([
-            -1.0 * x + cx, -1.0 * y + cy, 0.0, // bottom left
-            -1.0 * x + cx,  1.0 * y + cy, 0.0, // top left
-             1.0 * x + cx,  1.0 * y + cy, 0.0, // top right
-             1.0 * x + cx, -1.0 * y + cy, 0.0, // bottom right
+            -1.0 * x + cx, -1.0 * y + cy, z, // bottom left
+            -1.0 * x + cx,  1.0 * y + cy, z, // top left
+             1.0 * x + cx,  1.0 * y + cy, z, // top right
+             1.0 * x + cx, -1.0 * y + cy, z, // bottom right
         ]);
 
         buf.setIndices([

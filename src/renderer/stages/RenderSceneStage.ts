@@ -1,4 +1,5 @@
 import ObjectUniform from "../../materials/uniforms/ObjectUniform";
+import Camera from "../../objects/Camera";
 import Mesh from "../../objects/Mesh";
 import BufferStore from "../BufferStore";
 import PipelineManager from "../PipelineManager";
@@ -40,7 +41,7 @@ class RenderSceneStage extends Stage {
         pass.drawIndexed(geometry.indexCount);
     }
 
-    withMeshes(list: Iterable<Mesh> | null) {
+    withOpaqueMeshes(list: Iterable<Mesh> | null) {
         if (list) {
             this.renderList = [...list];
             this.renderList.sort((a, b) => a.material.id - b.material.id);

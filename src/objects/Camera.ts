@@ -11,14 +11,27 @@ export default class Camera {
     viewMatrix: Mat4 = mat4.identity();
     projectionMatrix: Mat4;
     fieldOfView: number = DEFAULT_FOV;
-    nearPlane: number = 0.1;
-    farPlane: number = 1000;
+    nearPlane: number = 0.001;
+    farPlane: number = 100000;
 
     constructor(mode : CameraMode) {
         this.mode = mode;
+        this.setPosition(0, 0, 0);
+    }
+
+    setPosition(x: number, y: number, z: number) {
+        mat4.translate(this.viewMatrix, [x, y, z], this.viewMatrix);
     }
 
     updateProjectionMatrix(aspect: number) {
-        this.projectionMatrix = mat4.perspective(this.fieldOfView, aspect, this.nearPlane, this.farPlane, this.projectionMatrix);
+        switch (this.mode) {
+            case "orthographic":
+                this.projectionMatrix = mat4.ortho(-1, +1, -1, +1, -1, +1, this.projectionMatrix);
+                break;
+            case "perspective":
+                this.projectionMatrix = mat4.perspective(this.fieldOfView, aspect, this.nearPlane, this.farPlane, this.projectionMatrix);
+                break;
+        }
+        return this.projectionMatrix;
     }
 }

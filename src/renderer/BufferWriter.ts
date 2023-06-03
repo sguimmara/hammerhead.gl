@@ -26,40 +26,51 @@ class BufferWriter implements Visitor
         }
     }
 
+    private checkExists(v: unknown, type: string) {
+        if (!v) {
+            throw new Error(`missing uniform <${type}> value`);
+        }
+    }
+
     visitNumber(number: number): void {
         this.data[this.offset++] = number;
     }
 
     visitVec2(v: Vec2): void {
+        this.checkExists(v, 'Vec2');
         this.data[this.offset++] = v[0];
         this.data[this.offset++] = v[1];
     }
 
     visitVec3(v: Vec3): void {
+        this.checkExists(v, 'Vec3');
         this.data[this.offset++] = v[0];
         this.data[this.offset++] = v[1];
         this.data[this.offset++] = v[2];
     }
 
     visitVec4(v: Vec4): void {
+        this.checkExists(v, 'Vec4');
         this.data[this.offset++] = v[0];
         this.data[this.offset++] = v[1];
         this.data[this.offset++] = v[2];
         this.data[this.offset++] = v[3];
     }
 
-    visitColor(color: Color): void {
-        const [r, g, b, a] = color.gl();
+    visitColor(v: Color): void {
+        this.checkExists(v, 'Color');
+        const [r, g, b, a] = v.gl();
         this.data[this.offset++] = r;
         this.data[this.offset++] = g;
         this.data[this.offset++] = b;
         this.data[this.offset++] = a;
     }
 
-    visitMat4(value: Mat4): void {
+    visitMat4(v: Mat4): void {
+        this.checkExists(v, 'Mat4');
         // TODO unroll loop
-        for (let i = 0; i < value.length; i++) {
-            const element = value[i];
+        for (let i = 0; i < v.length; i++) {
+            const element = v[i];
             this.data[this.offset++] = element;
         }
     }

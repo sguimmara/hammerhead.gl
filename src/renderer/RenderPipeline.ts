@@ -11,6 +11,8 @@ import TextureStore from "./TextureStore";
 import PostProcessingStage from "./stages/PostProcessingStage";
 import RenderSceneStage from "./stages/RenderSceneStage";
 import Stage from "./stages/Stage";
+import RenderCommand from "./RenderCommand";
+import Camera from "../objects/Camera";
 
 class RenderPipeline implements Destroy {
     private readonly stages: Stage[];
@@ -47,7 +49,7 @@ class RenderPipeline implements Destroy {
     /**
      * Removes all stage (except for the default render stage).
      */
-    clear() {
+    resetPipeline() {
         this.stages.forEach(s => s.destroy());
         this.stages.length = 1;
     }
@@ -85,17 +87,21 @@ class RenderPipeline implements Destroy {
         return this;
     }
 
-    updateGlobalValues(target: GPUTexture) {
+    updateGlobalValues(target: GPUTexture, camera: Camera) {
         const now = performance.now() / 1000.0;
         this.globalValues.time = now;
         this.globalValues.deltaTime = now - this.lastFrame;
         this.lastFrame = now;
         this.globalValues.screenSize[0] = target.width;
         this.globalValues.screenSize[1] = target.height;
+        this.globalValues.viewMatrix = camera.viewMatrix;
+        const aspect = target.width / target.height;
+        this.globalValues.projectionMatrix = camera.updateProjectionMatrix(aspect);
     }
 
-    render(meshes: Iterable<Mesh>, target: GPUTexture) {
+    render(command: RenderCommand) {
         const encoder = this.device.createCommandEncoder();
+        const target = command.target;
 
         if (this.finalRenderTexture != target) {
             this.intermediateTextures.forEach(t => {
@@ -106,12 +112,12 @@ class RenderPipeline implements Destroy {
             this.finalRenderTexture = target;
         }
 
-        this.updateGlobalValues(target);
+        this.updateGlobalValues(target, command.camera);
 
         this.sceneStage
             .withOutput(this.stages.length > 1 ? this.intermediateTextures[0] : target)
             .withClearColor(this.clearColor)
-            .withMeshes(meshes)
+            .withOpaqueMeshes(command.opaqueList)
             .execute(encoder);
 
         if (this.stages.length > 1) {
