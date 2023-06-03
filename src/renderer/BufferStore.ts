@@ -86,13 +86,13 @@ class BufferStore implements Service {
 
     updateUniform(uniform: BufferUniform) {
         const bw = this.uniformBuffers.get(uniform);
-        bw.upload(this.device.queue);
+        bw.update();
     }
 
     getOrCreateUniformBuffer(uniform: BufferUniform, label: string = 'uniform buffer') {
         if (this.uniformBuffers.has(uniform)) {
             const bw = this.uniformBuffers.get(uniform);
-            bw.upload(this.device.queue);
+            bw.update();
             return bw.buffer;
         }
 
@@ -101,8 +101,8 @@ class BufferStore implements Service {
             size: uniform.getByteSize(),
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
         });
-        const bw = new BufferWriter(uniform, gpuBuffer);
-        bw.upload(this.device.queue);
+        const bw = new BufferWriter(uniform, gpuBuffer, this.device);
+        bw.update();
         this.uniformBuffers.set(uniform, bw);
         return bw.buffer;
     }
