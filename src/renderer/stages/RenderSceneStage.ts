@@ -62,6 +62,7 @@ class RenderSceneStage extends Stage {
             throw new Error('no output texture to render into');
         }
         this.currentPipeline = null;
+        this.currentGeometry = null;
         this.pass = encoder.beginRenderPass(this.renderPassDescriptor);
         this.pipelineManager.bindGlobalUniforms(this.pass, this.GlobalValues);
 

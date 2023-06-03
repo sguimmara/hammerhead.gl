@@ -6,6 +6,7 @@ type CameraMode = 'orthographic' | 'perspective';``
 const DEFAULT_FOV = deg2rad(45);
 const DEFAULT_UP = [0, 1, 0];
 
+// TODO include a Transform
 export default class Camera {
     mode: CameraMode;
 
