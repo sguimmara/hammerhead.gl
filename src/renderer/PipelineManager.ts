@@ -196,9 +196,8 @@ class PipelineManager implements Service {
         switch (info.type) {
             case UniformType.Texture2D: {
                 const uniform = material.getTexture(slot);
-                const texture = this.textureStore.getOrCreateTexture(uniform.value);
-                // TODO don't create a new view each time
-                entries.push({ binding: slot, resource: texture.createView() });
+                const { defaultView } = this.textureStore.getOrCreateTexture(uniform.value);
+                entries.push({ binding: slot, resource: defaultView });
                 break;
             }
             case UniformType.Sampler:

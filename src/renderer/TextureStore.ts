@@ -5,10 +5,11 @@ import Texture from "../textures/Texture";
 class TextureStore implements Service {
     readonly type: string = 'TextureStore';
 
-    private readonly textures: Map<number, GPUTexture>;
+    private readonly textures: Map<number, { texture: GPUTexture, defaultView: GPUTextureView }>;
     private readonly device: GPUDevice;
     private readonly emptyTexture: GPUTexture;
     private readonly samplers = new Map<number, GPUSampler>;
+    private readonly emptyTextureView: GPUTextureView;
 
     constructor(device: GPUDevice) {
         this.textures = new Map();
@@ -21,6 +22,7 @@ class TextureStore implements Service {
             size: [1, 1],
             usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST | GPUTextureUsage.TEXTURE_BINDING
         });
+        this.emptyTextureView = this.emptyTexture.createView();
         const white = new Uint8ClampedArray(4);
         white.set([255, 255, 255, 255]);
         this.updateTexture(white,  this.emptyTexture);
@@ -28,7 +30,7 @@ class TextureStore implements Service {
 
     destroy() {
         this.textures.forEach(t => {
-            t.destroy();
+            t.texture.destroy();
         });
         this.textures.clear();
     }
@@ -83,9 +85,9 @@ class TextureStore implements Service {
 
     }
 
-    getOrCreateTexture(texture: Texture): GPUTexture {
+    getOrCreateTexture(texture: Texture): { texture: GPUTexture, defaultView: GPUTextureView } {
         if (texture == null) {
-            return this.emptyTexture;
+            return { texture: this.emptyTexture, defaultView: this.emptyTextureView };
         }
 
         if (this.textures.has(texture.id)) {
@@ -100,17 +102,18 @@ class TextureStore implements Service {
             usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST
         });
 
-        this.textures.set(texture.id, gpuTexture);
+        const result = { texture: gpuTexture, defaultView: gpuTexture.createView() };
+        this.textures.set(texture.id, result);
 
         this.updateTexture(texture.data, gpuTexture);
 
-        return gpuTexture;
+        return result;
     }
 
     onTextureDestroyed(texture: Texture): void {
         const entry = this.textures.get(texture.id);
         if (entry) {
-            entry.destroy();
+            entry.texture.destroy();
             this.textures.delete(texture.id);
         }
     }
