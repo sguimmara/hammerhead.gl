@@ -31,8 +31,7 @@ class WebGPURenderer {
 
         if (graph) {
             graph.traverse(obj => {
-                // TODO scene graph matrix transformations
-                mat4.copy(obj.localMatrix, obj.worldMatrix);
+                obj.transform.updateWorldMatrix(obj.parent?.transform);
                 const mesh = obj as Mesh;
                 if (mesh.isMesh) {
                     if (mesh.material && mesh.material.active) {

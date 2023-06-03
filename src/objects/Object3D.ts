@@ -1,18 +1,17 @@
 import Destroy from "../core/Destroy";
 import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatcher";
-import { Mat4, Vec3, mat4 } from 'wgpu-matrix';
+import Transform from "../core/Transform";
 
 let ID = 0;
 
 /**
  * Base class for all objects in the scene graph.
+ * @fires added When this object is added as a child of another object.
  */
 export default class Object3D implements Observable, Destroy {
     readonly id: number;
     readonly dispatcher: EventDispatcher<Object3D>;
-
-    worldMatrix: Mat4 = mat4.identity();
-    localMatrix: Mat4 = mat4.identity();
+    readonly transform: Transform = new Transform();
 
     /**
      * The active state of the object. An inactive object is not renderable and not traversable.
@@ -25,26 +24,6 @@ export default class Object3D implements Observable, Destroy {
     constructor() {
         this.id = ID++;
         this.dispatcher = new EventDispatcher<Object3D>(this);
-    }
-
-    setPosition(x: number|Vec3, y?: number, z?: number) {
-        let v;
-        if (typeof x === 'number') {
-            v = [x, y ?? 0, z ?? 0];
-        } else {
-            v = x;
-        }
-        mat4.setTranslation(this.localMatrix, v, this.localMatrix);
-    }
-
-    setScale(x: number|Vec3, y?: number, z?: number) {
-        let v;
-        if (typeof x === 'number') {
-            v = [x, y ?? 1, z ?? 1];
-        } else {
-            v = x;
-        }
-        mat4.scaling(v, this.localMatrix);
     }
 
     on(type: string, handler: EventHandler): void {
@@ -70,6 +49,7 @@ export default class Object3D implements Observable, Destroy {
         } else {
             this.children.push(child);
         }
+        child.transform.needsUpdate = true;
         child.dispatch('added');
     }
 

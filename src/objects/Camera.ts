@@ -24,6 +24,8 @@ export default class Camera {
         return mat4.getTranslation(this.viewMatrix);
     }
 
+    // TODO dual API Vec3/x,y,z
+
     lookAt(x: number, y: number, z: number) {
         mat4.cameraAim(this.position, [x, y, z], DEFAULT_UP, this.viewMatrix);
     }

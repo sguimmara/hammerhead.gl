@@ -155,7 +155,7 @@ class PipelineManager implements Service {
         let perObject = this.perObjectMap.get(mesh.id);
         if (!perObject) {
             perObject = new PerObject();
-            perObject.worldMatrix = new Mat4Uniform(mesh.worldMatrix);
+            perObject.worldMatrix = new Mat4Uniform(mesh.transform.worldMatrix);
             perObject.worldMatrixBuffer = this.bufferStore.getOrCreateUniformBuffer(perObject.worldMatrix, 'worldMatrix');
             perObject.bindGroup = this.device.createBindGroup({
                 label: 'worldMatrix BindGroup',
