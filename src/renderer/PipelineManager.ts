@@ -62,7 +62,18 @@ class PipelineManager implements Service {
 
     destroy() {
         // this.pipelines.clear();
-        // TODO cleanup everything
+        this.perObjectMap.forEach(o => {
+            this.bufferStore.destroyUniformBuffer(o.worldMatrix);
+        });
+
+        this.perMaterialMap.forEach(o => {
+            o.material.getBufferUniforms().forEach(u => {
+                this.bufferStore.destroyUniformBuffer(u);
+            })
+        });
+
+        this.perMaterialMap.clear();
+        this.perObjectMap.clear();
     }
 
     private createShaderModule(id: number, code: string) {
@@ -70,6 +81,15 @@ class PipelineManager implements Service {
             label: `${id}`,
             code,
         });
+    }
+
+    private onMeshDestroyed(mesh: Mesh) {
+        const perObject = this.perObjectMap.get(mesh.id);
+
+        if (perObject) {
+            this.bufferStore.destroyUniformBuffer(perObject.worldMatrix);
+            this.perMaterialMap.delete(mesh.id);
+        }
     }
 
     private onMaterialDestroyed(material: Material) {
@@ -83,7 +103,7 @@ class PipelineManager implements Service {
                 case UniformType.Vec2:
                 case UniformType.Vec3:
                 case UniformType.Vec4: {
-                    const uniform = material.getBufferUniforms(slot);
+                    const uniform = material.getBufferUniform(slot);
                     this.bufferStore.destroyUniformBuffer(uniform);
                     break;
                 }
@@ -145,6 +165,8 @@ class PipelineManager implements Service {
                 ]
             });
             this.perObjectMap.set(mesh.id, perObject);
+
+            mesh.on('destroy', () => this.onMeshDestroyed(mesh));
         } else {
             this.bufferStore.updateUniform(perObject.worldMatrix);
         }
@@ -191,7 +213,7 @@ class PipelineManager implements Service {
             case UniformType.Vec2:
             case UniformType.Vec3:
             case UniformType.Vec4: {
-                const uniform = material.getBufferUniforms(slot);
+                const uniform = material.getBufferUniform(slot);
                 const gpuBuffer = this.bufferStore.getOrCreateUniformBuffer(uniform);
                 entries.push({ binding: slot, resource: { buffer: gpuBuffer } });
             }

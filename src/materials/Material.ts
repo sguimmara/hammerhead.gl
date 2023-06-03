@@ -130,7 +130,17 @@ abstract class Material implements Observable, Destroy {
         this.uniforms[binding].value = texture;
     }
 
-    getBufferUniforms(binding: number): BufferUniform {
+    getBufferUniforms(): BufferUniform[] {
+        const result: BufferUniform[] = [];
+        this.uniforms.forEach(u => {
+            if (u instanceof BufferUniform) {
+                result.push(u);
+            }
+        })
+        return result;
+    }
+
+    getBufferUniform(binding: number): BufferUniform {
         return this.uniforms[binding] as BufferUniform;
     }
 

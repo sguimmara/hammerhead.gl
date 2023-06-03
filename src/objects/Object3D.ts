@@ -1,3 +1,4 @@
+import Destroy from "../core/Destroy";
 import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatcher";
 import { Mat4, mat4 } from 'wgpu-matrix';
 
@@ -6,7 +7,7 @@ let ID = 0;
 /**
  * Base class for all objects in the scene graph.
  */
-export default class Object3D implements Observable {
+export default class Object3D implements Observable, Destroy {
     readonly id: number;
     readonly dispatcher: EventDispatcher<Object3D>;
 
@@ -23,10 +24,15 @@ export default class Object3D implements Observable {
 
     constructor() {
         this.id = ID++;
+        this.dispatcher = new EventDispatcher<Object3D>(this);
     }
 
     on(type: string, handler: EventHandler): void {
         this.dispatcher.on(type, handler);
+    }
+
+    destroy(): void {
+        this.dispatch('destroy');
     }
 
     protected dispatch(type: string) {
