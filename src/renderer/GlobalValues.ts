@@ -1,13 +1,19 @@
 import { Mat4, Vec2, mat4, vec2 } from "wgpu-matrix";
 import Sized from "../core/Sized";
 import { Visitable, Visitor } from "../core/Visitable";
+import Version from "../core/Version";
 
-class GlobalValues implements Sized, Visitable {
+class GlobalValues implements Sized, Visitable, Version {
     time: number = 0;
     deltaTime: number = 0;
     screenSize: Vec2 = vec2.zero();
     viewMatrix: Mat4;
     projectionMatrix: Mat4;
+    version: number;
+
+    getVersion(): number {
+        return this.version;
+    }
 
     getByteSize(): number {
         const f32 = 4;

@@ -17,7 +17,7 @@ class BufferWriter implements Visitor
     private readonly device: GPUDevice;
     private offset: number;
     private data: Float32Array;
-    private version: number;
+    private version: number = -1;
 
     constructor(source: Source, buffer: GPUBuffer, device: GPUDevice) {
         this.offset = 0;
@@ -63,11 +63,8 @@ class BufferWriter implements Visitor
 
     visitColor(v: Color): void {
         this.checkExists(v, 'Color');
-        const [r, g, b, a] = v.gl();
-        this.data[this.offset++] = r;
-        this.data[this.offset++] = g;
-        this.data[this.offset++] = b;
-        this.data[this.offset++] = a;
+        this.data.set(v.gl(), this.offset);
+        this.offset += 4;
     }
 
     visitMat4(v: Mat4): void {
@@ -80,11 +77,11 @@ class BufferWriter implements Visitor
      * Updates the GPU buffer with the values from the source.
      */
     update() {
-        if (this.version != this.source.version) {
+        if (this.version != this.source.getVersion()) {
+            this.offset = 0;
             this.source.visit(this);
             this.device.queue.writeBuffer(this.buffer, 0, this.data);
-            this.offset = 0;
-            this.version = this.source.version;
+            this.version = this.source.getVersion();
         }
     }
 }

@@ -81,6 +81,11 @@ abstract class Material implements Observable, Destroy {
         this.dispatcher.on(type, handler);
     }
 
+    withRenderOrder(order: number) {
+        this.renderOrder = order;
+        return this;
+    }
+
     /**
      * Sets the value of a scalar uniform.
      * @param binding The binding number of the uniform.

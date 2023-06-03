@@ -3,12 +3,14 @@ import BufferUniform from "./BufferUniform";
 import { Visitor } from "../../core/Visitable";
 
 export default class Mat4Uniform extends BufferUniform {
-    value: Mat4 = mat4.identity();
+    value: Mat4;
 
     constructor(value?: Mat4) {
         super();
         if (value) {
             this.value = value;
+        } else {
+            this.value = mat4.identity();
         }
     }
 

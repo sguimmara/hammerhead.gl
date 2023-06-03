@@ -22,7 +22,7 @@ class BufferStore implements Service {
         this.device = device;
     }
 
-    private onGeometryDestroyed(geometry: BufferGeometry): void {
+    onGeometryDestroyed(geometry: BufferGeometry): void {
         const vertexBuffers = this.vertexBuffers.get(geometry.id);
         if (vertexBuffers) {
             vertexBuffers.forEach(gpuBuffer => {
@@ -138,7 +138,7 @@ class BufferStore implements Service {
         }
 
         const gpuBuffer = this.device.createBuffer({
-            label: `geom #${geometry.id} @Index`,
+            label: `BufferGeometry ${geometry.id} @Index`,
             size: geometry.indexBuffer.byteLength,
             usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
         });

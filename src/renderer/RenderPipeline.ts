@@ -101,10 +101,10 @@ class RenderPipeline implements Destroy {
 
         const aspect = target.width / target.height;
         this.globalValues.projectionMatrix = camera.updateProjectionMatrix(aspect);
-        this.globalUniform.needsUpdate();
+        this.globalValues.version++;
     }
 
-    render(command: RenderCommand) {
+    executeRenderCommand(command: RenderCommand) {
         const encoder = this.device.createCommandEncoder();
         const target = command.target;
 
@@ -123,7 +123,7 @@ class RenderPipeline implements Destroy {
             .withOutput(this.stages.length > 1 ? this.intermediateTextures[0] : target)
             .withClearColor(this.clearColor)
             .withRenderBuckets(command.buckets)
-            .execute(encoder);
+            .executeStage(encoder);
 
         if (this.stages.length > 1) {
             for (let i = 1; i < this.stages.length; i++) {
@@ -135,7 +135,7 @@ class RenderPipeline implements Destroy {
                     ? this.finalRenderTexture
                     : this.intermediateTextures[i % 2];
                 stage.withOutput(output);
-                stage.execute(encoder);
+                stage.executeStage(encoder);
             }
         }
 

@@ -54,7 +54,12 @@ class WebGPURenderer {
                 if (b.meshes.length > 0) {
                     result.push(b);
                     // Sort by material to reduce pipeline switches
-                    b.meshes.sort((a, b) => a.material.id - b.material.id);
+                    b.meshes.sort((a, b) => {
+                        if (a.material.id === b.material.id) {
+                            return a.geometry.id - b.geometry.id;
+                        }
+                        return a.material.id - b.material.id;
+                    });
                 }
             });
 
@@ -83,7 +88,7 @@ class WebGPURenderer {
             buckets,
             target: this.context.getCurrentTexture(),
         })
-        this.renderPipeline.render(command);
+        this.renderPipeline.executeRenderCommand(command);
     }
 
     /**

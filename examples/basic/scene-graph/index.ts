@@ -2,12 +2,11 @@ import Context from '../../../src/core/Context';
 import Mesh from '../../../src/objects/Mesh';
 import GeometryBuilder from '../../../src/geometries/GeometryBuilder';
 import BasicMaterial from '../../../src/materials/BasicMaterial';
-import { load8bitImage } from '../../lib';
 import chroma from 'chroma-js';
-import { mat4, vec3 } from 'wgpu-matrix';
 import { deg2rad } from '../../../src/core/MathUtils';
 import Camera from '../../../src/objects/Camera';
 import Object3D from '../../../src/objects/Object3D';
+import BufferGeometry from '../../../src/geometries/BufferGeometry';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -15,20 +14,30 @@ async function main() {
     const context = await Context.create(canvas);
     const renderer = context.renderer;
 
-    const material = new BasicMaterial();
+    const materials = [
+        new BasicMaterial().withRenderOrder(0),
+        new BasicMaterial().withRenderOrder(1),
+        new BasicMaterial().withRenderOrder(2),
+        new BasicMaterial().withRenderOrder(3),
+        new BasicMaterial().withRenderOrder(4),
+    ]
 
-    const geometry = GeometryBuilder.pyramid();
-    geometry.setColors([
-        chroma('red'),
-        chroma('green'),
-        chroma('blue'),
-        chroma('yellow'),
-    ]);
+    const geometries: BufferGeometry[] = [];
+    for (let i = 0; i < 50; i++) {
+        const geometry = GeometryBuilder.pyramid();
+        geometry.setColors([
+            chroma('red'),
+            chroma('green'),
+            chroma('blue'),
+            chroma('yellow'),
+        ]);
+        geometries.push(geometry);
+    }
 
     function makePyramid(x: number, y: number, z: number) {
         const pyramid = new Mesh({
-            material,
-            geometry,
+            material: materials[Math.floor(Math.random() * materials.length)],
+            geometry: geometries[Math.floor(Math.random() * geometries.length)],
         });
 
         const scale = 0.1;

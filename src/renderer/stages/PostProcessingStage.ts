@@ -30,7 +30,7 @@ class PostProcessingStage extends Stage {
         return this;
     }
 
-    execute(encoder: GPUCommandEncoder) {
+    executeStage(encoder: GPUCommandEncoder) {
         const pass = encoder.beginRenderPass(this.renderPassDescriptor);
 
         pass.setPipeline(this.pipeline);

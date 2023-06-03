@@ -1,5 +1,5 @@
+import BufferGeometry from "../../geometries/BufferGeometry";
 import ObjectUniform from "../../materials/uniforms/ObjectUniform";
-import Camera from "../../objects/Camera";
 import Mesh from "../../objects/Mesh";
 import Bucket from "../Bucket";
 import BufferStore from "../BufferStore";
@@ -14,6 +14,7 @@ class RenderSceneStage extends Stage {
     private renderList: Bucket[];
     private pass: GPURenderPassEncoder;
     private currentPipeline: GPURenderPipeline = null;
+    private currentGeometry: BufferGeometry;
 
     constructor(
         device: GPUDevice,
@@ -37,7 +38,11 @@ class RenderSceneStage extends Stage {
 
         this.pipelineManager.bindPerMaterialUniforms(material, pass);
         this.pipelineManager.bindPerObjectUniforms(pass, mesh);
-        this.pipelineManager.bindVertexBuffers(geometry, pass);
+
+        if (this.currentGeometry == null || this.currentGeometry != geometry) {
+            this.currentGeometry = geometry;
+            this.pipelineManager.bindVertexBuffers(geometry, pass);
+        }
 
         pass.drawIndexed(geometry.indexCount);
     }
@@ -52,7 +57,7 @@ class RenderSceneStage extends Stage {
         return this;
     }
 
-    execute(encoder: GPUCommandEncoder) {
+    executeStage(encoder: GPUCommandEncoder) {
         if (!this.output) {
             throw new Error('no output texture to render into');
         }

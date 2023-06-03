@@ -118,7 +118,7 @@ abstract class Stage {
         return this;
     }
 
-    abstract execute(encoder: GPUCommandEncoder): void;
+    abstract executeStage(encoder: GPUCommandEncoder): void;
 }
 
 export default Stage;

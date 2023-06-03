@@ -12,7 +12,7 @@ import TextureStore from "./TextureStore";
 import Mesh from "../objects/Mesh";
 
 class PerObject {
-    worldMatrix: Mat4Uniform;
+    transformUniform: ObjectUniform;
     worldMatrixBuffer: GPUBuffer;
     bindGroup: GPUBindGroup;
 }
@@ -62,7 +62,7 @@ class PipelineManager implements Service {
 
     destroy() {
         this.perObjectMap.forEach(o => {
-            this.bufferStore.destroyUniformBuffer(o.worldMatrix);
+            this.bufferStore.destroyUniformBuffer(o.transformUniform);
         });
 
         this.perMaterialMap.forEach(o => {
@@ -86,7 +86,7 @@ class PipelineManager implements Service {
         const perObject = this.perObjectMap.get(mesh.id);
 
         if (perObject) {
-            this.bufferStore.destroyUniformBuffer(perObject.worldMatrix);
+            this.bufferStore.destroyUniformBuffer(perObject.transformUniform);
             this.perMaterialMap.delete(mesh.id);
         }
     }
@@ -154,8 +154,8 @@ class PipelineManager implements Service {
         let perObject = this.perObjectMap.get(mesh.id);
         if (!perObject) {
             perObject = new PerObject();
-            perObject.worldMatrix = new Mat4Uniform(mesh.transform.worldMatrix);
-            perObject.worldMatrixBuffer = this.bufferStore.getOrCreateUniformBuffer(perObject.worldMatrix, 'worldMatrix');
+            perObject.transformUniform = new ObjectUniform(mesh.transform);
+            perObject.worldMatrixBuffer = this.bufferStore.getOrCreateUniformBuffer(perObject.transformUniform, 'worldMatrix');
             perObject.bindGroup = this.device.createBindGroup({
                 label: 'worldMatrix BindGroup',
                 layout: this.objectUniformLayout,
@@ -167,9 +167,7 @@ class PipelineManager implements Service {
 
             mesh.on('destroy', () => this.onMeshDestroyed(mesh));
         } else {
-            // TODO find a way to not update the buffer if it has not changed
-            perObject.worldMatrix.needsUpdate();
-            this.bufferStore.updateUniform(perObject.worldMatrix);
+            this.bufferStore.updateUniform(perObject.transformUniform);
         }
 
         pass.setBindGroup(BindGroups.ObjectUniforms, perObject.bindGroup);
@@ -220,6 +218,8 @@ class PipelineManager implements Service {
 
     bindPerMaterialUniforms(material: Material, pass: GPURenderPassEncoder) {
         const perMaterial = this.perMaterialMap.get(material.id);
+
+        material.getBufferUniforms().forEach(u => this.bufferStore.updateUniform(u));
 
         pass.setBindGroup(BindGroups.MaterialUniforms, perMaterial.bindGroup);
     }
