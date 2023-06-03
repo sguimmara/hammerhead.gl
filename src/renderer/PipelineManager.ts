@@ -167,6 +167,8 @@ class PipelineManager implements Service {
 
             mesh.on('destroy', () => this.onMeshDestroyed(mesh));
         } else {
+            // TODO find a way to not update the buffer if it has not changed
+            perObject.worldMatrix.needsUpdate();
             this.bufferStore.updateUniform(perObject.worldMatrix);
         }
 
@@ -306,7 +308,7 @@ class PipelineManager implements Service {
                 layout,
                 depthStencil: {
                     format: 'depth32float', // TODO expose as global config
-                    depthWriteEnabled: true, // TODO get from material
+                    depthWriteEnabled: material.depthWriteEnabled,
                     depthCompare: "less-equal" // TODO get from material
                 },
                 primitive: {

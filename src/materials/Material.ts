@@ -53,6 +53,9 @@ abstract class Material implements Observable, Destroy {
     readonly shaderCode: string;
     readonly layout: ShaderLayout;
     readonly requiresObjectUniforms: boolean;
+    readonly depthWriteEnabled: boolean = true;
+
+    renderOrder: number = 0;
 
     /** The active state of this material. An inactive material will not be rendered. */
     active: boolean = true;
@@ -103,7 +106,9 @@ abstract class Material implements Observable, Destroy {
      */
     protected setColor(binding: number, color: Color) {
         const [r, g, b, a] = color.gl();
-        this.uniforms[binding].value = vec4.create(r, g, b, a);
+        const uniform = this.uniforms[binding] as BufferUniform;
+        uniform.value = vec4.create(r, g, b, a);
+        uniform.needsUpdate();
     }
 
     /**
@@ -111,17 +116,21 @@ abstract class Material implements Observable, Destroy {
      * @param binding The binding number of the uniform.
      * @param value The value.
      */
-    protected setVec2(binding: number, vec2: Vec2) {
-        this.uniforms[binding].value = vec2;
+    protected setVec2(binding: number, v: Vec2) {
+        const uniform = this.uniforms[binding] as BufferUniform;
+        uniform.value = v;
+        uniform.needsUpdate();
     }
 
     /**
-     * Sets the value of a Vec3 uniform.
+     * Sets the value of a Vec4 uniform.
      * @param binding The binding number of the uniform.
      * @param value The value.
      */
-    protected setVec4(binding: number, vec4: Vec4) {
-        this.uniforms[binding].value = vec4;
+    protected setVec4(binding: number, v: Vec4) {
+        const uniform = this.uniforms[binding] as BufferUniform;
+        uniform.value = v;
+        uniform.needsUpdate();
     }
 
     /**

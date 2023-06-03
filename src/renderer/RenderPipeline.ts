@@ -101,6 +101,7 @@ class RenderPipeline implements Destroy {
 
         const aspect = target.width / target.height;
         this.globalValues.projectionMatrix = camera.updateProjectionMatrix(aspect);
+        this.globalUniform.needsUpdate();
     }
 
     render(command: RenderCommand) {
@@ -121,7 +122,7 @@ class RenderPipeline implements Destroy {
         this.sceneStage
             .withOutput(this.stages.length > 1 ? this.intermediateTextures[0] : target)
             .withClearColor(this.clearColor)
-            .withOpaqueMeshes(command.opaqueList)
+            .withRenderBuckets(command.buckets)
             .execute(encoder);
 
         if (this.stages.length > 1) {

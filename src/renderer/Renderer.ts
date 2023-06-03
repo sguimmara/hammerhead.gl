@@ -6,9 +6,11 @@ import Object3D from "../objects/Object3D";
 import RenderPipeline from "./RenderPipeline";
 import Camera from '../objects/Camera';
 import RenderCommand from "./RenderCommand";
-import { mat4 } from "wgpu-matrix";
+import Bucket from "./Bucket";
 
 const DEFAULT_CLEAR_COLOR = chroma('black');
+
+const tmpBuckets : Map<number, Bucket> = new Map();
 
 class WebGPURenderer {
     private readonly device: GPUDevice;
@@ -26,23 +28,41 @@ class WebGPURenderer {
         this.renderPipeline = new RenderPipeline(this.device, container);
     }
 
-    private getMeshes(graph: Object3D): { opaque: Mesh[] } {
-        const opaque: Mesh[] = [];
-
+    private getRenderBuckets(graph: Object3D): Bucket[] {
         if (graph) {
+            tmpBuckets.forEach(b => b.meshes.length = 0);
             graph.traverse(obj => {
                 obj.transform.updateWorldMatrix(obj.parent?.transform);
                 const mesh = obj as Mesh;
                 if (mesh.isMesh) {
-                    if (mesh.material && mesh.material.active) {
-                        // TODO transparent queue
-                        opaque.push(mesh);
+                    const material = mesh.material;
+                    if (material && material.active) {
+                        let bucket = tmpBuckets.get(material.renderOrder);
+                        if (!bucket) {
+                            bucket = new Bucket();
+                            bucket.meshes = [mesh];
+                            tmpBuckets.set(material.renderOrder, bucket);
+                        } else {
+                            bucket.meshes.push(mesh);
+                        }
                     }
                 }
             });
+
+            const result: Bucket[] = [];
+            tmpBuckets.forEach(b => {
+                if (b.meshes.length > 0) {
+                    result.push(b);
+                    // Sort by material to reduce pipeline switches
+                    b.meshes.sort((a, b) => a.material.id - b.material.id);
+                }
+            });
+
+            result.sort((a, b) => a.order - b.order);
+            return result;
         }
 
-        return { opaque };
+        return [];
     }
 
     /**
@@ -57,10 +77,10 @@ class WebGPURenderer {
         }
 
         this.renderPipeline.setClearColor(this.clearColor);
-        const { opaque } = this.getMeshes(root);
+        const buckets = this.getRenderBuckets(root);
         const command = new RenderCommand({
             camera,
-            opaqueList: opaque,
+            buckets,
             target: this.context.getCurrentTexture(),
         })
         this.renderPipeline.render(command);

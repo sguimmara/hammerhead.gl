@@ -125,8 +125,6 @@ class BufferStore implements Service {
             usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
         });
 
-        console.debug(`create buffer ${gpuBuffer.label}`);
-
         this.vertexBuffers.get(geometry.id).set(slot, gpuBuffer);
 
         this.device.queue.writeBuffer(gpuBuffer, 0, buf);
@@ -144,8 +142,6 @@ class BufferStore implements Service {
             size: geometry.indexBuffer.byteLength,
             usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
         });
-
-        console.debug(`create buffer ${gpuBuffer.label}`);
 
         this.indexBuffers.set(geometry.id, gpuBuffer);
 

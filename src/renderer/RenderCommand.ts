@@ -1,18 +1,18 @@
 import Camera from "../objects/Camera";
-import Mesh from "../objects/Mesh";
+import Bucket from "./Bucket";
 
 export default class RenderCommand {
     readonly camera: Camera;
-    readonly opaqueList: Mesh[];
+    readonly buckets: Bucket[];
     readonly target: GPUTexture;
 
     constructor(params: {
         camera: Camera,
-        opaqueList?: Mesh[],
+        buckets: Bucket[],
         target: GPUTexture
     }) {
         this.camera = params.camera;
-        this.opaqueList = params.opaqueList;
+        this.buckets = params.buckets;
         this.target = params.target;
     }
 }

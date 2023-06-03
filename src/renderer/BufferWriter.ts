@@ -2,6 +2,9 @@ import { Color } from "chroma-js";
 import { Mat4, Vec2, Vec3, Vec4 } from "wgpu-matrix";
 import Sized from "../core/Sized";
 import { Visitor, Visitable } from "../core/Visitable";
+import Version from "../core/Version";
+
+type Source = Sized & Visitable & Version;
 
 /**
  * Serializes objects into buffers.
@@ -10,13 +13,15 @@ import { Visitor, Visitable } from "../core/Visitable";
 class BufferWriter implements Visitor
 {
     readonly buffer: GPUBuffer;
-    private readonly source: Sized & Visitable;
+    private readonly source: Source;
     private readonly device: GPUDevice;
     private offset: number;
     private data: Float32Array;
+    private version: number;
 
-    constructor(source: Sized & Visitable, buffer: GPUBuffer, device: GPUDevice) {
+    constructor(source: Source, buffer: GPUBuffer, device: GPUDevice) {
         this.offset = 0;
+        this.version = null;
         this.source = source;
         this.buffer = buffer;
         const sourceSize = this.source.getByteSize();
@@ -75,11 +80,12 @@ class BufferWriter implements Visitor
      * Updates the GPU buffer with the values from the source.
      */
     update() {
-        this.source.visit(this);
-
-        this.device.queue.writeBuffer(this.buffer, 0, this.data);
-
-        this.offset = 0;
+        if (this.version != this.source.version) {
+            this.source.visit(this);
+            this.device.queue.writeBuffer(this.buffer, 0, this.data);
+            this.offset = 0;
+            this.version = this.source.version;
+        }
     }
 }
 

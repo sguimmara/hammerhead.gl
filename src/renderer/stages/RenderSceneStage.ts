@@ -1,6 +1,7 @@
 import ObjectUniform from "../../materials/uniforms/ObjectUniform";
 import Camera from "../../objects/Camera";
 import Mesh from "../../objects/Mesh";
+import Bucket from "../Bucket";
 import BufferStore from "../BufferStore";
 import PipelineManager from "../PipelineManager";
 import TextureStore from "../TextureStore";
@@ -10,7 +11,7 @@ import Stage from "./Stage";
  * A render pipeline stage that render the scene into a color attachment.
  */
 class RenderSceneStage extends Stage {
-    private renderList: Mesh[];
+    private renderList: Bucket[];
     private pass: GPURenderPassEncoder;
     private currentPipeline: GPURenderPipeline = null;
 
@@ -41,10 +42,9 @@ class RenderSceneStage extends Stage {
         pass.drawIndexed(geometry.indexCount);
     }
 
-    withOpaqueMeshes(list: Iterable<Mesh> | null) {
-        if (list) {
-            this.renderList = [...list];
-            this.renderList.sort((a, b) => a.material.id - b.material.id);
+    withRenderBuckets(buckets: Bucket[]) {
+        if (buckets) {
+            this.renderList = buckets;
         } else {
             this.renderList = [];
         }
@@ -60,8 +60,10 @@ class RenderSceneStage extends Stage {
         this.pass = encoder.beginRenderPass(this.renderPassDescriptor);
         this.pipelineManager.bindGlobalUniforms(this.pass, this.GlobalValues);
 
-        for (const mesh of this.renderList) {
-            this.renderMesh(mesh, this.pass);
+        for (const bucket of this.renderList) {
+            for (const mesh of bucket.meshes) {
+                this.renderMesh(mesh, this.pass);
+            }
         }
 
         this.pass.end();

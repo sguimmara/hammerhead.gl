@@ -15,6 +15,7 @@ export default class Mat4Uniform extends BufferUniform {
     getByteSize(): number {
         return 16 * 4;
     }
+
     visit(visitor: Visitor): void {
         visitor.visitMat4(this.value);
     }

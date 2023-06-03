@@ -17,19 +17,22 @@ async function main() {
 
     const material = new BasicMaterial();
 
+    const geometry = GeometryBuilder.pyramid();
+    geometry.setColors([
+        chroma('red'),
+        chroma('green'),
+        chroma('blue'),
+        chroma('yellow'),
+    ]);
+
     function makePyramid(x: number, y: number, z: number) {
         const pyramid = new Mesh({
             material,
-            geometry: GeometryBuilder.pyramid(),
+            geometry,
         });
 
-        pyramid.geometry.setColors([
-            chroma('red'),
-            chroma('green'),
-            chroma('blue'),
-            chroma('yellow'),
-        ]);
-
+        const scale = 0.1;
+        pyramid.transform.setScale(scale, scale, scale);
         pyramid.transform.setPosition(x, y, z);
 
         return pyramid;
@@ -37,14 +40,16 @@ async function main() {
 
     const root = new Object3D();
 
-    root.add(makePyramid(-0.87, 0, -1));
-    root.add(makePyramid(0.87, 0, -1));
-    root.add(makePyramid(0, 1.4, -0.5));
-    root.add(makePyramid(0,  0, 0.55));
+    for (let i = 0; i < 10000; i++) {
+        function rand() {
+            return (Math.random() - 0.5) * 10;
+        }
+        root.add(makePyramid(rand(), rand(), rand()));
+    }
 
     const camera = new Camera('perspective');
-    camera.setPosition(0, 10, 10);
-    camera.lookAt(0, 3, 0);
+    camera.setPosition(0, 0, 40);
+    camera.lookAt(0, 0, 0);
 
     function render() {
         renderer.render(root, camera);
