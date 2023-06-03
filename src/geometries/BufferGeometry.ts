@@ -3,6 +3,7 @@ import { Color } from "chroma-js";
 import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatcher";
 import { VertexBufferSlot } from "../core/constants";
 import Destroy from "../core/Destroy";
+import Box3 from "../core/Box3";
 
 class BufferGeometry implements Observable, Destroy {
     private readonly dispatcher: EventDispatcher<BufferGeometry>;
@@ -10,23 +11,33 @@ class BufferGeometry implements Observable, Destroy {
 
     version: number;
     readonly vertexBuffers: Map<VertexBufferSlot, Float32Array>;
-    readonly indexBuffer: Uint16Array;
+    readonly indexBuffer: Uint16Array | Uint32Array;
     readonly vertexCount: number;
     readonly indexCount: number;
+    bounds: Box3;
 
     constructor(options: {
         vertexCount: number,
         indexCount: number,
+        indexBuffer?: Uint32Array | Uint16Array,
+        vertices?: Float32Array,
     }) {
         this.id = BUFFER_GEOMETRY_ID++;
         this.vertexBuffers = new Map();
         this.vertexBuffers.set(
             VertexBufferSlot.Position,
-            new Float32Array(options.vertexCount * 3));
-        this.indexBuffer = new Uint16Array(options.indexCount);
+            options.vertices ?? new Float32Array(options.vertexCount * 3));
+        this.indexBuffer = options.indexBuffer ??
+            (options.indexCount > 65536
+                ? new Uint32Array(options.indexCount)
+                : new Uint16Array(options.indexCount));
         this.vertexCount = options.vertexCount;
         this.indexCount = options.indexCount;
         this.dispatcher = new EventDispatcher<BufferGeometry>(this);
+    }
+
+    computeBounds() {
+        this.bounds = Box3.fromPoints(this.vertexBuffers.get(VertexBufferSlot.Position));
     }
 
     on(type: string, handler: EventHandler): void {
@@ -56,8 +67,9 @@ class BufferGeometry implements Observable, Destroy {
             this.vertexBuffers.get(VertexBufferSlot.Color).set(values);
         } else if (colors) {
             const gl = colors.gl();
+            const buf = this.vertexBuffers.get(VertexBufferSlot.Color);
             for (let i = 0; i < this.vertexCount; i++) {
-                this.vertexBuffers.get(VertexBufferSlot.Color).set(gl, i * 4);
+                buf.set(gl, i * 4);
             }
         }
         this.version++;
