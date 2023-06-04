@@ -50,7 +50,7 @@ class RenderSceneStage extends Stage {
         } else {
             this.pipelineManager.bindVertexBufferUniforms(this.currentPipeline, geometry, pass);
             const vertexCount = geometry.vertexCount / 3;
-            pass.draw(6 * vertexCount); // TODO
+            pass.draw(6 * vertexCount); // TODO handle line rendering
         }
     }
 
