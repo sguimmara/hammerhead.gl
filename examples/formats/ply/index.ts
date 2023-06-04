@@ -14,7 +14,7 @@ async function main() {
     const loader = new PLYLoader();
 
     const mesh = await loader.loadFromURI('/files/hammerhead.ply');
-    mesh.material = new BasicMaterial().withDiffuseColor(chroma('green'));
+    mesh.material = new BasicMaterial();
 
     const camera = new Camera('perspective');
     const [x, y, z] = mesh.geometry.bounds.center;

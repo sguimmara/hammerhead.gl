@@ -9,10 +9,14 @@ class GlobalValues implements Sized, Visitable, Version {
     screenSize: Vec2 = vec2.zero();
     viewMatrix: Mat4;
     projectionMatrix: Mat4;
-    version: number;
+    private version: number;
 
     getVersion(): number {
         return this.version;
+    }
+
+    incrementVersion(): void {
+        this.version++;
     }
 
     getByteSize(): number {

@@ -114,6 +114,8 @@ class BufferStore implements Service {
             return this.vertexBuffers.get(geometry.id).get(slot);
         }
 
+        // TODO handle version change of geometry
+
         // TODO will be called multiple times for each buffer
         geometry.on('destroy', evt => this.onGeometryDestroyed(evt.emitter as BufferGeometry));
 

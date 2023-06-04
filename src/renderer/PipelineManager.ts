@@ -1,9 +1,9 @@
 import { mat4, vec3, vec4 } from "wgpu-matrix";
 import Container from "../core/Container";
 import Service from "../core/Service";
-import { BindGroups } from "../core/constants";
+import { BindGroups, VertexBufferSlot } from "../core/constants";
 import BufferGeometry from "../geometries/BufferGeometry";
-import Material from "../materials/Material";
+import Material, { RenderingMode } from "../materials/Material";
 import { UniformType, UniformInfo, AttributeInfo, AttributeType } from "../materials/ShaderLayout";
 import Mat4Uniform from "../materials/uniforms/Mat4Uniform";
 import ObjectUniform from "../materials/uniforms/ObjectUniform";
@@ -17,22 +17,27 @@ class PerObject {
     bindGroup: GPUBindGroup;
 }
 
+class PerGeometry {
+    vertexBufferBindGroup: GPUBindGroup;
+}
+
 class PerMaterial {
     material: Material;
     vertexShader: GPUShaderModule;
     fragmentShader: GPUShaderModule;
     pipeline: GPURenderPipeline;
-    bindGroup: GPUBindGroup;
+    materialBindGroup: GPUBindGroup;
 }
 
 class PipelineManager implements Service {
     readonly type: string = 'PipelineManager';
 
+    private globalUniformBindGroup: GPUBindGroup;
     private readonly device: GPUDevice;
     private readonly layouts: Map<string, GPUBindGroupLayout>;
     private readonly perObjectMap: Map<number, PerObject>;
     private readonly perMaterialMap: Map<number, PerMaterial>;
-    private globalUniformBindGroup: GPUBindGroup;
+    private readonly perGeometryMap: Map<number, PerGeometry>;
     private readonly globalUniformLayout: GPUBindGroupLayout;
     private readonly objectUniformLayout: GPUBindGroupLayout;
     private readonly textureStore: TextureStore;
@@ -43,6 +48,7 @@ class PipelineManager implements Service {
         this.layouts = new Map();
         this.perObjectMap = new Map();
         this.perMaterialMap = new Map();
+        this.perGeometryMap = new Map();
         this.textureStore = container.get<TextureStore>('TextureStore');
         this.bufferStore = container.get<BufferStore>('BufferStore');
 
@@ -217,12 +223,31 @@ class PipelineManager implements Service {
         }
     }
 
+    bindVertexBufferUniforms(pipeline: GPURenderPipeline, geometry: BufferGeometry, pass: GPURenderPassEncoder) {
+        let perGeometry = this.perGeometryMap.get(geometry.id);
+        if (!perGeometry) {
+            perGeometry = new PerGeometry();
+            this.perGeometryMap.set(geometry.id, perGeometry);
+        }
+
+        // TODO finish vertex pulling
+        if (!perGeometry.vertexBufferBindGroup) {
+            const entries = this.getAttributesAsBindGroupEntries(geometry);
+            perGeometry.vertexBufferBindGroup = this.device.createBindGroup({
+                layout: pipeline.getBindGroupLayout(BindGroups.VertexBufferUniforms),
+                entries,
+            });
+        }
+
+        pass.setBindGroup(BindGroups.VertexBufferUniforms, perGeometry.vertexBufferBindGroup);
+    }
+
     bindPerMaterialUniforms(material: Material, pass: GPURenderPassEncoder) {
         const perMaterial = this.perMaterialMap.get(material.id);
 
         material.getBufferUniforms().forEach(u => this.bufferStore.updateUniform(u));
 
-        pass.setBindGroup(BindGroups.MaterialUniforms, perMaterial.bindGroup);
+        pass.setBindGroup(BindGroups.MaterialUniforms, perMaterial.materialBindGroup);
     }
 
     private getVertexBufferLayout(info: AttributeInfo): GPUVertexBufferLayout {
@@ -259,6 +284,22 @@ class PipelineManager implements Service {
         pass.setIndexBuffer(this.bufferStore.getIndexBuffer(geometry), format);
     }
 
+    /**
+     * Get a buffer attribute as a bind group entry (instead of a regular attribute).
+     * Useful for vertex pulling.
+     */
+    private getAttributesAsBindGroupEntries(geometry: BufferGeometry): GPUBindGroupEntry[] {
+        const posBuffer = this.bufferStore.getOrCreateVertexBuffer(geometry, VertexBufferSlot.Position);
+        const colBuffer = this.bufferStore.getOrCreateVertexBuffer(geometry, VertexBufferSlot.Color);
+        const uvBuffer = this.bufferStore.getOrCreateVertexBuffer(geometry, VertexBufferSlot.TexCoord);
+
+        return [
+            { binding: VertexBufferSlot.Position, resource: { buffer: posBuffer }},
+            { binding: VertexBufferSlot.TexCoord, resource: { buffer: uvBuffer }},
+            { binding: VertexBufferSlot.Color, resource: { buffer: colBuffer }}
+        ]
+    }
+
     getPipeline(material: Material): GPURenderPipeline {
         let perMaterial = this.perMaterialMap.get(material.id);
         if (!perMaterial) {
@@ -284,26 +325,25 @@ class PipelineManager implements Service {
                 }
             };
 
-            // TODO refactor
-            const bindGroupLayouts = material.requiresObjectUniforms
-                ? [
-                    this.globalUniformLayout,
-                    this.getMaterialLayout(material),
-                    this.objectUniformLayout,
-                ]
-                :
-                [
-                    this.globalUniformLayout,
-                    this.getMaterialLayout(material),
-                ];
+            const bindGroupLayouts: GPUBindGroupLayout[] = [
+                this.globalUniformLayout,
+                this.getMaterialLayout(material)
+            ];
 
+            if (material.requiresObjectUniforms) {
+                bindGroupLayouts.push(this.objectUniformLayout);
+            }
 
             const layout = this.device.createPipelineLayout({
                 bindGroupLayouts
             });
 
             const attributes = material.layout.attributes;
-            const buffers = attributes.map(attr => this.getVertexBufferLayout(attr));
+
+            let buffers: GPUVertexBufferLayout[] = [];
+            if (material.mode === RenderingMode.Triangles) {
+                buffers = attributes.map(attr => this.getVertexBufferLayout(attr));
+            }
 
             // TODO get depth buffer behaviour from material
             const pipeline = this.device.createRenderPipeline({
@@ -312,7 +352,7 @@ class PipelineManager implements Service {
                 depthStencil: {
                     format: 'depth32float', // TODO expose as global config
                     depthWriteEnabled: material.depthWriteEnabled,
-                    depthCompare: "less-equal" // TODO get from material
+                    depthCompare: "less" // TODO get from material
                 },
                 primitive: {
                     topology: 'triangle-list', // TODO get from geometry
@@ -340,12 +380,12 @@ class PipelineManager implements Service {
                 this.getBindGroupEntries(material, i, entries);
             }
 
-            const bindGroup = this.device.createBindGroup({
+            const materialBindGroup = this.device.createBindGroup({
                 layout: pipeline.getBindGroupLayout(BindGroups.MaterialUniforms),
                 entries,
             });
 
-            perMaterial.bindGroup = bindGroup;
+            perMaterial.materialBindGroup = materialBindGroup;
 
             this.perMaterialMap.set(material.id, perMaterial);
 

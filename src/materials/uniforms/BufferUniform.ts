@@ -5,7 +5,7 @@ import Uniform from "./Uniform";
 
 export default abstract class BufferUniform implements Sized, Visitable, Version, Uniform {
     abstract value: unknown;
-    version: number = -1;
+    private version: number = -1;
     abstract getByteSize(): number;
     abstract visit(visitor: Visitor): void;
 
@@ -13,7 +13,7 @@ export default abstract class BufferUniform implements Sized, Visitable, Version
         return this.version;
     }
 
-    needsUpdate() {
+    incrementVersion(): void {
         this.version++;
     }
 }

@@ -101,7 +101,7 @@ class RenderPipeline implements Destroy {
 
         const aspect = target.width / target.height;
         this.globalValues.projectionMatrix = camera.updateProjectionMatrix(aspect);
-        this.globalValues.version++;
+        this.globalValues.incrementVersion();
     }
 
     executeRenderCommand(command: RenderCommand) {

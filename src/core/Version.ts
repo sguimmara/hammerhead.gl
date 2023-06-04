@@ -3,4 +3,5 @@
  */
 export default interface Version {
     getVersion(): number;
+    incrementVersion(): void;
 }

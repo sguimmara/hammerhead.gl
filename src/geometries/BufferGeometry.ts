@@ -5,12 +5,14 @@ import { VertexBufferSlot } from "../core/constants";
 import Destroy from "../core/Destroy";
 import Box3 from "../core/Box3";
 import { mat3, mat4, vec3 } from "wgpu-matrix";
+import Version from "../core/Version";
 
-class BufferGeometry implements Observable, Destroy {
+// TODO implement Version
+class BufferGeometry implements Observable, Destroy, Version {
     private readonly dispatcher: EventDispatcher<BufferGeometry>;
     readonly id: number;
 
-    version: number;
+    private version: number;
     readonly vertexBuffers: Map<VertexBufferSlot, Float32Array>;
     readonly indexBuffer: Uint16Array | Uint32Array;
     readonly vertexCount: number;
@@ -22,6 +24,8 @@ class BufferGeometry implements Observable, Destroy {
         indexCount: number,
         indexBuffer?: Uint32Array | Uint16Array,
         vertices?: Float32Array,
+        texcoordBuffer?: Float32Array,
+        colorBuffer?: Float32Array,
     }) {
         this.id = BUFFER_GEOMETRY_ID++;
         this.vertexBuffers = new Map();
@@ -32,9 +36,25 @@ class BufferGeometry implements Observable, Destroy {
             (options.indexCount > 65536
                 ? new Uint32Array(options.indexCount)
                 : new Uint16Array(options.indexCount));
+        if (options.texcoordBuffer) {
+            this.setTexCoords(options.texcoordBuffer);
+        }
+        if (options.colorBuffer) {
+            if (!this.vertexBuffers.has(VertexBufferSlot.Color)) {
+                this.vertexBuffers.set(VertexBufferSlot.Color, options.colorBuffer);
+            }
+        }
         this.vertexCount = options.vertexCount;
         this.indexCount = options.indexCount;
         this.dispatcher = new EventDispatcher<BufferGeometry>(this);
+    }
+
+    getVersion(): number {
+        return this.version;
+    }
+
+    incrementVersion(): void {
+        this.version++;
     }
 
     computeBounds() {
@@ -53,9 +73,9 @@ class BufferGeometry implements Observable, Destroy {
         return this.vertexBuffers.get(slot);
     }
 
-    setVertices(positions: number[]) {
+    setVertices(positions: ArrayLike<number>) {
         this.vertexBuffers.get(VertexBufferSlot.Position).set(positions, 0);
-        this.version++;
+        this.incrementVersion();
     }
 
     setColors(colors?: Color[] | Color) {
@@ -73,10 +93,10 @@ class BufferGeometry implements Observable, Destroy {
                 buf.set(gl, i * 4);
             }
         }
-        this.version++;
+        this.incrementVersion();
     }
 
-    setTexCoords(coords?: number[]) {
+    setTexCoords(coords?: ArrayLike<number>) {
         if (!this.vertexBuffers.has(VertexBufferSlot.TexCoord)) {
             this.vertexBuffers.set(VertexBufferSlot.TexCoord, new Float32Array(this.vertexCount * 2));
         }
@@ -84,12 +104,12 @@ class BufferGeometry implements Observable, Destroy {
         if (coords) {
             this.vertexBuffers.get(VertexBufferSlot.TexCoord).set(coords, 0);
         }
-        this.version++;
+        this.incrementVersion();
     }
 
-    setIndices(indices: number[]) {
+    setIndices(indices: ArrayLike<number>) {
         this.indexBuffer.set(indices, 0);
-        this.version++;
+        this.incrementVersion();
     }
 }
 

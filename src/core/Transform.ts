@@ -10,6 +10,10 @@ export default class Transform implements Version, Sized, Visitable {
     private parentVersion: number = -1;
     needsUpdate: boolean;
 
+    incrementVersion(): void {
+        this.version++;
+    }
+
     setPosition(x: number|Vec3, y?: number, z?: number) {
         let v;
         if (typeof x === 'number') {
@@ -18,7 +22,7 @@ export default class Transform implements Version, Sized, Visitable {
             v = x;
         }
         mat4.setTranslation(this.localMatrix, v, this.localMatrix);
-        this.version++;
+        this.incrementVersion();
         this.needsUpdate = true;
     }
 
@@ -30,14 +34,14 @@ export default class Transform implements Version, Sized, Visitable {
             v = x;
         }
         mat4.scaling(v, this.localMatrix);
-        this.version++;
+        this.incrementVersion();
         this.needsUpdate = true;
     }
 
     rotateY(radians: number) {
         if (radians != 0) {
             mat4.rotateY(this.localMatrix, radians, this.localMatrix);
-            this.version++;
+            this.incrementVersion();
             this.needsUpdate = true;
         }
     }
@@ -45,7 +49,7 @@ export default class Transform implements Version, Sized, Visitable {
     rotateX(radians: number) {
         if (radians != 0) {
             mat4.rotateX(this.localMatrix, radians, this.localMatrix);
-            this.version++;
+            this.incrementVersion();
             this.needsUpdate = true;
         }
     }
@@ -62,7 +66,7 @@ export default class Transform implements Version, Sized, Visitable {
             if (parent.version > this.parentVersion) {
                 mat4.mul(parent.worldMatrix, this.localMatrix, this.worldMatrix);
                 this.parentVersion = parent.version;
-                this.version++;
+                this.incrementVersion();
                 this.needsUpdate = false;
             }
         } else if (this.needsUpdate) {

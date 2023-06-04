@@ -16,6 +16,12 @@ import Mat4Uniform from "./uniforms/Mat4Uniform";
 
 let MATERIAL_ID = 0;
 
+export enum RenderingMode {
+    Triangles,
+    Lines,
+    Points,
+}
+
 function allocateUniform(type: UniformType) {
     switch (type) {
         case UniformType.Texture2D:
@@ -55,6 +61,7 @@ abstract class Material implements Observable, Destroy {
     readonly layout: ShaderLayout;
     readonly requiresObjectUniforms: boolean;
     readonly depthWriteEnabled: boolean = true;
+    readonly mode: RenderingMode;
 
     renderOrder: number = 0;
 
@@ -66,12 +73,14 @@ abstract class Material implements Observable, Destroy {
         vertexShader: string;
         layout: ShaderLayout;
         requiresObjectUniforms?: boolean,
+        mode?: RenderingMode,
     }) {
         this.id = MATERIAL_ID++;
         this.requiresObjectUniforms = options.requiresObjectUniforms ?? true;
         this.fragmentShader = options.fragmentShader;
         this.vertexShader = options.vertexShader;
         this.layout = options.layout;
+        this.mode = options.mode ?? RenderingMode.Triangles;
         this.dispatcher = new EventDispatcher<Material>(this);
         this.uniforms = allocateUniforms(this.layout.uniforms);
     }
@@ -97,7 +106,7 @@ abstract class Material implements Observable, Destroy {
     protected setScalar(binding: number, v: number) {
         const uniform = this.uniforms[binding] as BufferUniform;
         uniform.value = v;
-        uniform.needsUpdate();
+        uniform.incrementVersion();
     }
 
     /**
@@ -118,7 +127,7 @@ abstract class Material implements Observable, Destroy {
         const [r, g, b, a] = color.gl();
         const uniform = this.uniforms[binding] as BufferUniform;
         uniform.value = vec4.create(r, g, b, a);
-        uniform.needsUpdate();
+        uniform.incrementVersion();
     }
 
     /**
@@ -129,7 +138,7 @@ abstract class Material implements Observable, Destroy {
     protected setVec2(binding: number, v: Vec2) {
         const uniform = this.uniforms[binding] as BufferUniform;
         uniform.value = v;
-        uniform.needsUpdate();
+        uniform.incrementVersion();
     }
 
     /**
@@ -140,7 +149,7 @@ abstract class Material implements Observable, Destroy {
     protected setVec4(binding: number, v: Vec4) {
         const uniform = this.uniforms[binding] as BufferUniform;
         uniform.value = v;
-        uniform.needsUpdate();
+        uniform.incrementVersion();
     }
 
     /**
