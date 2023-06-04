@@ -25,7 +25,8 @@ export default class Box3 {
         let maxY = -Infinity;
         let maxZ = -Infinity;
 
-        for (let i = 0; i < points.length; i+=3) {
+        const length = points.length;
+        for (let i = 0; i < length; i += 3) {
             const x = points[i + 0];
             const y = points[i + 1];
             const z = points[i + 2];
