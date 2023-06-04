@@ -1,8 +1,5 @@
 #include ../chunks/effect.header.wgsl;
 
-#include ../chunks/VSOutput.wgsl;
-#include ../chunks/screenQuad.vert.wgsl;
-
 @group(MATERIAL_UNIFORMS) @binding(2) var<uniform> saturation: f32;
 @group(MATERIAL_UNIFORMS) @binding(3) var<uniform> brightness: f32;
 

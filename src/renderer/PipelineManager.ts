@@ -19,7 +19,8 @@ class PerObject {
 
 class PerMaterial {
     material: Material;
-    shaderModule: GPUShaderModule;
+    vertexShader: GPUShaderModule;
+    fragmentShader: GPUShaderModule;
     pipeline: GPURenderPipeline;
     bindGroup: GPUBindGroup;
 }
@@ -128,7 +129,7 @@ class PipelineManager implements Service {
     }
 
     private getMaterialLayout(material: Material): GPUBindGroupLayout {
-        const key = material.shaderCode;
+        const key = material.fragmentShader;
         if (this.layouts.has(key)) {
             return this.layouts.get(key);
         }
@@ -263,7 +264,8 @@ class PipelineManager implements Service {
         if (!perMaterial) {
             perMaterial = new PerMaterial();
             perMaterial.material = material;
-            perMaterial.shaderModule = this.createShaderModule(material.id, material.shaderCode);
+            perMaterial.vertexShader = this.createShaderModule(material.id, material.vertexShader);
+            perMaterial.fragmentShader = this.createShaderModule(material.id, material.fragmentShader);
 
             // TODO get blending mode from material.
             const colorTarget: GPUColorTargetState = {
@@ -318,12 +320,12 @@ class PipelineManager implements Service {
                     cullMode: 'back', // TODO get from geometry
                 },
                 vertex: {
-                    module: perMaterial.shaderModule,
+                    module: perMaterial.vertexShader,
                     entryPoint: 'vs',
                     buffers
                 },
                 fragment: {
-                    module: perMaterial.shaderModule,
+                    module: perMaterial.fragmentShader,
                     entryPoint: 'fs',
                     targets: [colorTarget]
                 }

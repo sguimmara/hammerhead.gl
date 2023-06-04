@@ -1,16 +1,17 @@
 import chroma, { Color } from 'chroma-js';
-import shaderCode from './BasicMaterial.wgsl';
+import fragmentShader from './BasicMaterial.frag.wgsl';
+import vertexShader from './default.vert.wgsl';
 import Texture from '../textures/Texture';
 import { ShaderLayout } from './ShaderLayout';
 import Material from './Material';
 
 const WHITE = chroma('white');
 
-const layout = ShaderLayout.parse(shaderCode);
+const layout = ShaderLayout.parse(fragmentShader, vertexShader);
 
 class BasicMaterial extends Material {
     constructor() {
-        super({ shaderCode, layout });
+        super({ fragmentShader, vertexShader, layout });
         this.withDiffuseColor(WHITE);
     }
 

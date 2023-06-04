@@ -50,9 +50,9 @@ export class ShaderLayout {
         this.uniforms = uniforms;
     }
 
-    static parse(shaderCode: string): ShaderLayout {
-        const uniforms = parseUniforms(shaderCode);
-        const attributes = getAttributes(shaderCode);
+    static parse(fragmentShader: string, vertexShader: string): ShaderLayout {
+        const uniforms = parseUniforms(fragmentShader);
+        const attributes = getAttributes(vertexShader);
         return new ShaderLayout(attributes, uniforms);
     }
 }

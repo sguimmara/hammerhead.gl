@@ -1,3 +1,7 @@
+#include ./chunks/constants.wgsl;
+#include ./chunks/VSOutput.wgsl;
+#include ./chunks/GlobalValues.wgsl;
+
 @vertex fn vs(
    vertex: Vertex,
 ) -> VSOutput {

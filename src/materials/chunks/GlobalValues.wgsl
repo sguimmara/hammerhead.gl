@@ -1,5 +1,3 @@
-#include constants.wgsl;
-
 struct GlobalValues {
     time: f32,
     deltaTime: f32,

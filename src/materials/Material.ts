@@ -50,7 +50,8 @@ abstract class Material implements Observable, Destroy {
     private readonly dispatcher: EventDispatcher<Material>;
     private readonly uniforms: Uniform[];
     readonly id: number;
-    readonly shaderCode: string;
+    readonly fragmentShader: string;
+    readonly vertexShader: string;
     readonly layout: ShaderLayout;
     readonly requiresObjectUniforms: boolean;
     readonly depthWriteEnabled: boolean = true;
@@ -61,13 +62,15 @@ abstract class Material implements Observable, Destroy {
     active: boolean = true;
 
     constructor(options: {
-        shaderCode: string;
+        fragmentShader: string;
+        vertexShader: string;
         layout: ShaderLayout;
         requiresObjectUniforms?: boolean,
     }) {
         this.id = MATERIAL_ID++;
         this.requiresObjectUniforms = options.requiresObjectUniforms ?? true;
-        this.shaderCode = options.shaderCode;
+        this.fragmentShader = options.fragmentShader;
+        this.vertexShader = options.vertexShader;
         this.layout = options.layout;
         this.dispatcher = new EventDispatcher<Material>(this);
         this.uniforms = allocateUniforms(this.layout.uniforms);

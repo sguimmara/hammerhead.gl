@@ -1,8 +1,5 @@
 #include ../chunks/effect.header.wgsl;
 
-#include ../chunks/VSOutput.wgsl;
-#include ../chunks/screenQuad.vert.wgsl;
-
 @group(MATERIAL_UNIFORMS) @binding(2) var<uniform> flip: vec2f;
 
 @fragment fn fs(input: VSOutput) -> @location(0) vec4f {
