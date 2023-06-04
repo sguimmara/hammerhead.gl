@@ -1,8 +1,37 @@
+import Destroy from "../core/Destroy";
 import Service from "../core/Service";
 import { VertexBufferSlot } from "../core/constants";
 import BufferGeometry from "../geometries/BufferGeometry";
 import BufferUniform from "../materials/uniforms/BufferUniform";
 import BufferWriter from "./BufferWriter";
+
+class GeometryStorage implements Destroy {
+    currentVersion: number;
+    currentVertexCount: number;
+    indexBuffer: GPUBuffer;
+    vertexBuffers: Map<number, GPUBuffer>;
+
+    constructor() {
+        this.vertexBuffers = new Map();
+    }
+
+    destroy(): void {
+        this.indexBuffer?.destroy();
+        this.vertexBuffers?.forEach(b => b.destroy());
+    }
+
+    getBufferCount() {
+        let result = 0;
+        if (this.indexBuffer) {
+            result++;
+        }
+        if (this.vertexBuffers) {
+            result += this.vertexBuffers.size;
+        }
+
+        return result;
+    }
+}
 
 /**
  * Manages GPU buffers.
@@ -11,68 +40,38 @@ class BufferStore implements Service {
     readonly type: string = 'BufferStore';
 
     private readonly device: GPUDevice;
-    private readonly indexBuffers: Map<number, GPUBuffer>;
-    private readonly vertexBuffers: Map<number, Map<number, GPUBuffer>>;
+    private readonly geometryStorages: Map<number, GeometryStorage>;
     private readonly uniformBuffers: Map<BufferUniform, BufferWriter>;
 
     constructor(device: GPUDevice) {
-        this.indexBuffers = new Map();
-        this.vertexBuffers = new Map();
+        this.geometryStorages = new Map();
         this.uniformBuffers = new Map();
         this.device = device;
     }
 
     private onGeometryDestroyed(geometry: BufferGeometry): void {
-        const vertexBuffers = this.vertexBuffers.get(geometry.id);
-        if (vertexBuffers) {
-            vertexBuffers.forEach(gpuBuffer => {
-                gpuBuffer.destroy();
-            });
-            this.vertexBuffers.delete(geometry.id);
-        }
-
-        const indexBuffer = this.indexBuffers.get(geometry.id);
-        if (indexBuffer) {
-            indexBuffer.destroy();
-            this.indexBuffers.delete(geometry.id);
-        }
+        const vertexBuffers = this.geometryStorages.get(geometry.id);
+        vertexBuffers?.destroy();
     }
 
     getBufferCount() {
-        let count = this.uniformBuffers.size + this.indexBuffers.size;
+        let count = this.uniformBuffers.size;
 
-        this.vertexBuffers.forEach(vBuf => count += vBuf.size);
+        this.geometryStorages.forEach(o => count += o.getBufferCount());
 
         return count;
     }
 
     destroy() {
-        for (const buf of this.indexBuffers.values()) {
-            buf.destroy();
-        }
-
-        for (const map of this.vertexBuffers.values()) {
-            for (const buf of map.values()) {
-                buf.destroy();
-            }
-        }
-
-        this.indexBuffers.clear();
-        this.vertexBuffers.clear();
+        this.geometryStorages.forEach(b => b.destroy());
+        this.geometryStorages.clear();
     }
 
     destroyBuffers(quad: BufferGeometry) {
-        if (this.vertexBuffers.has(quad.id)) {
-            const map = this.vertexBuffers.get(quad.id);
-            for (const buf of map.values()) {
-                buf.destroy()
-            }
-
-            this.vertexBuffers.delete(quad.id);
-        }
-        if (this.indexBuffers.has(quad.id)) {
-            this.indexBuffers.get(quad.id).destroy();
-            this.indexBuffers.delete(quad.id);
+        if (this.geometryStorages.has(quad.id)) {
+            const storage = this.geometryStorages.get(quad.id);
+            storage.destroy();
+            this.geometryStorages.delete(quad.id);
         }
     }
 
@@ -108,16 +107,16 @@ class BufferStore implements Service {
     }
 
     getOrCreateVertexBuffer(geometry: BufferGeometry, slot: number): GPUBuffer {
-        if (!this.vertexBuffers.has(geometry.id)) {
-            this.vertexBuffers.set(geometry.id, new Map());
-        } else if (this.vertexBuffers.get(geometry.id).has(slot)) {
-            return this.vertexBuffers.get(geometry.id).get(slot);
+        let storage = this.geometryStorages.get(geometry.id);
+        if (!storage) {
+            storage = new GeometryStorage();
+            geometry.on('destroy', evt => this.onGeometryDestroyed(evt.emitter as BufferGeometry));
+            this.geometryStorages.set(geometry.id, storage);
+        } else if (storage.vertexBuffers.has(slot)) {
+            return storage.vertexBuffers.get(slot);
         }
 
         // TODO handle version change of geometry
-
-        // TODO will be called multiple times for each buffer
-        geometry.on('destroy', evt => this.onGeometryDestroyed(evt.emitter as BufferGeometry));
 
         const buf = geometry.getVertexBuffer(slot);
 
@@ -127,7 +126,7 @@ class BufferStore implements Service {
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.STORAGE | GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
         });
 
-        this.vertexBuffers.get(geometry.id).set(slot, gpuBuffer);
+        storage.vertexBuffers.set(slot, gpuBuffer);
 
         this.device.queue.writeBuffer(gpuBuffer, 0, buf);
 
@@ -135,8 +134,12 @@ class BufferStore implements Service {
     }
 
     getIndexBuffer(geometry: BufferGeometry): GPUBuffer {
-        if (this.indexBuffers.has(geometry.id)) {
-            return this.indexBuffers.get(geometry.id);
+        let storage = this.geometryStorages.get(geometry.id);
+        if (!storage) {
+            geometry.on('destroy', evt => this.onGeometryDestroyed(evt.emitter as BufferGeometry));
+            this.geometryStorages.set(geometry.id, new GeometryStorage());
+        } else if (storage.indexBuffer) {
+            return storage.indexBuffer;
         }
 
         const gpuBuffer = this.device.createBuffer({
@@ -145,7 +148,7 @@ class BufferStore implements Service {
             usage: GPUBufferUsage.INDEX | GPUBufferUsage.STORAGE | GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
         });
 
-        this.indexBuffers.set(geometry.id, gpuBuffer);
+        storage.indexBuffer = gpuBuffer;
 
         this.device.queue.writeBuffer(gpuBuffer, 0, geometry.indexBuffer);
 

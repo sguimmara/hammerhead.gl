@@ -1,11 +1,9 @@
-import { mat4, vec3, vec4 } from "wgpu-matrix";
 import Container from "../core/Container";
 import Service from "../core/Service";
 import { BindGroups, VertexBufferSlot } from "../core/constants";
 import BufferGeometry from "../geometries/BufferGeometry";
 import Material, { RenderingMode } from "../materials/Material";
 import { UniformType, UniformInfo, AttributeInfo, AttributeType } from "../materials/ShaderLayout";
-import Mat4Uniform from "../materials/uniforms/Mat4Uniform";
 import ObjectUniform from "../materials/uniforms/ObjectUniform";
 import BufferStore from "./BufferStore";
 import TextureStore from "./TextureStore";
@@ -234,25 +232,6 @@ class PipelineManager implements Service {
         }
     }
 
-    bindVertexBufferUniforms(pipeline: GPURenderPipeline, geometry: BufferGeometry, pass: GPURenderPassEncoder) {
-        let perGeometry = this.perGeometryMap.get(geometry.id);
-        if (!perGeometry) {
-            perGeometry = new PerGeometry();
-            this.perGeometryMap.set(geometry.id, perGeometry);
-        }
-
-        // TODO finish vertex pulling
-        if (!perGeometry.vertexBufferBindGroup) {
-            const entries = this.getAttributesAsBindGroupEntries(geometry);
-            perGeometry.vertexBufferBindGroup = this.device.createBindGroup({
-                layout: pipeline.getBindGroupLayout(BindGroups.VertexBufferUniforms),
-                entries,
-            });
-        }
-
-        pass.setBindGroup(BindGroups.VertexBufferUniforms, perGeometry.vertexBufferBindGroup);
-    }
-
     bindPerMaterialUniforms(material: Material, pass: GPURenderPassEncoder) {
         const perMaterial = this.perMaterialMap.get(material.id);
 
@@ -293,6 +272,24 @@ class PipelineManager implements Service {
         }
         const format = geometry.indexBuffer instanceof Uint32Array ? "uint32" : "uint16";
         pass.setIndexBuffer(this.bufferStore.getIndexBuffer(geometry), format);
+    }
+
+    bindVertexBufferUniforms(pipeline: GPURenderPipeline, geometry: BufferGeometry, pass: GPURenderPassEncoder) {
+        let perGeometry = this.perGeometryMap.get(geometry.id);
+        if (!perGeometry) {
+            perGeometry = new PerGeometry();
+            this.perGeometryMap.set(geometry.id, perGeometry);
+        }
+
+        if (!perGeometry.vertexBufferBindGroup) {
+            const entries = this.getAttributesAsBindGroupEntries(geometry);
+            perGeometry.vertexBufferBindGroup = this.device.createBindGroup({
+                layout: pipeline.getBindGroupLayout(BindGroups.VertexBufferUniforms),
+                entries,
+            });
+        }
+
+        pass.setBindGroup(BindGroups.VertexBufferUniforms, perGeometry.vertexBufferBindGroup);
     }
 
     /**

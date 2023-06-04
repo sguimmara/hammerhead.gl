@@ -1,10 +1,10 @@
+import chroma from "chroma-js";
 import { parse } from "@loaders.gl/core";
 import * as ply from '@loaders.gl/ply';
 import Loader from "./Loader";
 import Mesh from "../objects/Mesh";
 import BufferGeometry from "../geometries/BufferGeometry";
 import BasicMaterial from "../materials/BasicMaterial";
-import chroma from "chroma-js";
 
 export default class PLYLoader implements Loader {
     zUp: boolean;

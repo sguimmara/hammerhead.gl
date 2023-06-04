@@ -133,6 +133,8 @@ function parseGroup(text: string): number {
             return BindGroups.GlobalValues;
         case "MATERIAL_UNIFORMS":
             return BindGroups.MaterialUniforms;
+        case "OBJECT_UNIFORMS":
+            return BindGroups.ObjectUniforms;
         default:
             throw new ShaderError(`invalid group: ${text}`);
     }
@@ -140,7 +142,7 @@ function parseGroup(text: string): number {
 
 function parseUniforms(shaderCode: string): UniformInfo[] {
     const bindingRegex =
-        /^\s*@group\((GLOBAL_UNIFORMS|MATERIAL_UNIFORMS)\)\s*@binding\((\d+)\)\s*var(<uniform>)?\s*(\w+)\s*:\s*(\w+)(<f32>)?\s*;\s*$/;
+        /^\s*@group\((GLOBAL_UNIFORMS|MATERIAL_UNIFORMS|OBJECT_UNIFORMS)\)\s*@binding\((\d+)\)\s*var(<uniform>)?\s*(\w+)\s*:\s*(\w+)(<f32>)?\s*;\s*$/;
     const lines = shaderCode.split("\n");
     const result = [];
     for (const line of lines) {

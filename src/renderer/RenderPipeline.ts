@@ -1,9 +1,9 @@
 import { Color } from "chroma-js";
+import { mat4 } from "wgpu-matrix";
 import Container from "../core/Container";
 import Destroy from "../core/Destroy";
 import PostProcessingMaterial from "../materials/postprocessing/PostProcessingMaterial";
 import ObjectUniform from "../materials/uniforms/ObjectUniform";
-import Mesh from "../objects/Mesh";
 import BufferStore from "./BufferStore";
 import GlobalValues from "./GlobalValues";
 import PipelineManager from "./PipelineManager";
@@ -13,7 +13,6 @@ import RenderSceneStage from "./stages/RenderSceneStage";
 import Stage from "./stages/Stage";
 import RenderCommand from "./RenderCommand";
 import Camera from "../objects/Camera";
-import { mat4 } from "wgpu-matrix";
 
 class RenderPipeline implements Destroy {
     private readonly stages: Stage[];

@@ -1,7 +1,7 @@
-import fragmentShader from './Colorimetry.wgsl';
-import vertexShader from '../screenQuad.vert.wgsl';
+import fragmentShader from "./Colorimetry.wgsl";
+import vertexShader from "../screenQuad.vert.wgsl";
 import PostProcessingMaterial from "./PostProcessingMaterial";
-import { ShaderLayout } from '../ShaderLayout';
+import { ShaderLayout } from "../ShaderLayout";
 
 const layout = ShaderLayout.parse(fragmentShader, vertexShader);
 

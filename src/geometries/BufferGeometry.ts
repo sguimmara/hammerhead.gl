@@ -4,10 +4,8 @@ import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatch
 import { VertexBufferSlot } from "../core/constants";
 import Destroy from "../core/Destroy";
 import Box3 from "../core/Box3";
-import { mat3, mat4, vec3 } from "wgpu-matrix";
 import Version from "../core/Version";
 
-// TODO implement Version
 class BufferGeometry implements Observable, Destroy, Version {
     private readonly dispatcher: EventDispatcher<BufferGeometry>;
     readonly id: number;

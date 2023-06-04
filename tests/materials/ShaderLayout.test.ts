@@ -16,7 +16,7 @@ describe('parse', () => {
             };
         `
 
-        const layout = ShaderLayout.parse(shaderCode);
+        const layout = ShaderLayout.parse('', shaderCode);
         const attributes = layout.attributes;
 
         expect(attributes.length).toEqual(4);
@@ -35,18 +35,28 @@ describe('parse', () => {
     });
 
     it('should return the correct uniforms', () => {
-        const shadercode = `
-            struct Vertex {
-                @location(0) position: vec3f,
+        const vertexShader = `
+            struct VSOutput {
+                @builtin(position) position: vec4f,
+                @location(0) texcoord: vec2f,
             };
 
-            @group(GLOBAL_UNIFORMS_BIND_GROUP) @binding(0) var colorTexture: texture_2d<f32>;
-            @group(OBJECT_UNIFORMS_BIND_GROUP) @binding(2) var colorSampler: sampler;
+            struct Vertex {
+                @location(0) position: vec3f,
+                @location(1) texcoord: vec2f,
+                @location(2) foo: vec2f,
+                @location(3) bar: vec4f,
+            };
+        `
 
-            @group(OBJECT_UNIFORMS_BIND_GROUP) @binding(1) var<uniform> color: vec4f;
+        const fragmentShader = `
+            @group(GLOBAL_UNIFORMS) @binding(0) var colorTexture: texture_2d<f32>;
+            @group(OBJECT_UNIFORMS) @binding(2) var colorSampler: sampler;
+
+            @group(OBJECT_UNIFORMS) @binding(1) var<uniform> color: vec4f;
         `;
 
-        const layout = ShaderLayout.parse(shadercode);
+        const layout = ShaderLayout.parse(fragmentShader, vertexShader);
         const uniforms = layout.uniforms;
 
         expect(uniforms.length).toEqual(2);

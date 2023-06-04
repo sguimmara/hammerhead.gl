@@ -4,7 +4,7 @@ import PostProcessingMaterial from "../materials/postprocessing/PostProcessingMa
 import Mesh from "../objects/Mesh";
 import Object3D from "../objects/Object3D";
 import RenderPipeline from "./RenderPipeline";
-import Camera from '../objects/Camera';
+import Camera from "../objects/Camera";
 import RenderCommand from "./RenderCommand";
 import Bucket from "./Bucket";
 
