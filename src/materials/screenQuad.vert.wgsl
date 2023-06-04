@@ -1,5 +1,6 @@
 #include ./chunks/constants.wgsl;
 #include ./chunks/VSOutput.wgsl;
+#include ./chunks/Vertex.wgsl;
 #include ./chunks/GlobalValues.wgsl;
 
 @vertex fn vs(

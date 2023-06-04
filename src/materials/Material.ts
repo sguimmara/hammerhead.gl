@@ -61,7 +61,7 @@ abstract class Material implements Observable, Destroy {
     readonly layout: ShaderLayout;
     readonly requiresObjectUniforms: boolean;
     readonly depthWriteEnabled: boolean = true;
-    readonly mode: RenderingMode;
+    mode: RenderingMode; // TODO readonly
 
     renderOrder: number = 0;
 

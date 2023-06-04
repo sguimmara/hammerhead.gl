@@ -1,4 +1,5 @@
 #include ./chunks/constants.wgsl;
+#include ./chunks/Vertex.wgsl;
 #include ./chunks/VSOutput.wgsl;
 #include ./chunks/GlobalValues.wgsl;
 

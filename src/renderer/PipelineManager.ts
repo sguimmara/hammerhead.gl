@@ -42,6 +42,7 @@ class PipelineManager implements Service {
     private readonly objectUniformLayout: GPUBindGroupLayout;
     private readonly textureStore: TextureStore;
     private readonly bufferStore: BufferStore;
+    private readonly vertexUniformLayout: GPUBindGroupLayout;
 
     constructor(device: GPUDevice, container: Container) {
         this.device = device;
@@ -53,16 +54,26 @@ class PipelineManager implements Service {
         this.bufferStore = container.get<BufferStore>('BufferStore');
 
         this.globalUniformLayout = device.createBindGroupLayout({
-            label: 'global uniforms BindGroupLayout',
+            label: 'global uniforms',
             entries: [
                 { binding: 0, visibility: GPUShaderStage.FRAGMENT | GPUShaderStage.VERTEX, buffer: {} },
             ]
         });
 
         this.objectUniformLayout = device.createBindGroupLayout({
-            label: 'worldMatrix BindGroupLayout',
+            label: 'worldMatrix',
             entries: [
                 { binding: 0, visibility: GPUShaderStage.VERTEX, buffer: {} }
+            ]
+        });
+
+        this.vertexUniformLayout = device.createBindGroupLayout({
+            label: 'vertex uniforms',
+            entries: [
+                { binding: 0, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: 'read-only-storage' } },
+                { binding: 1, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: 'read-only-storage' } },
+                { binding: 2, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: 'read-only-storage' } },
+                { binding: 3, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: 'read-only-storage' } },
             ]
         });
     }
@@ -292,11 +303,13 @@ class PipelineManager implements Service {
         const posBuffer = this.bufferStore.getOrCreateVertexBuffer(geometry, VertexBufferSlot.Position);
         const colBuffer = this.bufferStore.getOrCreateVertexBuffer(geometry, VertexBufferSlot.Color);
         const uvBuffer = this.bufferStore.getOrCreateVertexBuffer(geometry, VertexBufferSlot.TexCoord);
+        const indexBuffer = this.bufferStore.getIndexBuffer(geometry); // TODO
 
         return [
             { binding: VertexBufferSlot.Position, resource: { buffer: posBuffer }},
             { binding: VertexBufferSlot.TexCoord, resource: { buffer: uvBuffer }},
-            { binding: VertexBufferSlot.Color, resource: { buffer: colBuffer }}
+            { binding: VertexBufferSlot.Color, resource: { buffer: colBuffer }},
+            { binding: 3, resource: { buffer: indexBuffer }} // TODO
         ]
     }
 
@@ -332,6 +345,10 @@ class PipelineManager implements Service {
 
             if (material.requiresObjectUniforms) {
                 bindGroupLayouts.push(this.objectUniformLayout);
+            }
+
+            if (material.mode != RenderingMode.Triangles) {
+                bindGroupLayouts.push(this.vertexUniformLayout);
             }
 
             const layout = this.device.createPipelineLayout({
