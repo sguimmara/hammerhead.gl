@@ -1,11 +1,15 @@
-# wgpu-fun
+# Hammerhead.gl
 
-A WebGPU renderer implementation.
+A 3D renderer written in TypeScript and WebGPU.
 
-## ✅ Features
+<div align="center">
+    <img src="public/hammerhead.jpg">
+</div>
 
-- Strongly typed API
-- Post processing effects built-in the rendering pipeline
+## :shark: Features
+
+- :pen: Strongly typed API
+- :fireworks: Post-processing effects built-in the rendering pipeline
 
 ## 🚀 Getting started
 
