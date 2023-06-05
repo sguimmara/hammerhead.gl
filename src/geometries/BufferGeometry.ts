@@ -15,7 +15,7 @@ class BufferGeometry implements Observable, Destroy, Version {
     readonly indexBuffer: Uint16Array | Uint32Array;
     readonly vertexCount: number;
     readonly indexCount: number;
-    bounds: Box3;
+    private cachedBounds: Box3;
 
     constructor(options: {
         vertexCount: number,
@@ -55,8 +55,11 @@ class BufferGeometry implements Observable, Destroy, Version {
         this.version++;
     }
 
-    computeBounds() {
-        this.bounds = Box3.fromPoints(this.vertexBuffers.get(VertexBufferSlot.Position));
+    getBounds() {
+        if (!this.cachedBounds) {
+            this.cachedBounds = Box3.fromPoints(this.vertexBuffers.get(VertexBufferSlot.Position));
+        }
+        return this.cachedBounds;
     }
 
     on(type: string, handler: EventHandler): void {

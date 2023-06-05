@@ -2,7 +2,7 @@ import Container from "../core/Container";
 import Service from "../core/Service";
 import { BindGroups, VertexBufferSlot } from "../core/constants";
 import BufferGeometry from "../geometries/BufferGeometry";
-import Material, { RenderingMode } from "../materials/Material";
+import Material, { CullingMode, FrontFace, RenderingMode } from "../materials/Material";
 import { UniformType, UniformInfo, AttributeInfo, AttributeType } from "../materials/ShaderLayout";
 import ObjectUniform from "../materials/uniforms/ObjectUniform";
 import BufferStore from "./BufferStore";
@@ -314,6 +314,48 @@ class PipelineManager implements Service {
         ]
     }
 
+    getPrimitiveState(material: Material): GPUPrimitiveState {
+        let topology: GPUPrimitiveTopology;
+        switch (material.renderingMode) {
+            case RenderingMode.Triangles:
+            case RenderingMode.Points:
+                topology = 'triangle-list';
+                break;
+            case RenderingMode.Lines:
+                topology = 'line-list';
+                break;
+        }
+
+        let cullMode: GPUCullMode;
+        switch (material.cullingMode) {
+            case CullingMode.Front:
+                cullMode = 'front';
+                break;
+            case CullingMode.Back:
+                cullMode = 'back';
+                break;
+            case CullingMode.None:
+                cullMode = 'none';
+                break;
+        }
+
+        let frontFace: GPUFrontFace;
+        switch (material.frontFace) {
+            case FrontFace.CW:
+                frontFace = 'cw';
+                break;
+            case FrontFace.CCW:
+                frontFace = 'ccw';
+                break;
+        }
+
+        return {
+            topology,
+            frontFace,
+            cullMode,
+        }
+    }
+
     getPipeline(material: Material): GPURenderPipeline {
         let perMaterial = this.perMaterialMap.get(material.id);
         if (!perMaterial) {
@@ -348,7 +390,7 @@ class PipelineManager implements Service {
                 bindGroupLayouts.push(this.objectUniformLayout);
             }
 
-            if (material.mode != RenderingMode.Triangles) {
+            if (material.renderingMode != RenderingMode.Triangles) {
                 bindGroupLayouts.push(this.vertexUniformLayout);
             }
 
@@ -359,7 +401,7 @@ class PipelineManager implements Service {
             const attributes = material.layout.attributes;
 
             let buffers: GPUVertexBufferLayout[] = [];
-            if (material.mode === RenderingMode.Triangles) {
+            if (material.renderingMode === RenderingMode.Triangles) {
                 buffers = attributes.map(attr => this.getVertexBufferLayout(attr));
             }
 
@@ -372,11 +414,7 @@ class PipelineManager implements Service {
                     depthWriteEnabled: material.depthWriteEnabled,
                     depthCompare: "less" // TODO get from material
                 },
-                primitive: {
-                    topology: 'triangle-list', // TODO get from geometry
-                    frontFace: 'cw', // TODO get from geometry
-                    cullMode: 'back', // TODO get from geometry
-                },
+                primitive: this.getPrimitiveState(material),
                 vertex: {
                     module: perMaterial.vertexShader,
                     entryPoint: 'vs',

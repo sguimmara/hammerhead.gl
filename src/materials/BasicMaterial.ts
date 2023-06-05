@@ -2,6 +2,7 @@ import chroma, { Color } from 'chroma-js';
 import fragmentShader from './BasicMaterial.frag.wgsl';
 import triangleVertexShader from './default.vert.wgsl';
 import pointsVertexShader from './points.vert.wgsl';
+import linesVertexShader from './lines.vert.wgsl';
 import Texture from '../textures/Texture';
 import Material, { RenderingMode } from './Material';
 
@@ -14,7 +15,7 @@ function selectVertexShader(params: {
     if (mode) {
         switch (mode) {
             case RenderingMode.Lines:
-                throw new Error('not implemented');
+                return linesVertexShader;
             case RenderingMode.Points:
                 return pointsVertexShader;
         }
@@ -30,7 +31,7 @@ class BasicMaterial extends Material {
         super({
             fragmentShader,
             vertexShader: selectVertexShader(params),
-            mode: params.mode });
+            renderingMode: params.mode });
         this.withDiffuseColor(WHITE);
     }
 

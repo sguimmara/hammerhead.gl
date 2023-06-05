@@ -22,6 +22,17 @@ export enum RenderingMode {
     Points,
 }
 
+export enum CullingMode {
+    Front,
+    Back,
+    None,
+}
+
+export enum FrontFace {
+    CW,
+    CCW
+}
+
 function allocateUniform(type: UniformType) {
     switch (type) {
         case UniformType.Texture2D:
@@ -61,7 +72,9 @@ abstract class Material implements Observable, Destroy {
     readonly layout: ShaderLayout;
     readonly requiresObjectUniforms: boolean;
     readonly depthWriteEnabled: boolean = true;
-    readonly mode: RenderingMode;
+    readonly renderingMode: RenderingMode;
+    readonly cullingMode: CullingMode;
+    readonly frontFace: FrontFace;
 
     renderOrder: number = 0;
 
@@ -72,14 +85,18 @@ abstract class Material implements Observable, Destroy {
         fragmentShader: string;
         vertexShader: string;
         requiresObjectUniforms?: boolean,
-        mode?: RenderingMode,
+        renderingMode?: RenderingMode,
+        cullingMode?: CullingMode,
+        frontFace?: FrontFace,
     }) {
         this.id = MATERIAL_ID++;
         this.requiresObjectUniforms = options.requiresObjectUniforms ?? true;
         this.fragmentShader = options.fragmentShader;
         this.vertexShader = options.vertexShader;
+        this.cullingMode = options.cullingMode ?? CullingMode.Back;
+        this.frontFace = options.frontFace ?? FrontFace.CW;
         this.layout = ShaderLayout.parse(this.fragmentShader, this.vertexShader);
-        this.mode = options.mode ?? RenderingMode.Triangles;
+        this.renderingMode = options.renderingMode ?? RenderingMode.Triangles;
         this.dispatcher = new EventDispatcher<Material>(this);
         this.uniforms = allocateUniforms(this.layout.uniforms);
     }

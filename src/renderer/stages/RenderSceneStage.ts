@@ -40,7 +40,7 @@ class RenderSceneStage extends Stage {
         this.pipelineManager.bindPerMaterialUniforms(material, pass);
         this.pipelineManager.bindPerObjectUniforms(pass, mesh);
 
-        if (material.mode === RenderingMode.Triangles) {
+        if (material.renderingMode === RenderingMode.Triangles) {
             if (this.currentGeometry == null || this.currentGeometry != geometry) {
                 this.currentGeometry = geometry;
                 this.pipelineManager.bindVertexBuffers(geometry, pass);
@@ -49,7 +49,7 @@ class RenderSceneStage extends Stage {
             pass.drawIndexed(geometry.indexCount);
         } else {
             this.pipelineManager.bindVertexBufferUniforms(this.currentPipeline, geometry, pass);
-            const vertexCount = geometry.vertexCount / 3;
+            const vertexCount = geometry.vertexCount;
             pass.draw(6 * vertexCount); // TODO handle line rendering
         }
     }

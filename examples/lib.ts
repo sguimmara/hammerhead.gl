@@ -24,8 +24,9 @@ export function bindToggle(elementId: string, fn: Function) {
 
 export function frameObject(obj: Mesh, camera: Camera) {
     const geometry = obj.geometry;
-    const [x, y, z] = geometry.bounds.center;
-    const [mx, my, mz] = geometry.bounds.max;
+    const bounds = geometry.getBounds();
+    const [x, y, z] = bounds.center;
+    const [mx, my, mz] = bounds.max;
     camera.setPosition(mx * 2.5, my * 2.5, mz * 2.5);
     camera.lookAt(x, y, z);
 }
@@ -45,7 +46,7 @@ export async function loadPLYModel(uri: string): Promise<BufferGeometry> {
         vertices,
     });
 
-    geometry.computeBounds();
+    geometry.getBounds();
     geometry.setColors(chroma('white'));
     geometry.setTexCoords();
 
