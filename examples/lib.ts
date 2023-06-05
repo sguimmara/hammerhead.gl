@@ -4,6 +4,9 @@ import Texture from "../src/textures/Texture";
 
 import { parse } from "@loaders.gl/core";
 import * as ply from '@loaders.gl/ply';
+import Object3D from '../src/objects/Object3D';
+import Mesh from "../src/objects/Mesh";
+import Camera from "../src/objects/Camera";
 
 export function bindSlider(elementId: string, fn: Function) {
     const slider = document.getElementById(elementId) as HTMLInputElement;
@@ -17,6 +20,14 @@ export function bindToggle(elementId: string, fn: Function) {
     if (toggle) {
         toggle.oninput = () => fn(toggle.checked);
     }
+}
+
+export function frameObject(obj: Mesh, camera: Camera) {
+    const geometry = obj.geometry;
+    const [x, y, z] = geometry.bounds.center;
+    const [mx, my, mz] = geometry.bounds.max;
+    camera.setPosition(mx * 2.5, my * 2.5, mz * 2.5);
+    camera.lookAt(x, y, z);
 }
 
 export async function loadPLYModel(uri: string): Promise<BufferGeometry> {

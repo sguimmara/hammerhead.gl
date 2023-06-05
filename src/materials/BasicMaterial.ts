@@ -1,17 +1,36 @@
 import chroma, { Color } from 'chroma-js';
 import fragmentShader from './BasicMaterial.frag.wgsl';
-import vertexShader from './default.vert.wgsl';
+import triangleVertexShader from './default.vert.wgsl';
+import pointsVertexShader from './points.vert.wgsl';
 import Texture from '../textures/Texture';
-import { ShaderLayout } from './ShaderLayout';
-import Material from './Material';
+import Material, { RenderingMode } from './Material';
 
 const WHITE = chroma('white');
 
-const layout = ShaderLayout.parse(fragmentShader, vertexShader);
+function selectVertexShader(params: {
+    mode?: RenderingMode
+}): string {
+    const { mode } = params;
+    if (mode) {
+        switch (mode) {
+            case RenderingMode.Lines:
+                throw new Error('not implemented');
+            case RenderingMode.Points:
+                return pointsVertexShader;
+        }
+    }
+
+    return triangleVertexShader;
+}
 
 class BasicMaterial extends Material {
-    constructor() {
-        super({ fragmentShader, vertexShader, layout });
+    constructor(params: {
+        mode?: RenderingMode
+    } = {}) {
+        super({
+            fragmentShader,
+            vertexShader: selectVertexShader(params),
+            mode: params.mode });
         this.withDiffuseColor(WHITE);
     }
 

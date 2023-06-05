@@ -3,8 +3,9 @@ import { deg2rad } from "../../../src/core/MathUtils";
 import Camera from "../../../src/objects/Camera";
 import BasicMaterial from "../../../src/materials/BasicMaterial";
 import chroma from "chroma-js";
-import { loadPLYModel } from "../../lib";
+import { frameObject, loadPLYModel } from "../../lib";
 import Mesh from "../../../src/objects/Mesh";
+import { RenderingMode } from "../../../src/materials/Material";
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -13,15 +14,11 @@ async function main() {
     const renderer = context.renderer;
 
     const geometry = await loadPLYModel('/files/hammerhead.ply');
-    const material = new BasicMaterial().withDiffuseColor(chroma('cyan'));
-
-    const camera = new Camera('perspective');
-    const [x, y, z] = geometry.bounds.center;
-    const [mx, my, mz] = geometry.bounds.max;
-    camera.setPosition(mx * 2.5, my * 2.5, mz * 2.5);
-    camera.lookAt(x, y, z);
+    const material = new BasicMaterial({ mode: RenderingMode.Points }).withDiffuseColor(chroma('cyan'));
 
     const mesh = new Mesh({ geometry, material });
+    const camera = new Camera('perspective');
+    frameObject(mesh, camera);
 
     function render() {
         renderer.render(mesh, camera);

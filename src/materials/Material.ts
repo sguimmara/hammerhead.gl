@@ -61,7 +61,7 @@ abstract class Material implements Observable, Destroy {
     readonly layout: ShaderLayout;
     readonly requiresObjectUniforms: boolean;
     readonly depthWriteEnabled: boolean = true;
-    mode: RenderingMode; // TODO readonly
+    readonly mode: RenderingMode;
 
     renderOrder: number = 0;
 
@@ -71,7 +71,6 @@ abstract class Material implements Observable, Destroy {
     constructor(options: {
         fragmentShader: string;
         vertexShader: string;
-        layout: ShaderLayout;
         requiresObjectUniforms?: boolean,
         mode?: RenderingMode,
     }) {
@@ -79,7 +78,7 @@ abstract class Material implements Observable, Destroy {
         this.requiresObjectUniforms = options.requiresObjectUniforms ?? true;
         this.fragmentShader = options.fragmentShader;
         this.vertexShader = options.vertexShader;
-        this.layout = options.layout;
+        this.layout = ShaderLayout.parse(this.fragmentShader, this.vertexShader);
         this.mode = options.mode ?? RenderingMode.Triangles;
         this.dispatcher = new EventDispatcher<Material>(this);
         this.uniforms = allocateUniforms(this.layout.uniforms);
