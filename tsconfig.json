@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
-    "lib": ["ES2020", "DOM"],
-    "target": "ES2017",
-    "module": "ES2020",
+    "outDir": "dist",
+    "lib": ["ES2022", "DOM"],
+    "target": "ES2022",
+    "module": "ES2022",
     "moduleResolution": "node",
-    "noEmit": true,
+    "noEmit": false,
     "esModuleInterop": true,
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
-    "outDir": "dist",
     "sourceMap": true,
     "typeRoots": [ "./node_modules/@webgpu/types", "./node_modules/@types"]
   },

@@ -1,4 +1,9 @@
+import chroma from "chroma-js";
+import BufferGeometry from "../src/geometries/BufferGeometry";
 import Texture from "../src/textures/Texture";
+
+import { parse } from "@loaders.gl/core";
+import * as ply from '@loaders.gl/ply';
 
 export function bindSlider(elementId: string, fn: Function) {
     const slider = document.getElementById(elementId) as HTMLInputElement;
@@ -12,6 +17,28 @@ export function bindToggle(elementId: string, fn: Function) {
     if (toggle) {
         toggle.oninput = () => fn(toggle.checked);
     }
+}
+
+export async function loadPLYModel(uri: string): Promise<BufferGeometry> {
+    const res = await fetch(uri);
+    const text = await res.text();
+    const data = await parse(text, ply.PLYLoader);
+
+    const vertices = data.attributes.POSITION.value as Float32Array;
+    const indices = data.indices.value as Uint32Array;
+
+    const geometry = new BufferGeometry({
+        vertexCount: vertices.length,
+        indexCount: indices.length,
+        indexBuffer: indices,
+        vertices,
+    });
+
+    geometry.computeBounds();
+    geometry.setColors(chroma('white'));
+    geometry.setTexCoords();
+
+    return geometry;
 }
 
 export function load8bitImage(img: HTMLImageElement, url: string): Promise<Texture> {
