@@ -1,8 +1,8 @@
 {
-  "name": "wgpu-exercises",
+  "name": "hammerhead.gl",
   "version": "0.0.1",
   "type": "module",
-  "description": "A simple WebGPU exercise",
+  "description": "A 3D renderer written in TypeScript and WebGPU.",
   "main": "index.js",
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
