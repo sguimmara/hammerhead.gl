@@ -13,8 +13,8 @@ export default class Camera {
     viewMatrix: Mat4 = mat4.identity();
     projectionMatrix: Mat4;
     fieldOfView: number = DEFAULT_FOV;
-    nearPlane: number = 0.001;
-    farPlane: number = 100000;
+    nearPlane: number = 0.1 ;
+    farPlane: number = 1000;
 
     constructor(mode : CameraMode) {
         this.mode = mode;

@@ -5,23 +5,31 @@ import BasicMaterial from "../../../src/materials/BasicMaterial";
 import chroma from "chroma-js";
 import { frameObject, loadPLYModel } from "../../lib";
 import Mesh from "../../../src/objects/Mesh";
-import { RenderingMode } from "../../../src/materials/Material";
+import { CullingMode, FrontFace, RenderingMode } from "../../../src/materials/Material";
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
 async function main() {
     const context = await Context.create(canvas);
     const renderer = context.renderer;
+    renderer.clearColor = chroma('gray');
 
     const geometry = await loadPLYModel('/files/hammerhead.ply');
-    const material = new BasicMaterial({ renderingMode: RenderingMode.Points }).withDiffuseColor(chroma('cyan'));
+    const solid = new BasicMaterial({
+        renderingMode: RenderingMode.Triangles,
+        frontFace: FrontFace.CW,
+        cullingMode: CullingMode.Front,
+    }).withDiffuseColor(chroma('cyan'));
+    const wireframe = new BasicMaterial({ renderingMode: RenderingMode.Lines }).withDiffuseColor(chroma('black'));
 
-    const mesh = new Mesh({ geometry, material });
+    const solidMesh = new Mesh({ geometry, material: solid});
+    const wireframeMesh = new Mesh({ geometry, material: wireframe});
+    solidMesh.add(wireframeMesh);
     const camera = new Camera('perspective');
-    frameObject(mesh, camera);
+    frameObject(solidMesh, camera);
 
     function render() {
-        renderer.render(mesh, camera);
+        renderer.render(solidMesh, camera);
     }
 
     let now = performance.now();
@@ -32,7 +40,7 @@ async function main() {
         const dt = (current - now) / 1000;
         const degrees = 40 * dt;
         now = current;
-        mesh.transform.rotateY(deg2rad(degrees));
+        solidMesh.transform.rotateY(deg2rad(degrees));
         requestAnimationFrame(renderLoop);
     }
 

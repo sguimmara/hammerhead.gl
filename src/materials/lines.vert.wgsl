@@ -24,7 +24,11 @@
     var m = modelMatrix;
     var v = globals.viewMatrix;
     var p = globals.projectionMatrix;
-    var projected = p * v * m * position;
+    var viewPosition = v * m * position;
+    // To avoid z-fighting with solid meshes
+    // TODO can we do better ?
+    viewPosition.w += 0.002;
+    var projected = p * viewPosition;
 
     var color = vec4<f32>(
         colors[3 * elementIndex + 0],

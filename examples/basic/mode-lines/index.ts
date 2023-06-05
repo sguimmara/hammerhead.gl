@@ -14,7 +14,7 @@ async function main() {
     const renderer = context.renderer;
 
     const geometry = await loadPLYModel('/files/hammerhead.ply');
-    const material = new BasicMaterial({ mode: RenderingMode.Lines }).withDiffuseColor(chroma('cyan'));
+    const material = new BasicMaterial({ renderingMode: RenderingMode.Lines }).withDiffuseColor(chroma('cyan'));
 
     const mesh = new Mesh({ geometry, material });
     const camera = new Camera('perspective');

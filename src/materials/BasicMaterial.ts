@@ -4,16 +4,16 @@ import triangleVertexShader from './default.vert.wgsl';
 import pointsVertexShader from './points.vert.wgsl';
 import linesVertexShader from './lines.vert.wgsl';
 import Texture from '../textures/Texture';
-import Material, { RenderingMode } from './Material';
+import Material, { CullingMode, FrontFace, RenderingMode } from './Material';
 
 const WHITE = chroma('white');
 
 function selectVertexShader(params: {
-    mode?: RenderingMode
+    renderingMode?: RenderingMode
 }): string {
-    const { mode } = params;
-    if (mode) {
-        switch (mode) {
+    const { renderingMode } = params;
+    if (renderingMode) {
+        switch (renderingMode) {
             case RenderingMode.Lines:
                 return linesVertexShader;
             case RenderingMode.Points:
@@ -26,12 +26,14 @@ function selectVertexShader(params: {
 
 class BasicMaterial extends Material {
     constructor(params: {
-        mode?: RenderingMode
+        renderingMode?: RenderingMode,
+        cullingMode?: CullingMode,
+        frontFace?: FrontFace,
     } = {}) {
         super({
             fragmentShader,
             vertexShader: selectVertexShader(params),
-            renderingMode: params.mode });
+            ...params });
         this.withDiffuseColor(WHITE);
     }
 
