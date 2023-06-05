@@ -34,6 +34,7 @@ class PipelineManager implements Service {
     private readonly device: GPUDevice;
     private readonly layouts: Map<string, GPUBindGroupLayout>;
     private readonly perObjectMap: Map<number, PerObject>;
+    private readonly shaderModules: Map<string, GPUShaderModule>;
     private readonly perMaterialMap: Map<number, PerMaterial>;
     private readonly perGeometryMap: Map<number, PerGeometry>;
     private readonly globalUniformLayout: GPUBindGroupLayout;
@@ -48,6 +49,7 @@ class PipelineManager implements Service {
         this.perObjectMap = new Map();
         this.perMaterialMap = new Map();
         this.perGeometryMap = new Map();
+        this.shaderModules = new Map();
         this.textureStore = container.get<TextureStore>('TextureStore');
         this.bufferStore = container.get<BufferStore>('BufferStore');
 
@@ -91,11 +93,13 @@ class PipelineManager implements Service {
         this.perObjectMap.clear();
     }
 
-    private createShaderModule(id: number, code: string) {
-        return this.device.createShaderModule({
-            label: `${id}`,
-            code,
-        });
+    private createShaderModule(code: string) {
+        let shaderModule = this.shaderModules.get(code);
+        if (!shaderModule) {
+            shaderModule = this.device.createShaderModule({ code });
+            this.shaderModules.set(code, shaderModule);
+        }
+        return shaderModule;
     }
 
     private onMeshDestroyed(mesh: Mesh) {
@@ -315,8 +319,8 @@ class PipelineManager implements Service {
         if (!perMaterial) {
             perMaterial = new PerMaterial();
             perMaterial.material = material;
-            perMaterial.vertexShader = this.createShaderModule(material.id, material.vertexShader);
-            perMaterial.fragmentShader = this.createShaderModule(material.id, material.fragmentShader);
+            perMaterial.vertexShader = this.createShaderModule(material.vertexShader);
+            perMaterial.fragmentShader = this.createShaderModule(material.fragmentShader);
 
             // TODO get blending mode from material.
             const colorTarget: GPUColorTargetState = {
