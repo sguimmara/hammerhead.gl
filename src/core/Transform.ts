@@ -71,6 +71,30 @@ export default class Transform implements Version, Sized, Visitable {
         this.localMatrixNeedsUpdate = true;
     }
 
+    translateX(offset: number) {
+        if (offset != 0) {
+            this.position[0] += offset;
+            this.incrementVersion();
+            this.localMatrixNeedsUpdate = true;
+        }
+    }
+
+    translateY(offset: number) {
+        if (offset != 0) {
+            this.position[1] += offset;
+            this.incrementVersion();
+            this.localMatrixNeedsUpdate = true;
+        }
+    }
+
+    translateZ(offset: number) {
+        if (offset != 0) {
+            this.position[2] += offset;
+            this.incrementVersion();
+            this.localMatrixNeedsUpdate = true;
+        }
+    }
+
     rotateX(radians: number) {
         if (radians != 0) {
             this.rotation[0] += radians;
