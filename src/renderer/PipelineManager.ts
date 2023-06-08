@@ -330,7 +330,8 @@ class PipelineManager implements Service {
             case RenderingMode.Points:
                 topology = 'triangle-list';
                 break;
-            case RenderingMode.Lines:
+            case RenderingMode.TriangleLines:
+            case RenderingMode.LineList:
                 topology = 'line-list';
                 break;
         }

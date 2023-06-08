@@ -18,8 +18,9 @@ let MATERIAL_ID = 0;
 
 export enum RenderingMode {
     Triangles,
-    Lines,
+    TriangleLines,
     Points,
+    LineList,
 }
 
 export enum CullingMode {

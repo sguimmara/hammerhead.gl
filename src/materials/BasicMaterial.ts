@@ -1,8 +1,9 @@
 import chroma, { Color } from 'chroma-js';
 import fragmentShader from './BasicMaterial.frag.wgsl';
 import triangleVertexShader from './default.vert.wgsl';
+import lineListVertexShader from './line-list.vert.wgsl';
 import pointsVertexShader from './points.vert.wgsl';
-import linesVertexShader from './lines.vert.wgsl';
+import wireframeVertexShader from './wireframe.vert.wgsl';
 import Texture from '../textures/Texture';
 import Material, { CullingMode, FrontFace, RenderingMode } from './Material';
 
@@ -14,8 +15,10 @@ function selectVertexShader(params: {
     const { renderingMode } = params;
     if (renderingMode) {
         switch (renderingMode) {
-            case RenderingMode.Lines:
-                return linesVertexShader;
+            case RenderingMode.TriangleLines:
+                return wireframeVertexShader;
+            case RenderingMode.LineList:
+                return lineListVertexShader;
             case RenderingMode.Points:
                 return pointsVertexShader;
         }

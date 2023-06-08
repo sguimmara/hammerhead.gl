@@ -18,7 +18,7 @@ async function main() {
     renderer.clearColor = chroma('gray');
 
     const wireframe = new BasicMaterial({
-        renderingMode: RenderingMode.Lines,
+        renderingMode: RenderingMode.TriangleLines,
     }).withDiffuseColor(chroma('black'));
 
     const geometry = await loadPLYModel('/files/hammerhead.ply');
@@ -37,7 +37,7 @@ async function main() {
 
         const wireframeMesh = new Mesh({
             material: new BasicMaterial({
-                renderingMode: RenderingMode.Lines,
+                renderingMode: RenderingMode.TriangleLines,
             }).withDiffuseColor(chroma.mix(chroma('black'), color, 0.2)),
             geometry
         });

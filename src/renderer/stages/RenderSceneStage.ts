@@ -50,10 +50,15 @@ class RenderSceneStage extends Stage {
                 pass.drawIndexed(geometry.indexCount);
             }
             break;
-            case RenderingMode.Lines: {
+            case RenderingMode.TriangleLines: {
                 this.pipelineManager.bindVertexBufferUniforms(this.currentPipeline, geometry, pass);
                 const triangleCount = geometry.indexBuffer.value.length / 3;
                 pass.draw(6 * triangleCount, 1, 0, 0);
+            }
+            case RenderingMode.LineList: {
+                this.pipelineManager.bindVertexBufferUniforms(this.currentPipeline, geometry, pass);
+                const lineCount = geometry.indexBuffer.value.length / 2;
+                pass.draw(6 * lineCount, 1, 0, 0);
             }
             break;
             case RenderingMode.Points: {

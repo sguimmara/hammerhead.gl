@@ -20,7 +20,7 @@ async function main() {
         frontFace: FrontFace.CW,
         cullingMode: CullingMode.Front,
     }).withDiffuseColor(chroma('cyan'));
-    const wireframe = new BasicMaterial({ renderingMode: RenderingMode.Lines }).withDiffuseColor(chroma('black'));
+    const wireframe = new BasicMaterial({ renderingMode: RenderingMode.TriangleLines }).withDiffuseColor(chroma('black'));
 
     const solidMesh = new Mesh({ geometry, material: solid});
     const wireframeMesh = new Mesh({ geometry, material: wireframe});

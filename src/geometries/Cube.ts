@@ -1,7 +1,7 @@
 import chroma from "chroma-js";
 import BufferGeometry from "./BufferGeometry";
 
-export default class Box extends BufferGeometry {
+export default class Cube extends BufferGeometry {
     constructor() {
         super({ vertexCount: 8, indexCount: 36 });
 
