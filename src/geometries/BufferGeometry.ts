@@ -4,15 +4,17 @@ import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatch
 import { VertexBufferSlot } from "../core/constants";
 import Destroy from "../core/Destroy";
 import Box3 from "../core/Box3";
-import Version from "../core/Version";
+import { Versioned } from "../core/Version";
+import Clone from "../core/Clone";
 
-class BufferGeometry implements Observable, Destroy, Version {
+class BufferGeometry implements Observable, Destroy, Clone {
     private readonly dispatcher: EventDispatcher<BufferGeometry>;
     readonly id: number;
 
-    private version: number;
-    readonly vertexBuffers: Map<VertexBufferSlot, Float32Array>;
-    readonly indexBuffer: Uint16Array | Uint32Array;
+    readonly vertexBuffers: Map<VertexBufferSlot, Versioned<Float32Array>>;
+    // Note the absence of Uin16Array: this cannot be used with
+    // the vertex pulling technique in vertex shaders
+    readonly indexBuffer: Versioned<Uint32Array>;
     readonly vertexCount: number;
     readonly indexCount: number;
     private cachedBounds: Box3;
@@ -20,7 +22,7 @@ class BufferGeometry implements Observable, Destroy, Version {
     constructor(options: {
         vertexCount: number,
         indexCount: number,
-        indexBuffer?: Uint32Array | Uint16Array,
+        indexBuffer?: Uint32Array,
         vertices?: Float32Array,
         texcoordBuffer?: Float32Array,
         colorBuffer?: Float32Array,
@@ -29,17 +31,16 @@ class BufferGeometry implements Observable, Destroy, Version {
         this.vertexBuffers = new Map();
         this.vertexBuffers.set(
             VertexBufferSlot.Position,
-            options.vertices ?? new Float32Array(options.vertexCount * 3));
-        this.indexBuffer = options.indexBuffer ??
-            (options.indexCount > 65536
-                ? new Uint32Array(options.indexCount)
-                : new Uint16Array(options.indexCount));
+            options.vertices ? new Versioned(options.vertices) : new Versioned(new Float32Array(options.vertexCount * 3)));
+        this.indexBuffer = new Versioned(options.indexBuffer ?? new Uint32Array(options.indexCount));
         if (options.texcoordBuffer) {
-            this.setTexCoords(options.texcoordBuffer);
+            if (!this.vertexBuffers.has(VertexBufferSlot.TexCoord)) {
+                this.vertexBuffers.set(VertexBufferSlot.TexCoord,  new Versioned(options.texcoordBuffer));
+            }
         }
         if (options.colorBuffer) {
             if (!this.vertexBuffers.has(VertexBufferSlot.Color)) {
-                this.vertexBuffers.set(VertexBufferSlot.Color, options.colorBuffer);
+                this.vertexBuffers.set(VertexBufferSlot.Color, new Versioned<Float32Array>(options.colorBuffer));
             }
         }
         this.vertexCount = options.vertexCount;
@@ -47,17 +48,20 @@ class BufferGeometry implements Observable, Destroy, Version {
         this.dispatcher = new EventDispatcher<BufferGeometry>(this);
     }
 
-    getVersion(): number {
-        return this.version;
-    }
-
-    incrementVersion(): void {
-        this.version++;
+    clone(): BufferGeometry {
+        return new BufferGeometry({
+            vertexCount: this.vertexCount,
+            indexCount: this.indexCount,
+            vertices: this.getVertexBuffer(VertexBufferSlot.Position)?.value,
+            colorBuffer: this.getVertexBuffer(VertexBufferSlot.Color)?.value,
+            texcoordBuffer: this.getVertexBuffer(VertexBufferSlot.TexCoord)?.value,
+            indexBuffer: this.indexBuffer.value,
+        });
     }
 
     getBounds() {
         if (!this.cachedBounds) {
-            this.cachedBounds = Box3.fromPoints(this.vertexBuffers.get(VertexBufferSlot.Position));
+            this.cachedBounds = Box3.fromPoints(this.vertexBuffers.get(VertexBufferSlot.Position).value);
         }
         return this.cachedBounds;
     }
@@ -70,47 +74,50 @@ class BufferGeometry implements Observable, Destroy, Version {
         this.dispatcher.dispatch('destroy');
     }
 
-    getVertexBuffer(slot: VertexBufferSlot): Float32Array | null {
+    getVertexBuffer(slot: VertexBufferSlot): Versioned<Float32Array> | null {
         return this.vertexBuffers.get(slot);
     }
 
     setVertices(positions: ArrayLike<number>) {
-        this.vertexBuffers.get(VertexBufferSlot.Position).set(positions, 0);
-        this.incrementVersion();
+        const vbuf = this.vertexBuffers.get(VertexBufferSlot.Position);
+        vbuf.value.set(positions, 0);
+        vbuf.incrementVersion();
     }
 
     setColors(colors?: Color[] | Color) {
         if (!this.vertexBuffers.has(VertexBufferSlot.Color)) {
-            this.vertexBuffers.set(VertexBufferSlot.Color, new Float32Array(this.vertexCount * 4));
+            this.vertexBuffers.set(VertexBufferSlot.Color, new Versioned(new Float32Array(this.vertexCount * 4)));
         }
 
+        const item = this.vertexBuffers.get(VertexBufferSlot.Color);
         if (Array.isArray(colors)) {
             const values = colors.flatMap(c => c.gl());
-            this.vertexBuffers.get(VertexBufferSlot.Color).set(values);
+            item.value.set(values);
         } else if (colors) {
             const gl = colors.gl();
-            const buf = this.vertexBuffers.get(VertexBufferSlot.Color);
+            const buf = item.value;
             for (let i = 0; i < this.vertexCount; i++) {
                 buf.set(gl, i * 4);
             }
         }
-        this.incrementVersion();
+        item.incrementVersion();
     }
 
     setTexCoords(coords?: ArrayLike<number>) {
         if (!this.vertexBuffers.has(VertexBufferSlot.TexCoord)) {
-            this.vertexBuffers.set(VertexBufferSlot.TexCoord, new Float32Array(this.vertexCount * 2));
+            this.vertexBuffers.set(VertexBufferSlot.TexCoord,  new Versioned(new Float32Array(this.vertexCount * 2)));
         }
 
         if (coords) {
-            this.vertexBuffers.get(VertexBufferSlot.TexCoord).set(coords, 0);
+            const item = this.vertexBuffers.get(VertexBufferSlot.TexCoord);
+            item.value.set(coords, 0);
+            item.incrementVersion();
         }
-        this.incrementVersion();
     }
 
     setIndices(indices: ArrayLike<number>) {
-        this.indexBuffer.set(indices, 0);
-        this.incrementVersion();
+        this.indexBuffer.value.set(indices, 0);
+        this.indexBuffer.incrementVersion();
     }
 }
 

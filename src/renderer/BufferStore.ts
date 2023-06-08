@@ -8,16 +8,35 @@ import BufferWriter from "./BufferWriter";
 class GeometryStorage implements Destroy {
     currentVersion: number;
     currentVertexCount: number;
-    indexBuffer: GPUBuffer;
-    vertexBuffers: Map<number, GPUBuffer>;
+    source: BufferGeometry;
+    indexBuffer: { version: number, buffer: GPUBuffer };
+    vertexBuffers: Map<number, { version: number, buffer: GPUBuffer }>;
+    private readonly device: GPUDevice;
 
-    constructor() {
+    constructor(source: BufferGeometry, device: GPUDevice) {
+        this.device = device;
+        this.source = source;
         this.vertexBuffers = new Map();
     }
 
     destroy(): void {
-        this.indexBuffer?.destroy();
-        this.vertexBuffers?.forEach(b => b.destroy());
+        this.indexBuffer?.buffer.destroy();
+        this.vertexBuffers?.forEach(item => item.buffer.destroy());
+    }
+
+    update() {
+        if (this.indexBuffer.version != this.source.indexBuffer.getVersion()) {
+            this.device.queue.writeBuffer(this.indexBuffer.buffer, 0, this.source.indexBuffer.value);
+            this.indexBuffer.version = this.source.indexBuffer.getVersion();
+        }
+
+        this.vertexBuffers.forEach((value, k) => {
+            const source = this.source.getVertexBuffer(k);
+            if (source.getVersion() != value.version) {
+                this.device.queue.writeBuffer(value.buffer, 0, source.value);
+                value.version = source.getVersion();
+            }
+        });
     }
 
     getBufferCount() {
@@ -109,26 +128,25 @@ class BufferStore implements Service {
     getOrCreateVertexBuffer(geometry: BufferGeometry, slot: number): GPUBuffer {
         let storage = this.geometryStorages.get(geometry.id);
         if (!storage) {
-            storage = new GeometryStorage();
+            storage = new GeometryStorage(geometry, this.device);
             geometry.on('destroy', evt => this.onGeometryDestroyed(evt.emitter as BufferGeometry));
             this.geometryStorages.set(geometry.id, storage);
         } else if (storage.vertexBuffers.has(slot)) {
-            return storage.vertexBuffers.get(slot);
+            storage.update();
+            return storage.vertexBuffers.get(slot).buffer;
         }
-
-        // TODO handle version change of geometry
 
         const buf = geometry.getVertexBuffer(slot);
 
         const gpuBuffer = this.device.createBuffer({
             label: `BufferGeometry ${geometry.id} @${VertexBufferSlot[slot]}`,
-            size: buf.byteLength,
+            size: buf.value.byteLength,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.STORAGE | GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
         });
 
-        storage.vertexBuffers.set(slot, gpuBuffer);
+        storage.vertexBuffers.set(slot, { version: buf.getVersion(), buffer: gpuBuffer });
 
-        this.device.queue.writeBuffer(gpuBuffer, 0, buf);
+        this.device.queue.writeBuffer(gpuBuffer, 0, buf.value);
 
         return gpuBuffer;
     }
@@ -137,21 +155,20 @@ class BufferStore implements Service {
         let storage = this.geometryStorages.get(geometry.id);
         if (!storage) {
             geometry.on('destroy', evt => this.onGeometryDestroyed(evt.emitter as BufferGeometry));
-            this.geometryStorages.set(geometry.id, new GeometryStorage());
+            this.geometryStorages.set(geometry.id, new GeometryStorage(geometry, this.device));
         } else if (storage.indexBuffer) {
-            return storage.indexBuffer;
+            storage.update();
+            return storage.indexBuffer.buffer;
         }
 
         const gpuBuffer = this.device.createBuffer({
             label: `BufferGeometry ${geometry.id} @Index`,
-            size: geometry.indexBuffer.byteLength,
+            size: geometry.indexBuffer.value.byteLength,
             usage: GPUBufferUsage.INDEX | GPUBufferUsage.STORAGE | GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
         });
 
-        storage.indexBuffer = gpuBuffer;
-
-        this.device.queue.writeBuffer(gpuBuffer, 0, geometry.indexBuffer);
-
+        storage.indexBuffer = { buffer: gpuBuffer, version: -1 };
+        storage.update();
         return gpuBuffer;
     }
 }

@@ -274,8 +274,7 @@ class PipelineManager implements Service {
             const gpuBuffer = this.bufferStore.getOrCreateVertexBuffer(geometry, key);
             pass.setVertexBuffer(key, gpuBuffer);
         }
-        const format = geometry.indexBuffer instanceof Uint32Array ? "uint32" : "uint16";
-        pass.setIndexBuffer(this.bufferStore.getIndexBuffer(geometry), format);
+        pass.setIndexBuffer(this.bufferStore.getIndexBuffer(geometry), "uint32");
     }
 
     bindVertexBufferUniforms(pipeline: GPURenderPipeline, geometry: BufferGeometry, pass: GPURenderPassEncoder) {
