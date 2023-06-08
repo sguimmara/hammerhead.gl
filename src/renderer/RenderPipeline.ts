@@ -96,7 +96,7 @@ class RenderPipeline implements Destroy {
         this.globalValues.screenSize[0] = target.width;
         this.globalValues.screenSize[1] = target.height;
 
-        this.globalValues.viewMatrix = mat4.inverse(camera.viewMatrix);
+        this.globalValues.viewMatrix = camera.getViewMatrix();
 
         const aspect = target.width / target.height;
         this.globalValues.projectionMatrix = camera.updateProjectionMatrix(aspect);
