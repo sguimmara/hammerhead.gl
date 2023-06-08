@@ -93,10 +93,20 @@ class PipelineManager implements Service {
         this.perObjectMap.clear();
     }
 
+    private preprocessShader(shaderCode: string) : string {
+        // Linux implementation refuses constants as group numbers
+        // and require literals.
+        return shaderCode
+            .replaceAll('GLOBAL_UNIFORMS',  BindGroups.GlobalValues.toString())
+            .replaceAll('MATERIAL_UNIFORMS', BindGroups.MaterialUniforms.toString())
+            .replaceAll('OBJECT_UNIFORMS', BindGroups.ObjectUniforms.toString())
+            .replaceAll('VERTEX_UNIFORMS', BindGroups.VertexBufferUniforms.toString());
+    }
+
     private createShaderModule(code: string) {
         let shaderModule = this.shaderModules.get(code);
         if (!shaderModule) {
-            shaderModule = this.device.createShaderModule({ code });
+            shaderModule = this.device.createShaderModule({ code: this.preprocessShader(code) });
             this.shaderModules.set(code, shaderModule);
         }
         return shaderModule;
