@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "lint": "tsc --noEmit",
     "build": "tsc",
     "start": "vite"
   },

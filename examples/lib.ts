@@ -7,6 +7,7 @@ import * as ply from '@loaders.gl/ply';
 import Object3D from '../src/objects/Object3D';
 import Mesh from "../src/objects/Mesh";
 import Camera from "../src/objects/Camera";
+import Box3 from "../src/core/Box3";
 
 export function bindSlider(elementId: string, fn: Function) {
     const slider = document.getElementById(elementId) as HTMLInputElement;
@@ -22,13 +23,23 @@ export function bindToggle(elementId: string, fn: Function) {
     }
 }
 
+export async function wait(ms: number) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+}
+
+export function frameBounds(bounds: Box3, camera: Camera) {
+    const [x, y, z] = bounds.center;
+    const [mx, my, mz] = bounds.max;
+    camera.transform.setPosition(mx * 3, my * 3, mz * 3);
+    camera.transform.lookAt(x, y, z);
+}
+
 export function frameObject(obj: Mesh, camera: Camera) {
     const geometry = obj.geometry;
     const bounds = geometry.getBounds();
-    const [x, y, z] = bounds.center;
-    const [mx, my, mz] = bounds.max;
-    camera.setPosition(mx * 2.5, my * 2.5, mz * 2.5);
-    camera.lookAt(x, y, z);
+    frameBounds(bounds, camera);
 }
 
 export async function loadPLYModel(uri: string): Promise<BufferGeometry> {

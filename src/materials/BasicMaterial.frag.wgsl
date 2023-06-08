@@ -8,5 +8,7 @@
 
 @fragment fn fs(vertex: VSOutput) -> @location(0) vec4f {
     var textureColor = textureSample(colorTexture, colorSampler, vertex.texcoord);
-    return vertex.color * color * textureColor;
+    var result = vertex.color * color * textureColor;
+
+    return result;
 }

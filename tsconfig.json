@@ -13,6 +13,6 @@
     "sourceMap": true,
     "typeRoots": [ "./node_modules/@webgpu/types", "./node_modules/@types"]
   },
-  "include": ["src/**/*", "index.ts"],
+  "include": ["src/**/*", "examples/**/*", "index.ts"],
   "exclude": ["**/*.spec.ts"]
 }

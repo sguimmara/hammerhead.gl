@@ -63,7 +63,7 @@ export default class Object3D implements Observable, Destroy {
             callback(this);
             if (this.children) {
                 for (let i = 0; i < this.children.length; i++) {
-                    callback(this.children[i]);
+                    this.children[i].traverse(callback);
                 }
             }
         }

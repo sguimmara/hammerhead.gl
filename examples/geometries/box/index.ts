@@ -1,12 +1,12 @@
 import Context from '../../../src/core/Context';
 import Mesh from '../../../src/objects/Mesh';
-import GeometryBuilder from '../../../src/geometries/GeometryBuilder';
 import BasicMaterial from '../../../src/materials/BasicMaterial';
-import { load8bitImage } from '../../lib';
 import chroma from 'chroma-js';
-import { mat4, vec3 } from 'wgpu-matrix';
-import { deg2rad } from '../../../src/core/MathUtils';
 import Camera from '../../../src/objects/Camera';
+import Box from '../../../src/geometries/Box';
+import { CullingMode, FrontFace, RenderingMode } from '../../../src/materials/Material';
+import { deg2rad } from '../../../src/core/MathUtils';
+import { frameObject } from '../../lib';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -14,23 +14,16 @@ async function main() {
     const context = await Context.create(canvas);
     const renderer = context.renderer;
 
-    const material = new BasicMaterial();
+    const material = new BasicMaterial({ renderingMode: RenderingMode.Lines })
+        .withDiffuseColor(chroma('yellow'));
 
     const mesh = new Mesh({
         material,
-        geometry: GeometryBuilder.pyramid(),
+        geometry: new Box(),
     });
 
-    mesh.geometry.setColors([
-        chroma('red'),
-        chroma('green'),
-        chroma('blue'),
-        chroma('yellow'),
-    ]);
-
     const camera = new Camera('perspective');
-    camera.setPosition(0, 3, 5);
-    camera.lookAt(0, 0, 0);
+    frameObject(mesh, camera);
 
     function render() {
         renderer.render(mesh, camera);
@@ -38,8 +31,6 @@ async function main() {
 
     let now = performance.now();
     let rotation = 0;
-
-    mesh.transform.setScale(1.2, 1.2, 1.2);
 
     function renderLoop() {
         render();
@@ -49,6 +40,8 @@ async function main() {
         rotation += degrees;
         now = current;
         mesh.transform.rotateY(deg2rad(degrees));
+        // mesh.transform.rotateX(deg2rad(degrees));
+        // mesh.transform.rotateZ(deg2rad(degrees));
         requestAnimationFrame(renderLoop);
     }
 

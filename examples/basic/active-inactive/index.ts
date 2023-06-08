@@ -3,8 +3,6 @@ import Mesh from '../../../src/objects/Mesh';
 import GeometryBuilder from '../../../src/geometries/GeometryBuilder';
 import BasicMaterial from '../../../src/materials/BasicMaterial';
 import { bindToggle, load8bitImage } from '../../lib';
-import Flip from '../../../src/materials/postprocessing/Flip';
-import { mat4, vec3 } from 'wgpu-matrix';
 import Camera from '../../../src/objects/Camera';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;

@@ -40,17 +40,27 @@ class RenderSceneStage extends Stage {
         this.pipelineManager.bindPerMaterialUniforms(material, pass);
         this.pipelineManager.bindPerObjectUniforms(pass, mesh);
 
-        if (material.renderingMode === RenderingMode.Triangles) {
-            if (this.currentGeometry == null || this.currentGeometry != geometry) {
-                this.currentGeometry = geometry;
-                this.pipelineManager.bindVertexBuffers(geometry, pass);
-            }
+        switch (material.renderingMode) {
+            case RenderingMode.Triangles: {
+                if (this.currentGeometry == null || this.currentGeometry != geometry) {
+                    this.currentGeometry = geometry;
+                    this.pipelineManager.bindVertexBuffers(geometry, pass);
+                }
 
-            pass.drawIndexed(geometry.indexCount);
-        } else {
-            this.pipelineManager.bindVertexBufferUniforms(this.currentPipeline, geometry, pass);
-            const vertexCount = geometry.vertexCount;
-            pass.draw(6 * vertexCount); // TODO handle line rendering
+                pass.drawIndexed(geometry.indexCount);
+            }
+            break;
+            case RenderingMode.Lines: {
+                this.pipelineManager.bindVertexBufferUniforms(this.currentPipeline, geometry, pass);
+                const triangleCount = geometry.indexBuffer.value.length / 3;
+                pass.draw(6 * triangleCount, 1, 0, 0);
+            }
+            break;
+            case RenderingMode.Points: {
+                this.pipelineManager.bindVertexBufferUniforms(this.currentPipeline, geometry, pass);
+                const vertexCount = geometry.vertexCount;
+                pass.draw(6 * vertexCount);
+            }
         }
     }
 
