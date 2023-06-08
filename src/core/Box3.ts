@@ -16,6 +16,24 @@ export default class Box3 {
         }
     }
 
+    /**
+     * Calls the callback function for each of the 8 corners of this box.
+     * @param callback The callback to apply.
+     */
+    forEachCorner(callback: (corner: Vec3) => void) {
+        const [xMin, yMin, zMin] = this.min;
+        const [xMax, yMax, zMax] = this.max;
+
+        callback([xMax, yMax, zMax]);
+        callback([xMax, yMax, zMin]);
+        callback([xMax, yMin, zMin]);
+        callback([xMin, yMin, zMin]);
+        callback([xMin, yMax, zMax]);
+        callback([xMin, yMin, zMax]);
+        callback([xMax, yMin, zMax]);
+        callback([xMin, yMax, zMin]);
+    }
+
     static fromPoints(points: ArrayLike<number>) {
         let minX = +Infinity;
         let minY = +Infinity;
