@@ -12,6 +12,7 @@ export default class Object3D implements Observable, Destroy {
     readonly id: number;
     readonly dispatcher: EventDispatcher<Object3D>;
     readonly transform: Transform = new Transform();
+    label: string;
 
     /**
      * The active state of the object. An inactive object is not renderable and not traversable.
