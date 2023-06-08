@@ -50,10 +50,10 @@
 	var projected = p * viewPos;
 
 	var color = vec4<f32>(
-		colors[3 * vertexIndex + 0],
-		colors[3 * vertexIndex + 1],
-		colors[3 * vertexIndex + 2],
-		colors[3 * vertexIndex + 3],
+		colors[4 * vertexIndex + 0],
+		colors[4 * vertexIndex + 1],
+		colors[4 * vertexIndex + 2],
+		colors[4 * vertexIndex + 3],
 	);
 
 	var uv = vec2<f32>(
