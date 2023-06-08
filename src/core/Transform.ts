@@ -3,54 +3,91 @@ import Version from "./Version";
 import { Visitable, Visitor } from "./Visitable";
 import Sized from "./Sized";
 
+const DEFAULT_UP = [0, 1, 0];
+
 export default class Transform implements Version, Sized, Visitable {
+    scale: Vec3 = [1, 1, 1];
+    position: Vec3 = [0, 0, 0];
     worldMatrix: Mat4 = mat4.identity();
     localMatrix: Mat4 = mat4.identity();
+    rotation: Vec3 = [0, 0, 0]; // TODO use Quaternion
+
     private version: number = 0;
     private parentVersion: number = -1;
-    needsUpdate: boolean;
+    localMatrixNeedsUpdate: boolean;
 
     incrementVersion(): void {
         this.version++;
     }
 
+    private updatePRSFromLocalMatrix() {
+        mat4.getTranslation(this.localMatrix, this.position);
+        mat4.getScaling(this.localMatrix, this.scale);
+        // TODO rotation
+    }
+
+    lookAt(x: number, y: number, z: number) {
+        this.updateLocalMatrix();
+        mat4.cameraAim(this.position, [x, y, z], DEFAULT_UP, this.localMatrix);
+        this.updatePRSFromLocalMatrix();
+        this.incrementVersion();
+    }
+
     setPosition(x: number|Vec3, y?: number, z?: number) {
         let v;
         if (typeof x === 'number') {
-            v = [x, y ?? 0, z ?? 0];
+            this.position[0] = x;
+            this.position[1] = y;
+            this.position[2] = z;
         } else {
             v = x;
+
+            this.position[0] = v[0];
+            this.position[1] = v[1];
+            this.position[2] = v[2];
         }
-        mat4.setTranslation(this.localMatrix, v, this.localMatrix);
         this.incrementVersion();
-        this.needsUpdate = true;
+        this.localMatrixNeedsUpdate = true;
     }
 
     setScale(x: number|Vec3, y?: number, z?: number) {
         let v;
         if (typeof x === 'number') {
-            v = [x, y ?? 1, z ?? 1];
+            this.scale[0] = x;
+            this.scale[1] = y;
+            this.scale[2] = z;
         } else {
             v = x;
-        }
-        mat4.scaling(v, this.localMatrix);
-        this.incrementVersion();
-        this.needsUpdate = true;
-    }
 
-    rotateY(radians: number) {
-        if (radians != 0) {
-            mat4.rotateY(this.localMatrix, radians, this.localMatrix);
-            this.incrementVersion();
-            this.needsUpdate = true;
+            this.scale[0] = v[0];
+            this.scale[1] = v[1];
+            this.scale[2] = v[2];
         }
+        this.incrementVersion();
+        this.localMatrixNeedsUpdate = true;
     }
 
     rotateX(radians: number) {
         if (radians != 0) {
-            mat4.rotateX(this.localMatrix, radians, this.localMatrix);
+            this.rotation[0] += radians;
             this.incrementVersion();
-            this.needsUpdate = true;
+            this.localMatrixNeedsUpdate = true;
+        }
+    }
+
+    rotateY(radians: number) {
+        if (radians != 0) {
+            this.rotation[1] += radians;
+            this.incrementVersion();
+            this.localMatrixNeedsUpdate = true;
+        }
+    }
+
+    rotateZ(radians: number) {
+        if (radians != 0) {
+            this.rotation[2] += radians;
+            this.incrementVersion();
+            this.localMatrixNeedsUpdate = true;
         }
     }
 
@@ -58,20 +95,42 @@ export default class Transform implements Version, Sized, Visitable {
         return this.version;
     }
 
+
+    private updateLocalMatrix() {
+        mat4.identity(this.localMatrix);
+        mat4.rotateX(this.localMatrix, this.rotation[0], this.localMatrix);
+        mat4.rotateY(this.localMatrix, this.rotation[1], this.localMatrix);
+        mat4.rotateZ(this.localMatrix, this.rotation[2], this.localMatrix);
+        mat4.scale(this.localMatrix, this.scale, this.localMatrix);
+        mat4.setTranslation(this.localMatrix, this.position, this.localMatrix);
+        this.localMatrixNeedsUpdate = false;
+    }
+
+    getViewMatrix() {
+        if (this.localMatrixNeedsUpdate) {
+            this.updateLocalMatrix();
+        }
+
+        return mat4.inverse(this.localMatrix);
+    }
+
     /**
      * Updates the world matrix of this object.
      */
     updateWorldMatrix(parent: Transform) {
+        if (this.localMatrixNeedsUpdate) {
+            this.updateLocalMatrix();
+        }
+
         if (parent) {
-            if (parent.version > this.parentVersion) {
+            if (parent.getVersion() > this.parentVersion) {
                 mat4.mul(parent.worldMatrix, this.localMatrix, this.worldMatrix);
-                this.parentVersion = parent.version;
+                this.parentVersion = parent.getVersion();
                 this.incrementVersion();
-                this.needsUpdate = false;
             }
-        } else if (this.needsUpdate) {
+        } else {
             mat4.copy(this.localMatrix, this.worldMatrix);
-            this.needsUpdate = false;
+            this.incrementVersion();
         }
     }
 

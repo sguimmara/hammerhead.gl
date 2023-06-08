@@ -50,7 +50,7 @@ export default class Object3D implements Observable, Destroy {
         } else {
             this.children.push(child);
         }
-        child.transform.needsUpdate = true;
+        child.transform.localMatrixNeedsUpdate = true;
         child.dispatch('added');
     }
 
