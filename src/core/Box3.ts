@@ -1,9 +1,11 @@
 import { Vec3, vec3 } from "wgpu-matrix";
+import Clone from "./Clone";
 
-export default class Box3 {
+export default class Box3 implements Clone {
     min: Vec3;
     max: Vec3;
     center: Vec3;
+    size: Vec3;
 
     constructor(options: {
         min?: Vec3,
@@ -12,8 +14,21 @@ export default class Box3 {
         this.min = options.min;
         this.max = options.max;
         if (this.max && this.min) {
-            this.center = vec3.lerp(this.min, this.max, 0.5);
+            this.updateCenterAndSize();
         }
+    }
+
+    private updateCenterAndSize() {
+        this.center = vec3.lerp(this.min, this.max, 0.5);
+        this.size = [
+            Math.abs(this.max[0] - this.min[0]),
+            Math.abs(this.max[1] - this.min[1]),
+            Math.abs(this.max[2] - this.min[2]),
+        ];
+    }
+
+    clone(): Box3 {
+        return new Box3({ min: this.min, max: this.max });
     }
 
     /**
@@ -34,6 +49,46 @@ export default class Box3 {
         callback([xMin, yMax, zMin]);
     }
 
+    static union(boxes: Array<Box3>) {
+        if (boxes.length === 1) {
+            return boxes[0].clone();
+        }
+
+        const result = boxes[0].clone();
+        for (let i = 1; i < boxes.length; i++) {
+            if (boxes[i]) {
+                result.expand(boxes[i]);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * **Mutates** this box to contain the other box.
+     * @param other The box to expand.
+     */
+    expand(other: Box3) {
+        const xMin = Math.min(this.min[0], other.min[0]);
+        const yMin = Math.min(this.min[1], other.min[1]);
+        const zMin = Math.min(this.min[2], other.min[2]);
+
+        const xMax = Math.max(this.max[0], other.max[0]);
+        const yMax = Math.max(this.max[1], other.max[1]);
+        const zMax = Math.max(this.max[2], other.max[2]);
+
+        this.min = [xMin, yMin, zMin];
+        this.max = [xMax, yMax, zMax];
+        this.updateCenterAndSize();
+
+        return this;
+    }
+
+    /**
+     * Returns a tight box that encompasses the given points.
+     * @param points The points to encompass.
+     * @returns A new box.
+     */
     static fromPoints(points: ArrayLike<number>) {
         let minX = +Infinity;
         let minY = +Infinity;

@@ -7,6 +7,8 @@ import { frameObject, loadPLYModel } from "../../lib";
 import Mesh from "../../../src/objects/Mesh";
 import { CullingMode, FrontFace, RenderingMode } from "../../../src/materials/Material";
 import { VertexBufferSlot } from "../../../src/core/constants";
+import BoundsHelper from "../../../src/helpers/BoundsHelper";
+import Object3D from "../../../src/objects/Object3D";
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -32,15 +34,21 @@ async function main() {
     const camera = new Camera('perspective');
     camera.transform.setPosition(0, 0, 300);
 
+    const helper = new BoundsHelper({ source: solidMesh });
+
+    const root = new Object3D();
+    root.add(helper);
+    root.add(solidMesh);
+
     function render() {
-        renderer.render(solidMesh, camera);
+        renderer.render(root, camera);
     }
 
     const vertices = geometry.getVertexBuffer(VertexBufferSlot.Position);
 
     const originalVertices = new Float32Array(vertices.value);
 
-    const box = geometry.getBounds();
+    const box = geometry.getLocalBounds();
     const left = box.min[0];
     const right = box.max[0];
     const width = Math.abs(right - left) * 0.1;
@@ -52,17 +60,19 @@ async function main() {
             const x = array[i + 0];
             const distanceToLeft = Math.abs(x - left) / width;
             const sin = Math.sin((t * speed) - distanceToLeft);
-            const distance = sin * 10;
+            const distance = sin * 20;
             array[i + 1] = originalVertices[i + 1] + distance;
         }
-        vertices.incrementVersion();
+        solidMesh.geometry.setPositions(array);
+        wireframeMesh.geometry.setPositions(array);
     }
 
     function renderLoop() {
-        render();
         const current = performance.now();
         updateVertices(current);
         requestAnimationFrame(renderLoop);
+        helper.update();
+        render();
     }
 
     requestAnimationFrame(renderLoop);

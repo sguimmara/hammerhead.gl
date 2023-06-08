@@ -38,7 +38,7 @@ export function frameBounds(bounds: Box3, camera: Camera) {
 
 export function frameObject(obj: Mesh, camera: Camera) {
     const geometry = obj.geometry;
-    const bounds = geometry.getBounds();
+    const bounds = geometry.getLocalBounds();
     frameBounds(bounds, camera);
 }
 
@@ -57,7 +57,7 @@ export async function loadPLYModel(uri: string): Promise<BufferGeometry> {
         vertices,
     });
 
-    geometry.getBounds();
+    geometry.getLocalBounds();
     geometry.setColors(chroma('white'));
     geometry.setTexCoords();
 

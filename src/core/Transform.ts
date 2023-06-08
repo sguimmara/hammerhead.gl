@@ -26,9 +26,13 @@ export default class Transform implements Version, Sized, Visitable {
         // TODO rotation
     }
 
-    lookAt(x: number, y: number, z: number) {
+    lookAt(x: number|Vec3, y?: number, z?: number) {
         this.updateLocalMatrix();
-        mat4.cameraAim(this.position, [x, y, z], DEFAULT_UP, this.localMatrix);
+        if (typeof x === 'number') {
+            mat4.cameraAim(this.position, [x, y, z], DEFAULT_UP, this.localMatrix);
+        } else {
+            mat4.cameraAim(this.position, x, DEFAULT_UP, this.localMatrix);
+        }
         this.updatePRSFromLocalMatrix();
         this.incrementVersion();
     }

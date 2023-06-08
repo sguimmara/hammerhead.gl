@@ -50,7 +50,7 @@ export default class Cube extends BufferGeometry {
             Cf, Db, Df, Cf, Cb, Db, // top side
         ];
 
-        this.setVertices(vertices);
+        this.setPositions(vertices);
         this.setIndices(indices);
         this.setTexCoords();
         this.setColors(chroma('white'));

@@ -12,7 +12,7 @@ export default class Tetrahedron extends BufferGeometry {
         const b1x = Math.cos(deg2rad(120));
         const b1z = Math.sin(deg2rad(120));
 
-        this.setVertices([
+        this.setPositions([
             b0z, 0, b0x, // Base 0 (b0)
             b1z, 0, b1x, // Base 1 (b1)
             0, 0, 1, // Base 2 (b2)

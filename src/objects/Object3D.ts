@@ -1,3 +1,4 @@
+import Box3 from "../core/Box3";
 import Destroy from "../core/Destroy";
 import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatcher";
 import Transform from "../core/Transform";
@@ -29,6 +30,14 @@ export default class Object3D implements Observable, Destroy {
 
     on(type: string, handler: EventHandler): void {
         this.dispatcher.on(type, handler);
+    }
+
+    /**
+     * Returns the axis-aligned bounding box (AABB) of this object.
+     */
+    getWorldBounds(): Box3 {
+        const children = this.children.map(c => c.getWorldBounds());
+        return Box3.union(children);
     }
 
     destroy(): void {

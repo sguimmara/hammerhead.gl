@@ -4,7 +4,7 @@ import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatch
 import { VertexBufferSlot } from "../core/constants";
 import Destroy from "../core/Destroy";
 import Box3 from "../core/Box3";
-import { Versioned } from "../core/Version";
+import Version, { Versioned } from "../core/Version";
 import Clone from "../core/Clone";
 
 class BufferGeometry implements Observable, Destroy, Clone {
@@ -59,7 +59,7 @@ class BufferGeometry implements Observable, Destroy, Clone {
         });
     }
 
-    getBounds() {
+    getLocalBounds() {
         if (!this.cachedBounds) {
             this.cachedBounds = Box3.fromPoints(this.vertexBuffers.get(VertexBufferSlot.Position).value);
         }
@@ -78,10 +78,12 @@ class BufferGeometry implements Observable, Destroy, Clone {
         return this.vertexBuffers.get(slot);
     }
 
-    setVertices(positions: ArrayLike<number>) {
-        const vbuf = this.vertexBuffers.get(VertexBufferSlot.Position);
-        vbuf.value.set(positions, 0);
-        vbuf.incrementVersion();
+    setPositions(positions: ArrayLike<number>) {
+        const item = this.vertexBuffers.get(VertexBufferSlot.Position);
+        if (item.value !== positions) {
+            item.value.set(positions, 0);
+        }
+        this.invalidate(item);
     }
 
     setColors(colors?: Color[] | Color) {
@@ -100,7 +102,12 @@ class BufferGeometry implements Observable, Destroy, Clone {
                 buf.set(gl, i * 4);
             }
         }
+        this.invalidate(item);
+    }
+
+    private invalidate(item: Version) {
         item.incrementVersion();
+        this.cachedBounds = null;
     }
 
     setTexCoords(coords?: ArrayLike<number>) {
@@ -111,13 +118,13 @@ class BufferGeometry implements Observable, Destroy, Clone {
         if (coords) {
             const item = this.vertexBuffers.get(VertexBufferSlot.TexCoord);
             item.value.set(coords, 0);
-            item.incrementVersion();
+            this.invalidate(item);
         }
     }
 
     setIndices(indices: ArrayLike<number>) {
         this.indexBuffer.value.set(indices, 0);
-        this.indexBuffer.incrementVersion();
+        this.invalidate(this.indexBuffer);
     }
 }
 

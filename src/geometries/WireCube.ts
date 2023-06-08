@@ -55,7 +55,7 @@ export default class WireCube extends BufferGeometry {
             A, B, B, F, F, E, E, A, // front side
         ];
 
-        this.setVertices(vertices);
+        this.setPositions(vertices);
         this.setIndices(indices);
         this.setTexCoords();
         this.setColors(chroma('white'));
