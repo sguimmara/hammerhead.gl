@@ -313,13 +313,13 @@ class PipelineManager implements Service {
         const posBuffer = this.bufferStore.getOrCreateVertexBuffer(geometry, VertexBufferSlot.Position);
         const colBuffer = this.bufferStore.getOrCreateVertexBuffer(geometry, VertexBufferSlot.Color);
         const uvBuffer = this.bufferStore.getOrCreateVertexBuffer(geometry, VertexBufferSlot.TexCoord);
-        const indexBuffer = this.bufferStore.getIndexBuffer(geometry); // TODO
+        const indexBuffer = this.bufferStore.getIndexBuffer(geometry);
 
         return [
             { binding: VertexBufferSlot.Position, resource: { buffer: posBuffer }},
             { binding: VertexBufferSlot.TexCoord, resource: { buffer: uvBuffer }},
             { binding: VertexBufferSlot.Color, resource: { buffer: colBuffer }},
-            { binding: 3, resource: { buffer: indexBuffer }} // TODO
+            { binding: VertexBufferSlot.Index, resource: { buffer: indexBuffer }}
         ]
     }
 

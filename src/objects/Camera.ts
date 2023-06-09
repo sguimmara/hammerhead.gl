@@ -21,7 +21,6 @@ export default class Camera {
     }
 
     getViewMatrix() {
-        // TODO use world matrix
         return this.transform.getViewMatrix();
     }
 

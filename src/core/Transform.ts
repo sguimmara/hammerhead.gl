@@ -135,6 +135,7 @@ export default class Transform implements Version, Sized, Visitable {
     }
 
     getViewMatrix() {
+        // TODO use world matrix
         if (this.localMatrixNeedsUpdate) {
             this.updateLocalMatrix();
         }
