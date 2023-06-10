@@ -2,6 +2,9 @@ import chroma from 'chroma-js';
 
 import BufferGeometry from './BufferGeometry';
 
+/**
+ * A quad.
+ */
 export default class Quad extends BufferGeometry {
     constructor() {
         super({ vertexCount: 4, indexCount: 6 });

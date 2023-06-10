@@ -2,6 +2,9 @@ import { MathUtils } from '@/core';
 import BufferGeometry from './BufferGeometry';
 import chroma from 'chroma-js';
 
+/**
+ * A tetrahedron.
+ */
 export default class Tetrahedron extends BufferGeometry {
     constructor() {
         super({ vertexCount: 4, indexCount: 12 })

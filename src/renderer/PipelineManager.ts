@@ -30,6 +30,9 @@ class PerMaterial {
     materialBindGroup: GPUBindGroup;
 }
 
+/**
+ * Manages WebGPU render pipelines and related objects.
+ */
 class PipelineManager implements Service {
     private globalUniformBindGroup: GPUBindGroup;
     private readonly device: GPUDevice;

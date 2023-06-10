@@ -1,10 +1,15 @@
 import { MathUtils, Transform } from '@/core';
 import { Mat4, mat4 } from 'wgpu-matrix';
 
-type CameraMode = 'orthographic' | 'perspective';
+export type CameraMode = 'orthographic' | 'perspective';
 
 const DEFAULT_FOV = MathUtils.deg2rad(45);
 
+// TODO implement Object3D
+
+/**
+ * A camera.
+ */
 export default class Camera {
     mode: CameraMode;
 

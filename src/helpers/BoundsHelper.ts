@@ -4,6 +4,9 @@ import { BasicMaterial, RenderingMode } from '@/materials';
 import { Mesh, Object3D } from '@/objects';
 import chroma, { Color } from 'chroma-js';
 
+/**
+ * Displays the bounds of an object.
+ */
 export default class BoundsHelper
     extends Mesh
     implements Update {

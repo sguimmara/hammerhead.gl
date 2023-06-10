@@ -23,6 +23,9 @@ export interface Observable {
     on(type: EventType, handler: EventHandler): void;
 }
 
+/**
+ * Implementation of {@link Observable}
+ */
 export class EventDispatcher<T extends object> implements Observable {
     private readonly handlers: Map<string, EventHandler[]>;
     private readonly emitter: T;

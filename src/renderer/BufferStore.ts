@@ -51,7 +51,7 @@ class GeometryStorage implements Destroy {
 }
 
 /**
- * Manages GPU buffers.
+ * Manages WebGPU buffers.
  */
 class BufferStore implements Service {
     private readonly device: GPUDevice;

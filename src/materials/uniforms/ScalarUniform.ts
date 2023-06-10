@@ -1,6 +1,9 @@
 import { Visitor } from "../../core/Visitable";
 import BufferUniform from "./BufferUniform";
 
+/**
+ * Uniform that holds a single number.
+ */
 export default class ScalarUniform extends BufferUniform {
     value: number;
 

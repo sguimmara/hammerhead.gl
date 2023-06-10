@@ -2,6 +2,9 @@ import fragmentShader from "./Colorimetry.wgsl";
 import vertexShader from "../screenQuad.vert.wgsl";
 import PostProcessingMaterial from "./PostProcessingMaterial";
 
+/**
+ * Alters the colorimetry of the image.
+ */
 class Colorimetry extends PostProcessingMaterial {
     constructor({ saturation = 1, brightness = 1} = {}) {
         super(fragmentShader, vertexShader);

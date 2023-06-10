@@ -3,6 +3,9 @@ import fragmentShader from './Flip.wgsl';
 import vertexShader from '../screenQuad.vert.wgsl';
 import PostProcessingMaterial from './PostProcessingMaterial';
 
+/**
+ * Flips the image in the X and Y axes.
+ */
 class Flip extends PostProcessingMaterial {
     private flip: Vec2 = vec2.create(1, 1);
 

@@ -1,6 +1,9 @@
 import BufferGeometry from './BufferGeometry';
 import chroma from 'chroma-js';
 
+/**
+ * A wireframe cube.
+ */
 export default class WireCube extends BufferGeometry {
     constructor() {
         super({ vertexCount: 8, indexCount: 48 });

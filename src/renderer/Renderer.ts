@@ -11,6 +11,9 @@ const DEFAULT_CLEAR_COLOR = chroma("black");
 
 const tmpBuckets: Map<number, Bucket> = new Map();
 
+/**
+ * The WebGPU renderer.
+ */
 class WebGPURenderer {
     private readonly device: GPUDevice;
     private readonly context: GPUCanvasContext;

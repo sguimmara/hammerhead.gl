@@ -3,6 +3,9 @@ import { Color } from 'chroma-js';
 
 let BUFFER_GEOMETRY_ID = 0;
 
+/**
+ * Base class for all geometries.
+ */
 class BufferGeometry implements Observable, Destroy, Clone {
     private readonly dispatcher: EventDispatcher<BufferGeometry>;
     readonly id: number;

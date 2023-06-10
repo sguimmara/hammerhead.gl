@@ -3,6 +3,9 @@ import { Sized, Version, Visitable, Visitor } from "@/core";
 
 const DEFAULT_UP = [0, 1, 0];
 
+/**
+ * An object transform. Handles position, rotation and scale.
+ */
 export default class Transform implements Version, Sized, Visitable {
     scale: Vec3 = [1, 1, 1];
     position: Vec3 = [0, 0, 0];

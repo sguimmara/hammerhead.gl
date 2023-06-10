@@ -4,6 +4,7 @@ import TextureStore from './TextureStore';
 import PipelineManager from './PipelineManager';
 import Bucket from './Bucket';
 import BufferWriter from './BufferWriter';
+import * as stages from './stages';
 
 export {
     Renderer,
@@ -12,4 +13,5 @@ export {
     PipelineManager,
     Bucket,
     BufferWriter,
+    stages,
 }

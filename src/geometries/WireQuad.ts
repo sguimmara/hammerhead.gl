@@ -1,6 +1,9 @@
 import BufferGeometry from './BufferGeometry';
 import chroma from 'chroma-js';
 
+/**
+ * A wireframe quad.
+ */
 export default class WireQuad extends BufferGeometry {
     constructor() {
         super({ vertexCount: 4, indexCount: 8 });

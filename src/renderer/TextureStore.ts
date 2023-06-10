@@ -1,6 +1,9 @@
 import { Service } from "@/core";
 import { AddressMode, FilterMode, Sampler, Texture } from "@/textures";
 
+/**
+ * Manages WebGPU textures.
+ */
 class TextureStore implements Service {
     private readonly textures: Map<
         number,
