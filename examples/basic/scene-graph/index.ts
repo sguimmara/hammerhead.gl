@@ -1,24 +1,24 @@
-import chroma from 'chroma-js';
-import Box3 from 'hammerhead.gl/core/Box3';
-import Context from 'hammerhead.gl/core/Context';
-import { deg2rad } from 'hammerhead.gl/core/MathUtils';
-import BasicMaterial from 'hammerhead.gl/materials/BasicMaterial';
-import { CullingMode, FrontFace, RenderingMode } from 'hammerhead.gl/materials/Material';
-import Camera from 'hammerhead.gl/objects/Camera';
-import Mesh from 'hammerhead.gl/objects/Mesh';
-import Object3D from 'hammerhead.gl/objects/Object3D';
-import { vec3 } from 'wgpu-matrix';
+import chroma from "chroma-js";
+import { Box3, Context, MathUtils } from "hammerhead.gl/core";
+import {
+    BasicMaterial,
+    CullingMode,
+    FrontFace,
+    RenderingMode,
+} from "hammerhead.gl/materials";
+import { Camera, Mesh, Object3D } from "hammerhead.gl/objects";
+import { vec3 } from "wgpu-matrix";
 
-import { frameBounds, loadPLYModel, wait } from '../../lib';
+import { frameBounds, loadPLYModel, wait } from "../../lib";
 
-let canvas = document.getElementById('canvas') as HTMLCanvasElement;
+let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
 async function main() {
     const context = await Context.create(canvas);
     const renderer = context.renderer;
-    renderer.clearColor = chroma('gray');
+    renderer.clearColor = chroma("gray");
 
-    const geometry = await loadPLYModel('/files/hammerhead.ply');
+    const geometry = await loadPLYModel("/files/hammerhead.ply");
 
     function makeMesh(x: number, y: number, z: number, color: string) {
         const mesh = new Mesh({
@@ -35,11 +35,11 @@ async function main() {
         const wireframeMesh = new Mesh({
             material: new BasicMaterial({
                 renderingMode: RenderingMode.TriangleLines,
-            }).withDiffuseColor(chroma.mix(chroma('black'), color, 0.2)),
-            geometry
+            }).withDiffuseColor(chroma.mix(chroma("black"), color, 0.2)),
+            geometry,
         });
 
-        wireframeMesh.label = color + '/wireframe';
+        wireframeMesh.label = color + "/wireframe";
 
         mesh.add(wireframeMesh);
         mesh.transform.setPosition(x, y, z);
@@ -58,14 +58,14 @@ async function main() {
     right.transform.setPosition(0, -100, 100);
     root.add(left);
     root.add(right);
-    root.add(makeMesh(0, 0, 0, 'red'));
+    root.add(makeMesh(0, 0, 0, "red"));
 
-    left.add(makeMesh(0, 0, -50,   'yellow'));
-    left.add(makeMesh(0, 0, +50,   'orange'));
-    right.add(makeMesh(0, 0, -50,  'lightgreen'));
-    right.add(makeMesh(0, 0, +50,  'cyan'));
+    left.add(makeMesh(0, 0, -50, "yellow"));
+    left.add(makeMesh(0, 0, +50, "orange"));
+    right.add(makeMesh(0, 0, -50, "lightgreen"));
+    right.add(makeMesh(0, 0, +50, "cyan"));
 
-    const camera = new Camera('perspective');
+    const camera = new Camera("perspective");
     camera.nearPlane = 1;
     camera.farPlane = 10000;
 
@@ -90,7 +90,7 @@ async function main() {
             const dt = (current - now) / 1000;
             const degrees = speed * dt;
             now = current;
-            object.transform.rotateY(deg2rad(degrees));
+            object.transform.rotateY(MathUtils.deg2rad(degrees));
             rotation += degrees;
             await wait(16);
         }
@@ -99,13 +99,13 @@ async function main() {
             const dt = (current - now) / 1000;
             const degrees = -speed * dt;
             now = current;
-            object.transform.rotateY(deg2rad(degrees));
+            object.transform.rotateY(MathUtils.deg2rad(degrees));
             rotation += degrees;
             await wait(16);
         }
 
         // Reset rotation
-        object.transform.rotateY(deg2rad(-rotation));
+        object.transform.rotateY(MathUtils.deg2rad(-rotation));
     }
 
     function renderLoop() {
@@ -114,9 +114,17 @@ async function main() {
     }
 
     requestAnimationFrame(renderLoop);
-    context.on('resized', render);
+    context.on("resized", render);
 
-    const loop = [root, left, right, left.children[0], left.children[1], right.children[0], right.children[1]];
+    const loop = [
+        root,
+        left,
+        right,
+        left.children[0],
+        left.children[1],
+        right.children[0],
+        right.children[1],
+    ];
 
     let i = 0;
     while (true) {

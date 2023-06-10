@@ -1,13 +1,9 @@
 import chroma from 'chroma-js';
-import Context from 'hammerhead.gl/core/Context';
-import MathUtils from 'hammerhead.gl/core/MathUtils';
-import BasicMaterial from 'hammerhead.gl/materials/BasicMaterial';
-import { CullingMode, FrontFace, RenderingMode } from 'hammerhead.gl/materials/Material';
-import Camera from 'hammerhead.gl/objects/Camera';
-import Mesh from 'hammerhead.gl/objects/Mesh';
-import Object3D from 'hammerhead.gl/objects/Object3D';
 
 import { loadPLYModel } from '../../lib';
+import { Context, MathUtils } from 'hammerhead.gl/core';
+import { BasicMaterial, RenderingMode, FrontFace, CullingMode } from 'hammerhead.gl/materials';
+import { Mesh, Object3D, Camera } from 'hammerhead.gl/objects';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 

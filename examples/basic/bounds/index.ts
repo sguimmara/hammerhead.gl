@@ -1,13 +1,8 @@
 import chroma from 'chroma-js';
-import Context from 'hammerhead.gl/core/Context';
-import { deg2rad } from 'hammerhead.gl/core/MathUtils';
-import BoundsHelper from 'hammerhead.gl/helpers/BoundsHelper';
-import BasicMaterial from 'hammerhead.gl/materials/BasicMaterial';
-import { FrontFace, RenderingMode } from 'hammerhead.gl/materials/Material';
-import Camera from 'hammerhead.gl/objects/Camera';
-import Mesh from 'hammerhead.gl/objects/Mesh';
-import Object3D from 'hammerhead.gl/objects/Object3D';
-
+import { Context, MathUtils } from 'hammerhead.gl/core';
+import { Object3D, Mesh, Camera } from 'hammerhead.gl/objects';
+import { BoundsHelper } from 'hammerhead.gl/helpers';
+import { BasicMaterial, RenderingMode, FrontFace } from 'hammerhead.gl/materials';
 import { frameBounds, loadPLYModel } from '../../lib';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -66,13 +61,13 @@ async function main() {
         const dt = (current - now) / 1000;
         const degrees = 40 * dt;
         now = current;
-        shark1.transform.rotateY(deg2rad(degrees));
-        shark1.transform.rotateZ(deg2rad(degrees));
-        shark1.transform.rotateX(deg2rad(degrees));
+        shark1.transform.rotateY(MathUtils.deg2rad(degrees));
+        shark1.transform.rotateZ(MathUtils.deg2rad(degrees));
+        shark1.transform.rotateX(MathUtils.deg2rad(degrees));
 
-        shark2.transform.rotateX(deg2rad(degrees));
-        shark2.transform.rotateZ(deg2rad(-degrees));
-        shark2.transform.rotateY(deg2rad(degrees));
+        shark2.transform.rotateX(MathUtils.deg2rad(degrees));
+        shark2.transform.rotateZ(MathUtils.deg2rad(-degrees));
+        shark2.transform.rotateY(MathUtils.deg2rad(degrees));
 
         shark1.transform.setPosition(Math.sin(current * 0.01) * 10, 0, 100);
         shark2.transform.setPosition(0, Math.sin(current * 0.01) * 10, -100);
@@ -85,7 +80,6 @@ async function main() {
         render();
         requestAnimationFrame(renderLoop);
     }
-
     requestAnimationFrame(renderLoop);
 
     context.on('resized', render);

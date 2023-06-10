@@ -1,12 +1,9 @@
 import chroma from 'chroma-js';
-import Context from 'hammerhead.gl/core/Context';
-import { deg2rad } from 'hammerhead.gl/core/MathUtils';
-import BasicMaterial from 'hammerhead.gl/materials/BasicMaterial';
-import { RenderingMode } from 'hammerhead.gl/materials/Material';
-import Camera from 'hammerhead.gl/objects/Camera';
-import Mesh from 'hammerhead.gl/objects/Mesh';
 
 import { frameObject, loadPLYModel } from '../../lib';
+import { Context, MathUtils } from 'hammerhead.gl/core';
+import { BasicMaterial, RenderingMode } from 'hammerhead.gl/materials';
+import { Mesh, Camera } from 'hammerhead.gl/objects';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -33,7 +30,7 @@ async function main() {
         const dt = (current - now) / 1000;
         const degrees = 40 * dt;
         now = current;
-        mesh.transform.rotateY(deg2rad(degrees));
+        mesh.transform.rotateY(MathUtils.deg2rad(degrees));
         requestAnimationFrame(renderLoop);
     }
 

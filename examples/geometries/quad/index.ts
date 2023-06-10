@@ -1,44 +1,42 @@
-import chroma from 'chroma-js';
-import Context from 'hammerhead.gl/core/Context';
-import { deg2rad } from 'hammerhead.gl/core/MathUtils';
-import Quad from 'hammerhead.gl/geometries/Quad';
-import WireQuad from 'hammerhead.gl/geometries/WireQuad';
-import BasicMaterial from 'hammerhead.gl/materials/BasicMaterial';
-import { RenderingMode } from 'hammerhead.gl/materials/Material';
-import Camera from 'hammerhead.gl/objects/Camera';
-import Mesh from 'hammerhead.gl/objects/Mesh';
-import { frameObject, load8bitImage } from '../../lib';
+import chroma from "chroma-js";
+import { Context, MathUtils } from "hammerhead.gl/core";
+import { Quad, WireQuad } from "hammerhead.gl/geometries";
+import { BasicMaterial, RenderingMode } from "hammerhead.gl/materials";
+import { Camera, Mesh } from "hammerhead.gl/objects";
 
-let canvas = document.getElementById('canvas') as HTMLCanvasElement;
+import { frameObject, load8bitImage } from "../../lib";
+
+let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
 async function main() {
     const context = await Context.create(canvas);
     const renderer = context.renderer;
-    renderer.clearColor = chroma('gray');
+    renderer.clearColor = chroma("gray");
 
-    const logo = await load8bitImage('/webgpu.png');
+    const logo = await load8bitImage("/webgpu.png");
 
     const cube = new Mesh({
-        material: new BasicMaterial()
-            .withColorTexture(logo),
+        material: new BasicMaterial().withColorTexture(logo),
         geometry: new Quad(),
     });
 
     const wirecube = new Mesh({
-        material: new BasicMaterial({ renderingMode: RenderingMode.LineList}).withDiffuseColor(chroma('black')),
+        material: new BasicMaterial({
+            renderingMode: RenderingMode.LineList,
+        }).withDiffuseColor(chroma("black")),
         geometry: new WireQuad(),
     });
 
     cube.geometry.setColors([
-        chroma('red'),
-        chroma('green'),
-        chroma('blue'),
-        chroma('yellow'),
+        chroma("red"),
+        chroma("green"),
+        chroma("blue"),
+        chroma("yellow"),
     ]);
 
     cube.add(wirecube);
 
-    const camera = new Camera('perspective');
+    const camera = new Camera("perspective");
     frameObject(cube, camera);
     camera.transform.setPosition(0.5, 0.5, 3);
     camera.transform.lookAt(0, 0, 0);
@@ -57,13 +55,13 @@ async function main() {
         const degrees = 40 * dt;
         rotation += degrees;
         now = current;
-        cube.transform.rotateY(deg2rad(degrees));
+        cube.transform.rotateY(MathUtils.deg2rad(degrees));
         requestAnimationFrame(renderLoop);
     }
 
     requestAnimationFrame(renderLoop);
 
-    context.on('resized', render);
+    context.on("resized", render);
 }
 
 main();

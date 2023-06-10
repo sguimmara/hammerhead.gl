@@ -1,16 +1,15 @@
-import Context from 'hammerhead.gl/core/Context';
-import GeometryBuilder from 'hammerhead.gl/geometries/GeometryBuilder';
-import BasicMaterial from 'hammerhead.gl/materials/BasicMaterial';
-import Colorimetry from 'hammerhead.gl/materials/postprocessing/Colorimetry';
-import Camera from 'hammerhead.gl/objects/Camera';
-import Mesh from 'hammerhead.gl/objects/Mesh';
+import { Context } from "hammerhead.gl/core";
+import GeometryBuilder from "hammerhead.gl/geometries/GeometryBuilder";
+import { BasicMaterial } from "hammerhead.gl/materials";
+import { Colorimetry } from "hammerhead.gl/materials/postprocessing";
+import { Camera, Mesh } from "hammerhead.gl/objects";
 
-import { bindSlider, load8bitImage } from '../../lib';
+import { bindSlider, load8bitImage } from "../../lib";
 
-let canvas = document.getElementById('canvas') as HTMLCanvasElement;
+let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
 async function main() {
-    const logo = await load8bitImage('/webgpu.png');
+    const logo = await load8bitImage("/webgpu.png");
 
     const context = await Context.create(canvas);
     const renderer = context.renderer;
@@ -29,7 +28,7 @@ async function main() {
         geometry: GeometryBuilder.screenQuad(),
     });
 
-    const camera = new Camera('orthographic');
+    const camera = new Camera("orthographic");
 
     function render() {
         renderer.render(mesh, camera);
@@ -37,14 +36,14 @@ async function main() {
 
     render();
 
-    context.on('resized', render);
+    context.on("resized", render);
 
-    bindSlider('slider-saturation', (v: number) => {
+    bindSlider("slider-saturation", (v: number) => {
         colorimetry.withSaturation(v);
         render();
     });
 
-    bindSlider('slider-brightness', (v: number) => {
+    bindSlider("slider-brightness", (v: number) => {
         colorimetry.withBrightness(v);
         render();
     });

@@ -1,21 +1,20 @@
-import chroma from 'chroma-js';
-import Context from 'hammerhead.gl/core/Context';
-import { deg2rad } from 'hammerhead.gl/core/MathUtils';
-import Tetrahedron from 'hammerhead.gl/geometries/Tetrahedron';
-import BasicMaterial from 'hammerhead.gl/materials/BasicMaterial';
-import { RenderingMode } from 'hammerhead.gl/materials/Material';
-import Camera from 'hammerhead.gl/objects/Camera';
-import Mesh from 'hammerhead.gl/objects/Mesh';
-import { frameObject } from '../../lib';
+import chroma from "chroma-js";
+import { Context, MathUtils } from "hammerhead.gl/core";
+import { Tetrahedron } from "hammerhead.gl/geometries";
+import { BasicMaterial, RenderingMode } from "hammerhead.gl/materials";
+import { Camera, Mesh } from "hammerhead.gl/objects";
 
-let canvas = document.getElementById('canvas') as HTMLCanvasElement;
+import { frameObject } from "../../lib";
+
+let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
 async function main() {
     const context = await Context.create(canvas);
     const renderer = context.renderer;
-    // renderer.clearColor = chroma('pink');
 
-    const material = new BasicMaterial({ renderingMode: RenderingMode.Triangles });
+    const material = new BasicMaterial({
+        renderingMode: RenderingMode.Triangles,
+    });
 
     const mesh = new Mesh({
         material,
@@ -23,13 +22,13 @@ async function main() {
     });
 
     mesh.geometry.setColors([
-        chroma('red'),
-        chroma('green'),
-        chroma('blue'),
-        chroma('yellow'),
+        chroma("red"),
+        chroma("green"),
+        chroma("blue"),
+        chroma("yellow"),
     ]);
 
-    const camera = new Camera('perspective');
+    const camera = new Camera("perspective");
     frameObject(mesh, camera);
 
     function render() {
@@ -46,13 +45,13 @@ async function main() {
         const degrees = 40 * dt;
         rotation += degrees;
         now = current;
-        mesh.transform.rotateY(deg2rad(degrees));
+        mesh.transform.rotateY(MathUtils.deg2rad(degrees));
         requestAnimationFrame(renderLoop);
     }
 
     requestAnimationFrame(renderLoop);
 
-    context.on('resized', render);
+    context.on("resized", render);
 }
 
 main();

@@ -1,16 +1,15 @@
-import chroma from 'chroma-js';
-import Context from 'hammerhead.gl/core/Context';
-import GeometryBuilder from 'hammerhead.gl/geometries/GeometryBuilder';
-import BasicMaterial from 'hammerhead.gl/materials/BasicMaterial';
-import Camera from 'hammerhead.gl/objects/Camera';
-import Mesh from 'hammerhead.gl/objects/Mesh';
+import chroma from "chroma-js";
+import { Context } from "hammerhead.gl/core";
+import GeometryBuilder from "hammerhead.gl/geometries/GeometryBuilder";
+import { BasicMaterial } from "hammerhead.gl/materials";
+import { Camera, Mesh } from "hammerhead.gl/objects";
 
-import { load8bitImage } from '../../lib';
+import { load8bitImage } from "../../lib";
 
-let canvas = document.getElementById('canvas') as HTMLCanvasElement;
+let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
 async function main() {
-    const logo = await load8bitImage('/webgpu.png');
+    const logo = await load8bitImage("/webgpu.png");
 
     const context = await Context.create(canvas);
     const renderer = context.renderer;
@@ -23,13 +22,13 @@ async function main() {
     });
 
     mesh.geometry.setColors([
-        chroma('red'),
-        chroma('green'),
-        chroma('blue'),
-        chroma('cyan'),
+        chroma("red"),
+        chroma("green"),
+        chroma("blue"),
+        chroma("cyan"),
     ]);
 
-    const camera = new Camera('orthographic');
+    const camera = new Camera("orthographic");
 
     function render() {
         renderer.render(mesh, camera);
@@ -37,7 +36,7 @@ async function main() {
 
     render();
 
-    context.on('resized', render);
+    context.on("resized", render);
 }
 
 main();

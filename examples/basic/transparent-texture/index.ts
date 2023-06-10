@@ -1,20 +1,19 @@
-import chroma from 'chroma-js';
-import Context from 'hammerhead.gl/core/Context';
-import GeometryBuilder from 'hammerhead.gl/geometries/GeometryBuilder';
-import BasicMaterial from 'hammerhead.gl/materials/BasicMaterial';
-import Camera from 'hammerhead.gl/objects/Camera';
-import Mesh from 'hammerhead.gl/objects/Mesh';
+import chroma from "chroma-js";
+import { Context } from "hammerhead.gl/core";
+import GeometryBuilder from "hammerhead.gl/geometries/GeometryBuilder";
+import { BasicMaterial } from "hammerhead.gl/materials";
+import { Camera, Mesh } from "hammerhead.gl/objects";
 
-import { load8bitImage } from '../../lib';
+import { load8bitImage } from "../../lib";
 
-let canvas = document.getElementById('canvas') as HTMLCanvasElement;
+let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
 async function main() {
-    const logo = await load8bitImage('/webgpu-transparent.png');
+    const logo = await load8bitImage("/webgpu-transparent.png");
 
     const context = await Context.create(canvas);
     const renderer = context.renderer;
-    renderer.clearColor = chroma('pink');
+    renderer.clearColor = chroma("pink");
 
     const material = new BasicMaterial().withColorTexture(logo);
 
@@ -23,10 +22,10 @@ async function main() {
         geometry: GeometryBuilder.screenQuad(),
     });
 
-    const camera = new Camera('orthographic');
+    const camera = new Camera("orthographic");
 
-    const color1 = chroma('green');
-    const color2 = chroma('red');
+    const color1 = chroma("green");
+    const color2 = chroma("red");
 
     function renderLoop() {
         const t = (Math.sin(performance.now() / 250) + 1) / 2;
