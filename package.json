@@ -13,7 +13,7 @@
     "start": "vite"
   },
   "author": "Sébastien Guimmara",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@loaders.gl/core": "^3.4.4",
     "@loaders.gl/ply": "^3.4.4",
