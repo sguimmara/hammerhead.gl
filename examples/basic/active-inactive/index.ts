@@ -1,15 +1,14 @@
-import Context from 'hammerhead.gl/core/Context';
-import GeometryBuilder from 'hammerhead.gl/geometries/GeometryBuilder';
-import BasicMaterial from 'hammerhead.gl/materials/BasicMaterial';
-import Camera from 'hammerhead.gl/objects/Camera';
-import Mesh from 'hammerhead.gl/objects/Mesh';
+import { Context } from "hammerhead.gl/core";
+import { ScreenQuad } from "hammerhead.gl/geometries";
+import { BasicMaterial } from "hammerhead.gl/materials";
+import { Camera, Mesh } from "hammerhead.gl/objects";
 
-import { bindToggle, load8bitImage } from '../../lib';
+import { bindToggle, load8bitImage } from "../../lib";
 
-let canvas = document.getElementById('canvas') as HTMLCanvasElement;
+let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
 async function main() {
-    const logo = await load8bitImage('/webgpu.png');
+    const logo = await load8bitImage("/webgpu.png");
 
     const context = await Context.create(canvas);
     const renderer = context.renderer;
@@ -18,10 +17,10 @@ async function main() {
 
     const mesh = new Mesh({
         material,
-        geometry: GeometryBuilder.screenQuad(),
+        geometry: new ScreenQuad(),
     });
 
-    const camera = new Camera('orthographic');
+    const camera = new Camera("orthographic");
 
     function render() {
         renderer.render(mesh, camera);
@@ -29,14 +28,14 @@ async function main() {
 
     render();
 
-    context.on('resized', render);
+    context.on("resized", render);
 
-    bindToggle('toggle-active', (v: boolean) => {
+    bindToggle("toggle-active", (v: boolean) => {
         mesh.active = v;
         render();
     });
 
-    bindToggle('toggle-active-material', (v: boolean) => {
+    bindToggle("toggle-active-material", (v: boolean) => {
         mesh.material.active = v;
         render();
     });

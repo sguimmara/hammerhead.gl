@@ -1,7 +1,7 @@
 import Box3 from './Box3';
 import { type Destroy } from './Destroy';
 import Container from './Container';
-import Context, { ContextEvents } from './Context';
+import Context, { type ContextEvents } from './Context';
 import { EventDispatcher, ObservableEvent, type EventHandler, type Observable } from './EventDispatcher';
 import MathUtils from './MathUtils';
 import { type Service } from './Service';

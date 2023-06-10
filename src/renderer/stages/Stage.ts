@@ -1,5 +1,4 @@
-import { BufferGeometry } from '@/geometries';
-import GeometryBuilder from '@/geometries/GeometryBuilder';
+import { BufferGeometry, ScreenQuad } from '@/geometries';
 import { ObjectUniform } from '@/materials/uniforms';
 import { BufferStore, PipelineManager, TextureStore } from '@/renderer';
 import chroma, { Color } from 'chroma-js';
@@ -39,7 +38,7 @@ abstract class Stage {
         this.pipelineManager = pipelineManager;
         this.bufferStore = bufferStore;
         this.textureStore = textureStore;
-        this.quad = GeometryBuilder.screenQuad();
+        this.quad = new ScreenQuad();
         this.clearColor = DEFAULT_CLEAR_COLOR;
         this.needsRecreateRenderPass = true;
         this.GlobalValues = GlobalValues;

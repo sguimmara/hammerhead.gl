@@ -1,5 +1,5 @@
 import { Context } from "hammerhead.gl/core";
-import GeometryBuilder from "hammerhead.gl/geometries/GeometryBuilder";
+import { ScreenQuad } from "hammerhead.gl/geometries";
 import { BasicMaterial } from "hammerhead.gl/materials";
 import { Camera, Mesh } from "hammerhead.gl/objects";
 
@@ -17,7 +17,7 @@ async function main() {
 
     const mesh = new Mesh({
         material,
-        geometry: GeometryBuilder.screenQuad(),
+        geometry: new ScreenQuad(),
     });
 
     const camera = new Camera("orthographic");

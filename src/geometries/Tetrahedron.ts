@@ -1,6 +1,7 @@
 import { MathUtils } from '@/core';
-import BufferGeometry from './BufferGeometry';
 import chroma from 'chroma-js';
+
+import BufferGeometry from './BufferGeometry';
 
 /**
  * A tetrahedron.

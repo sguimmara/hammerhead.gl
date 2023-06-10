@@ -1,21 +1,24 @@
-import chroma from 'chroma-js';
+import chroma from "chroma-js";
+import { Context, MathUtils } from "hammerhead.gl/core";
+import { BasicMaterial, RenderingMode } from "hammerhead.gl/materials";
+import { Camera, Mesh } from "hammerhead.gl/objects";
 
-import { frameObject, loadPLYModel } from '../../lib';
-import { Context, MathUtils } from 'hammerhead.gl/core';
-import { BasicMaterial, RenderingMode } from 'hammerhead.gl/materials';
-import { Mesh, Camera } from 'hammerhead.gl/objects';
+import { frameObject, loadPLYModel } from "../../lib";
 
-let canvas = document.getElementById('canvas') as HTMLCanvasElement;
+let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
 async function main() {
     const context = await Context.create(canvas);
     const renderer = context.renderer;
 
-    const geometry = await loadPLYModel('/files/hammerhead.ply');
-    const material = new BasicMaterial({ renderingMode: RenderingMode.Points }).withDiffuseColor(chroma('cyan'));
+    const geometry = await loadPLYModel("/files/hammerhead.ply");
+
+    const material = new BasicMaterial({
+        renderingMode: RenderingMode.Points,
+    }).withDiffuseColor(chroma("cyan"));
 
     const mesh = new Mesh({ geometry, material });
-    const camera = new Camera('perspective');
+    const camera = new Camera("perspective");
     frameObject(mesh, camera);
 
     function render() {
@@ -36,7 +39,7 @@ async function main() {
 
     requestAnimationFrame(renderLoop);
 
-    context.on('resized', render);
+    context.on("resized", render);
 }
 
 main();
