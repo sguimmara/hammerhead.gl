@@ -1,29 +1,9 @@
-export class ObservableEvent {
-    readonly emitter: object;
-
-    constructor(emitter: object) {
-        this.emitter = emitter;
-    }
-}
-
-export type EventHandler = (event: ObservableEvent) => void;
-
-/**
- * Trait for objects that emit events.
- */
-export interface Observable<T> {
-    /**
-     * Registers an event handler on this object.
-     * @param type The event type.
-     * @param handler The event handler.
-     * @example
-     * myObservable.on('destroy', evt => console.info(`${evt.emitter} was destroyed`));
-     */
-    on(type: T, handler: EventHandler): void;
-}
+import { EventHandler, Observable, ObservableEvent } from "./Observable";
 
 /**
  * Implementation of {@link Observable}
+ * @typeParam T The observed object type.
+ * @typeParam TEvents The type of events.
  */
 export class EventDispatcher<T extends object, TEvents extends string> implements Observable<TEvents> {
     private readonly handlers: Map<string, EventHandler[]>;
