@@ -1,4 +1,4 @@
-import { Destroy, Service } from "@/core";
+import { Destroy, Service } from '@/core';
 
 class ContainerError extends Error {
     constructor(message: string) {
@@ -22,10 +22,12 @@ class Container implements Destroy {
      * @throws {ContainerError} The service is already registered.
      */
     register(service: Service) {
-        if ( this.services.has(service.type)) {
-            throw new ContainerError(`the service "${service.type}" is already registered`);
+        if (this.services.has(service.getType())) {
+            throw new ContainerError(
+                `the service "${service.getType()}" is already registered`
+            );
         }
-        this.services.set(service.type, service);
+        this.services.set(service.getType(), service);
     }
 
     /**
@@ -42,7 +44,7 @@ class Container implements Destroy {
     }
 
     destroy() {
-        this.services.forEach(s => s.destroy());
+        this.services.forEach((s) => s.destroy());
     }
 }
 

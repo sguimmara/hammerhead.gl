@@ -5,5 +5,9 @@ import { Destroy } from "@/core";
  * via a dependency injection pattern.
  */
 export interface Service extends Destroy {
-    type: string;
+    /**
+     * Returns the type name of this service.
+     * This will be used as a key in the service resolution in the container.
+     */
+    getType(): string;
 }

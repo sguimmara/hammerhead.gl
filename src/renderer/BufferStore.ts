@@ -54,8 +54,6 @@ class GeometryStorage implements Destroy {
  * Manages GPU buffers.
  */
 class BufferStore implements Service {
-    readonly type: string = 'BufferStore';
-
     private readonly device: GPUDevice;
     private readonly geometryStorages: Map<number, GeometryStorage>;
     private readonly uniformBuffers: Map<BufferUniform, BufferWriter>;
@@ -64,6 +62,10 @@ class BufferStore implements Service {
         this.geometryStorages = new Map();
         this.uniformBuffers = new Map();
         this.device = device;
+    }
+
+    getType(): string {
+        return 'BufferStore';
     }
 
     private onGeometryDestroyed(geometry: BufferGeometry): void {

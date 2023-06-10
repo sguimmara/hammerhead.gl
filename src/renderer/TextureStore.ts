@@ -2,8 +2,6 @@ import { Service } from "@/core";
 import { AddressMode, FilterMode, Sampler, Texture } from "@/textures";
 
 class TextureStore implements Service {
-    readonly type: string = "TextureStore";
-
     private readonly textures: Map<
         number,
         { texture: GPUTexture; defaultView: GPUTextureView }
@@ -31,6 +29,10 @@ class TextureStore implements Service {
         const white = new Uint8ClampedArray(4);
         white.set([255, 255, 255, 255]);
         this.updateTexture(white, this.emptyTexture);
+    }
+
+    getType(): string {
+        return 'TextureStore';
     }
 
     destroy() {

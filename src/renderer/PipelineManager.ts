@@ -31,8 +31,6 @@ class PerMaterial {
 }
 
 class PipelineManager implements Service {
-    readonly type: string = "PipelineManager";
-
     private globalUniformBindGroup: GPUBindGroup;
     private readonly device: GPUDevice;
     private readonly layouts: Map<string, GPUBindGroupLayout>;
@@ -99,6 +97,10 @@ class PipelineManager implements Service {
                 },
             ],
         });
+    }
+
+    getType(): string {
+        return 'PipelineManager';
     }
 
     destroy() {
