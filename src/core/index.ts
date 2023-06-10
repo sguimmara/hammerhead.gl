@@ -3,7 +3,7 @@ import { type Destroy } from './Destroy';
 import Container from './Container';
 import Context, { type ContextEvents } from './Context';
 import { EventDispatcher } from './EventDispatcher';
-import { EventHandler, ObservableEvent, type Observable } from "./Observable";
+import { type EventHandler, ObservableEvent, type Observable } from "./Observable";
 import MathUtils from './MathUtils';
 import { type Service } from './Service';
 import { type Sized } from './Sized';
