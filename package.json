@@ -1,6 +1,8 @@
 {
   "name": "hammerhead.gl",
-  "version": "0.1.0",
+  "author": "Sébastien Guimmara",
+  "license": "MIT",
+  "version": "0.2.0",
   "type": "module",
   "description": "A 3D renderer written in TypeScript and WebGPU.",
   "main": "index.js",
@@ -11,11 +13,8 @@
     "build": "tsc",
     "doc": "typedoc src/index.ts",
     "start": "vite",
-    "prepublish": "shx rm -fr dist/ && shx mkdir dist && node scripts/prepare-package.mjs",
-    "prepack": "npm run build"
+    "prepack": "shx rm -fr dist/ && shx mkdir dist && node scripts/prepare-package.mjs && npm run build"
   },
-  "author": "Sébastien Guimmara",
-  "license": "MIT",
   "devDependencies": {
     "@loaders.gl/core": "^3.4.4",
     "@loaders.gl/ply": "^3.4.4",
