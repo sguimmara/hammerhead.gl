@@ -1,6 +1,6 @@
 {
   "name": "hammerhead.gl",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "description": "A 3D renderer written in TypeScript and WebGPU.",
   "main": "index.js",
