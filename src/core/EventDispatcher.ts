@@ -7,12 +7,11 @@ export class ObservableEvent {
 }
 
 export type EventHandler = (event: ObservableEvent) => void;
-export type EventType = string;
 
 /**
  * Trait for objects that emit events.
  */
-export interface Observable {
+export interface Observable<T> {
     /**
      * Registers an event handler on this object.
      * @param type The event type.
@@ -20,13 +19,13 @@ export interface Observable {
      * @example
      * myObservable.on('destroy', evt => console.info(`${evt.emitter} was destroyed`));
      */
-    on(type: EventType, handler: EventHandler): void;
+    on(type: T, handler: EventHandler): void;
 }
 
 /**
  * Implementation of {@link Observable}
  */
-export class EventDispatcher<T extends object> implements Observable {
+export class EventDispatcher<T extends object, TEvents extends string> implements Observable<TEvents> {
     private readonly handlers: Map<string, EventHandler[]>;
     private readonly emitter: T;
 
@@ -35,7 +34,7 @@ export class EventDispatcher<T extends object> implements Observable {
         this.emitter = emitter;
     }
 
-    dispatch(type: string) {
+    dispatch(type: TEvents) {
         if (this.handlers.has(type)) {
             const handlers = this.handlers.get(type);
             handlers.forEach(fn => {
@@ -44,7 +43,7 @@ export class EventDispatcher<T extends object> implements Observable {
         }
     }
 
-    on(type: EventType, handler: EventHandler): void {
+    on(type: TEvents, handler: EventHandler): void {
         if (!type) {
             throw new Error('missing event name');
         }

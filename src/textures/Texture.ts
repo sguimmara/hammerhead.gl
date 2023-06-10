@@ -2,11 +2,13 @@ import { Observable, Destroy, EventDispatcher, EventHandler } from "@/core";
 
 let TEXTURE_ID = 0;
 
+export type TextureEvents = 'destroy';
+
 /**
  * A 2D texture.
  */
-class Texture implements Observable, Destroy {
-    private readonly dispatcher: EventDispatcher<Texture>;
+export default class Texture implements Observable<TextureEvents>, Destroy {
+    private readonly dispatcher: EventDispatcher<Texture, TextureEvents>;
     /** The width, in pixels. */
     readonly width: number;
     /** The height, in pixels. */
@@ -25,10 +27,10 @@ class Texture implements Observable, Destroy {
         this.width = options.width;
         this.height = options.height;
         this.data = options.data;
-        this.dispatcher = new EventDispatcher<Texture>(this);
+        this.dispatcher = new EventDispatcher<Texture, TextureEvents>(this);
     }
 
-    on(type: string, handler: EventHandler): void {
+    on(type: TextureEvents, handler: EventHandler): void {
         this.dispatcher.on(type, handler);
     }
 
@@ -36,5 +38,3 @@ class Texture implements Observable, Destroy {
         this.dispatcher.dispatch("destroy");
     }
 }
-
-export default Texture;

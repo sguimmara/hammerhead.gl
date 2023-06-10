@@ -1,13 +1,28 @@
-import { Box3, Clone, Destroy, EventDispatcher, EventHandler, Observable, Version, Versioned, VertexBufferSlot } from '@/core';
+import {
+    Box3,
+    Clone,
+    Destroy,
+    EventDispatcher,
+    EventHandler,
+    Observable,
+    Version,
+    Versioned,
+    VertexBufferSlot,
+} from '@/core';
 import { Color } from 'chroma-js';
 
 let BUFFER_GEOMETRY_ID = 0;
 
+export type GeometryEvents = "destroy";
+
 /**
  * Base class for all geometries.
  */
-class BufferGeometry implements Observable, Destroy, Clone {
-    private readonly dispatcher: EventDispatcher<BufferGeometry>;
+export default class BufferGeometry implements Observable<GeometryEvents>, Destroy, Clone {
+    private readonly dispatcher: EventDispatcher<
+        BufferGeometry,
+        GeometryEvents
+    >;
     readonly id: number;
 
     readonly vertexBuffers: Map<VertexBufferSlot, Versioned<Float32Array>>;
@@ -19,32 +34,45 @@ class BufferGeometry implements Observable, Destroy, Clone {
     private cachedBounds: Box3;
 
     constructor(options: {
-        vertexCount: number,
-        indexCount: number,
-        indexBuffer?: Uint32Array,
-        vertices?: Float32Array,
-        texcoordBuffer?: Float32Array,
-        colorBuffer?: Float32Array,
+        vertexCount: number;
+        indexCount: number;
+        indexBuffer?: Uint32Array;
+        vertices?: Float32Array;
+        texcoordBuffer?: Float32Array;
+        colorBuffer?: Float32Array;
     }) {
         this.id = BUFFER_GEOMETRY_ID++;
         this.vertexBuffers = new Map();
         this.vertexBuffers.set(
             VertexBufferSlot.Position,
-            options.vertices ? new Versioned(options.vertices) : new Versioned(new Float32Array(options.vertexCount * 3)));
-        this.indexBuffer = new Versioned(options.indexBuffer ?? new Uint32Array(options.indexCount));
+            options.vertices
+                ? new Versioned(options.vertices)
+                : new Versioned(new Float32Array(options.vertexCount * 3))
+        );
+        this.indexBuffer = new Versioned(
+            options.indexBuffer ?? new Uint32Array(options.indexCount)
+        );
         if (options.texcoordBuffer) {
             if (!this.vertexBuffers.has(VertexBufferSlot.TexCoord)) {
-                this.vertexBuffers.set(VertexBufferSlot.TexCoord,  new Versioned(options.texcoordBuffer));
+                this.vertexBuffers.set(
+                    VertexBufferSlot.TexCoord,
+                    new Versioned(options.texcoordBuffer)
+                );
             }
         }
         if (options.colorBuffer) {
             if (!this.vertexBuffers.has(VertexBufferSlot.Color)) {
-                this.vertexBuffers.set(VertexBufferSlot.Color, new Versioned<Float32Array>(options.colorBuffer));
+                this.vertexBuffers.set(
+                    VertexBufferSlot.Color,
+                    new Versioned<Float32Array>(options.colorBuffer)
+                );
             }
         }
         this.vertexCount = options.vertexCount;
         this.indexCount = options.indexCount;
-        this.dispatcher = new EventDispatcher<BufferGeometry>(this);
+        this.dispatcher = new EventDispatcher<BufferGeometry, GeometryEvents>(
+            this
+        );
     }
 
     clone(): BufferGeometry {
@@ -53,24 +81,27 @@ class BufferGeometry implements Observable, Destroy, Clone {
             indexCount: this.indexCount,
             vertices: this.getVertexBuffer(VertexBufferSlot.Position)?.value,
             colorBuffer: this.getVertexBuffer(VertexBufferSlot.Color)?.value,
-            texcoordBuffer: this.getVertexBuffer(VertexBufferSlot.TexCoord)?.value,
+            texcoordBuffer: this.getVertexBuffer(VertexBufferSlot.TexCoord)
+                ?.value,
             indexBuffer: this.indexBuffer.value,
         });
     }
 
     getLocalBounds() {
         if (!this.cachedBounds) {
-            this.cachedBounds = Box3.fromPoints(this.vertexBuffers.get(VertexBufferSlot.Position).value);
+            this.cachedBounds = Box3.fromPoints(
+                this.vertexBuffers.get(VertexBufferSlot.Position).value
+            );
         }
         return this.cachedBounds;
     }
 
-    on(type: string, handler: EventHandler): void {
+    on(type: GeometryEvents, handler: EventHandler): void {
         this.dispatcher.on(type, handler);
     }
 
     destroy() {
-        this.dispatcher.dispatch('destroy');
+        this.dispatcher.dispatch("destroy");
     }
 
     getVertexBuffer(slot: VertexBufferSlot): Versioned<Float32Array> | null {
@@ -87,12 +118,15 @@ class BufferGeometry implements Observable, Destroy, Clone {
 
     setColors(colors?: Color[] | Color) {
         if (!this.vertexBuffers.has(VertexBufferSlot.Color)) {
-            this.vertexBuffers.set(VertexBufferSlot.Color, new Versioned(new Float32Array(this.vertexCount * 4)));
+            this.vertexBuffers.set(
+                VertexBufferSlot.Color,
+                new Versioned(new Float32Array(this.vertexCount * 4))
+            );
         }
 
         const item = this.vertexBuffers.get(VertexBufferSlot.Color);
         if (Array.isArray(colors)) {
-            const values = colors.flatMap(c => c.gl());
+            const values = colors.flatMap((c) => c.gl());
             item.value.set(values);
         } else if (colors) {
             const gl = colors.gl();
@@ -111,7 +145,10 @@ class BufferGeometry implements Observable, Destroy, Clone {
 
     setTexCoords(coords?: ArrayLike<number>) {
         if (!this.vertexBuffers.has(VertexBufferSlot.TexCoord)) {
-            this.vertexBuffers.set(VertexBufferSlot.TexCoord,  new Versioned(new Float32Array(this.vertexCount * 2)));
+            this.vertexBuffers.set(
+                VertexBufferSlot.TexCoord,
+                new Versioned(new Float32Array(this.vertexCount * 2))
+            );
         }
 
         if (coords) {
@@ -126,5 +163,3 @@ class BufferGeometry implements Observable, Destroy, Clone {
         this.invalidate(this.indexBuffer);
     }
 }
-
-export default BufferGeometry;

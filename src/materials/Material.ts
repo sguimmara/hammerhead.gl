@@ -65,8 +65,10 @@ function allocateUniforms(layout: UniformInfo[]): Uniform[] {
     return uniforms;
 }
 
-abstract class Material implements Observable, Destroy {
-    private readonly dispatcher: EventDispatcher<Material>;
+export type MaterialEvents = 'destroy';
+
+abstract class Material implements Observable<MaterialEvents>, Destroy {
+    private readonly dispatcher: EventDispatcher<Material, MaterialEvents>;
     private readonly uniforms: Uniform[];
     readonly id: number;
     readonly fragmentShader: string;
@@ -102,7 +104,7 @@ abstract class Material implements Observable, Destroy {
             this.vertexShader
         );
         this.renderingMode = options.renderingMode ?? RenderingMode.Triangles;
-        this.dispatcher = new EventDispatcher<Material>(this);
+        this.dispatcher = new EventDispatcher<Material, MaterialEvents>(this);
         this.uniforms = allocateUniforms(this.layout.uniforms);
     }
 
@@ -110,7 +112,7 @@ abstract class Material implements Observable, Destroy {
         this.dispatcher.dispatch("destroy");
     }
 
-    on(type: string, handler: EventHandler): void {
+    on(type: MaterialEvents, handler: EventHandler): void {
         this.dispatcher.on(type, handler);
     }
 

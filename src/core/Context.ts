@@ -11,16 +11,18 @@ class ContextInfo {
     textures: number;
 }
 
+export type ContextEvents = 'resized';
+
 /**
  * The WebGPU context.
  * @fires resized When the canvas is resized.
  */
-class Context implements Observable {
+export default class Context implements Observable<ContextEvents> {
     private readonly context: GPUCanvasContext;
     private readonly container: Container;
     private readonly bufferStore: BufferStore;
     private readonly textureStore: TextureStore;
-    private readonly dispatcher: EventDispatcher<Context>;
+    private readonly dispatcher: EventDispatcher<Context, ContextEvents>;
 
     readonly device: GPUDevice;
     readonly renderer: Renderer;
@@ -32,7 +34,7 @@ class Context implements Observable {
     ) {
         this.context = context;
         this.device = device;
-        this.dispatcher = new EventDispatcher<Context>(this);
+        this.dispatcher = new EventDispatcher<Context, ContextEvents>(this);
 
         this.container = new Container();
         this.bufferStore = new BufferStore(device);
@@ -64,7 +66,7 @@ class Context implements Observable {
         observer.observe(canvas);
     }
 
-    on(type: string, handler: EventHandler): void {
+    on(type: ContextEvents, handler: EventHandler): void {
         this.dispatcher.on(type, handler);
     }
 
@@ -102,5 +104,3 @@ class Context implements Observable {
         return new Context(context, device, canvas);
     }
 }
-
-export default Context;

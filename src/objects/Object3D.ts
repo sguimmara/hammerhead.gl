@@ -9,13 +9,15 @@ import {
 
 let ID = 0;
 
+export type Object3DEvents = 'destroy' | 'added';
+
 /**
  * Base class for all objects in the scene graph.
  * @fires added When this object is added as a child of another object.
  */
-export default class Object3D implements Observable, Destroy {
+export default class Object3D implements Observable<Object3DEvents>, Destroy {
     readonly id: number;
-    readonly dispatcher: EventDispatcher<Object3D>;
+    readonly dispatcher: EventDispatcher<Object3D, Object3DEvents>;
     readonly transform: Transform = new Transform();
     label: string;
 
@@ -29,10 +31,10 @@ export default class Object3D implements Observable, Destroy {
 
     constructor() {
         this.id = ID++;
-        this.dispatcher = new EventDispatcher<Object3D>(this);
+        this.dispatcher = new EventDispatcher<Object3D, Object3DEvents>(this);
     }
 
-    on(type: string, handler: EventHandler): void {
+    on(type: Object3DEvents, handler: EventHandler): void {
         this.dispatcher.on(type, handler);
     }
 
@@ -45,10 +47,10 @@ export default class Object3D implements Observable, Destroy {
     }
 
     destroy(): void {
-        this.dispatch("destroy");
+        this.dispatch('destroy');
     }
 
-    protected dispatch(type: string) {
+    protected dispatch(type: Object3DEvents) {
         this.dispatcher.dispatch(type);
     }
 
@@ -64,7 +66,7 @@ export default class Object3D implements Observable, Destroy {
             this.children.push(child);
         }
         child.transform.localMatrixNeedsUpdate = true;
-        child.dispatch("added");
+        child.dispatch('added');
     }
 
     /**

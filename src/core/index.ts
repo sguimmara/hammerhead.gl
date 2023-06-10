@@ -1,8 +1,8 @@
 import Box3 from './Box3';
 import { type Destroy } from './Destroy';
 import Container from './Container';
-import Context from './Context';
-import { EventDispatcher, ObservableEvent, type EventHandler, type EventType, type Observable } from './EventDispatcher';
+import Context, { ContextEvents } from './Context';
+import { EventDispatcher, ObservableEvent, type EventHandler, type Observable } from './EventDispatcher';
 import MathUtils from './MathUtils';
 import { type Service } from './Service';
 import { type Sized } from './Sized';
@@ -20,8 +20,8 @@ export {
     Container,
     Destroy,
     Context,
+    ContextEvents,
     Observable,
-    EventType,
     EventHandler,
     EventDispatcher,
     ObservableEvent,
