@@ -1,7 +1,7 @@
 /**
  * Traits for objects that can be cloned.
  */
-export default interface Destroy {
+export interface Clone {
     /**
      * Clones this object.
      */

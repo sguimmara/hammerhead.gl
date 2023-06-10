@@ -4,8 +4,8 @@ import triangleVertexShader from './default.vert.wgsl';
 import lineListVertexShader from './line-list.vert.wgsl';
 import pointsVertexShader from './points.vert.wgsl';
 import wireframeVertexShader from './wireframe.vert.wgsl';
-import Texture from '../textures/Texture';
-import Material, { CullingMode, FrontFace, RenderingMode } from './Material';
+import { Texture } from '@/textures';
+import Material, { RenderingMode, CullingMode, FrontFace } from './Material';
 
 const WHITE = chroma('white');
 

@@ -1,8 +1,9 @@
-import { Vec3, mat4, vec3, vec4 } from "wgpu-matrix";
-import Box3 from "../core/Box3";
-import BufferGeometry from "../geometries/BufferGeometry";
-import Material from "../materials/Material";
-import Object3D from "./Object3D";
+import { Box3 } from '@/core';
+import { BufferGeometry } from '@/geometries';
+import { Material } from '@/materials';
+import { vec3 } from 'wgpu-matrix';
+
+import Object3D from './Object3D';
 
 export default class Mesh extends Object3D {
     material: Material;

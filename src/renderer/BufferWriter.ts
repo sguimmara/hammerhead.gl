@@ -1,8 +1,6 @@
+import { Sized, Visitable, Version, Visitor } from "@/core";
 import { Color } from "chroma-js";
-import { Mat4, Vec2, Vec3, Vec4 } from "wgpu-matrix";
-import Sized from "../core/Sized";
-import { Visitor, Visitable } from "../core/Visitable";
-import Version from "../core/Version";
+import { Vec2, Vec3, Vec4, Mat4 } from "wgpu-matrix";
 
 type Source = Sized & Visitable & Version;
 

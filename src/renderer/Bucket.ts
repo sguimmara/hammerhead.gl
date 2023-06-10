@@ -1,4 +1,4 @@
-import Mesh from "../objects/Mesh";
+import { Mesh } from "@/objects";
 
 export default class Bucket {
     order: number;

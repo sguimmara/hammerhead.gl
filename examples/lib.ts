@@ -1,13 +1,12 @@
 import chroma from "chroma-js";
-import BufferGeometry from "../src/geometries/BufferGeometry";
-import Texture from "../src/textures/Texture";
-
 import { parse } from "@loaders.gl/core";
 import * as ply from '@loaders.gl/ply';
-import Object3D from '../src/objects/Object3D';
-import Mesh from "../src/objects/Mesh";
-import Camera from "../src/objects/Camera";
-import Box3 from "../src/core/Box3";
+
+import BufferGeometry from 'hammerhead.gl/geometries/BufferGeometry';
+import Texture from 'hammerhead.gl/textures/Texture';
+import Mesh from 'hammerhead.gl/objects/Mesh';
+import Camera from 'hammerhead.gl/objects/Camera';
+import Box3 from 'hammerhead.gl/core/Box3';
 
 export function bindSlider(elementId: string, fn: Function) {
     const slider = document.getElementById(elementId) as HTMLInputElement;
@@ -64,7 +63,8 @@ export async function loadPLYModel(uri: string): Promise<BufferGeometry> {
     return geometry;
 }
 
-export function load8bitImage(img: HTMLImageElement, url: string): Promise<Texture> {
+export function load8bitImage(url: string): Promise<Texture> {
+    const img = new Image();
     return new Promise((resolve, reject) => {
         img.crossOrigin = 'anonymous';
         img.src = url;

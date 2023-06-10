@@ -1,13 +1,13 @@
-import Context from '../../../src/core/Context';
-import Mesh from '../../../src/objects/Mesh';
-import BasicMaterial from '../../../src/materials/BasicMaterial';
 import chroma from 'chroma-js';
-import Camera from '../../../src/objects/Camera';
-import { RenderingMode } from '../../../src/materials/Material';
-import { deg2rad } from '../../../src/core/MathUtils';
+import Context from 'hammerhead.gl/core/Context';
+import { deg2rad } from 'hammerhead.gl/core/MathUtils';
+import Quad from 'hammerhead.gl/geometries/Quad';
+import WireQuad from 'hammerhead.gl/geometries/WireQuad';
+import BasicMaterial from 'hammerhead.gl/materials/BasicMaterial';
+import { RenderingMode } from 'hammerhead.gl/materials/Material';
+import Camera from 'hammerhead.gl/objects/Camera';
+import Mesh from 'hammerhead.gl/objects/Mesh';
 import { frameObject, load8bitImage } from '../../lib';
-import Quad from '../../../src/geometries/Quad';
-import WireQuad from '../../../src/geometries/WireQuad';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -16,8 +16,7 @@ async function main() {
     const renderer = context.renderer;
     renderer.clearColor = chroma('gray');
 
-    const img = new Image();
-    const logo = await load8bitImage(img, '/webgpu.png');
+    const logo = await load8bitImage('/webgpu.png');
 
     const cube = new Mesh({
         material: new BasicMaterial()

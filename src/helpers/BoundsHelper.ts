@@ -1,11 +1,8 @@
-import Mesh from "../objects/Mesh";
-import Object3D from "../objects/Object3D";
-import WireCube from '../geometries/WireCube';
-import BasicMaterial from "../materials/BasicMaterial";
-import { RenderingMode } from "../materials/Material";
-import chroma, { Color } from "chroma-js";
-import Update from "../core/Update";
-import Box3 from "../core/Box3";
+import { Box3, Update } from '@/core';
+import { WireCube } from '@/geometries';
+import { BasicMaterial, RenderingMode } from '@/materials';
+import { Mesh, Object3D } from '@/objects';
+import chroma, { Color } from 'chroma-js';
 
 export default class BoundsHelper
     extends Mesh

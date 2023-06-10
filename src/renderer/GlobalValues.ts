@@ -1,7 +1,5 @@
-import { Mat4, Vec2, vec2 } from "wgpu-matrix";
-import Sized from "../core/Sized";
-import { Visitable, Visitor } from "../core/Visitable";
-import Version from "../core/Version";
+import { Sized, Visitable, Version, Visitor } from '@/core';
+import { Mat4, Vec2, vec2 } from 'wgpu-matrix';
 
 class GlobalValues implements Sized, Visitable, Version {
     time: number = 0;

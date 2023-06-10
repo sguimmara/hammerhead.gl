@@ -1,11 +1,7 @@
+import { Box3, Clone, Destroy, EventDispatcher, EventHandler, Observable, Version, Versioned, VertexBufferSlot } from '@/core';
+import { Color } from 'chroma-js';
+
 let BUFFER_GEOMETRY_ID = 0;
-import { Color } from "chroma-js";
-import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatcher";
-import { VertexBufferSlot } from "../core/constants";
-import Destroy from "../core/Destroy";
-import Box3 from "../core/Box3";
-import Version, { Versioned } from "../core/Version";
-import Clone from "../core/Clone";
 
 class BufferGeometry implements Observable, Destroy, Clone {
     private readonly dispatcher: EventDispatcher<BufferGeometry>;

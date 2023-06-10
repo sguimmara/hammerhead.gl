@@ -1,4 +1,4 @@
-import Material from "../Material";
+import Material from "@/materials/Material";
 
 class PostProcessingMaterial extends Material {
     constructor(fragmentShader: string, vertexShader: string) {

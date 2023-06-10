@@ -1,7 +1,7 @@
 /**
- * Traits for objects that hold unmanaged memory.
+ * Trait for objects that hold unmanaged memory.
  */
-export default interface Destroy {
+export interface Destroy {
     /**
      * Release unmanaged memory.
      */

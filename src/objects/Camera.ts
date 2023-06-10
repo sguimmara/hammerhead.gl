@@ -1,10 +1,9 @@
-import { Mat4, Vec3, mat4 } from "wgpu-matrix";
-import { deg2rad } from "../core/MathUtils";
-import Transform from "../core/Transform";
+import { MathUtils, Transform } from '@/core';
+import { Mat4, mat4 } from 'wgpu-matrix';
 
-type CameraMode = 'orthographic' | 'perspective';``
+type CameraMode = 'orthographic' | 'perspective';
 
-const DEFAULT_FOV = deg2rad(45);
+const DEFAULT_FOV = MathUtils.deg2rad(45);
 
 export default class Camera {
     mode: CameraMode;

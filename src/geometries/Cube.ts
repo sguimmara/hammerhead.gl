@@ -1,5 +1,6 @@
-import chroma from "chroma-js";
-import BufferGeometry from "./BufferGeometry";
+import chroma from 'chroma-js';
+
+import BufferGeometry from './BufferGeometry';
 
 export default class Cube extends BufferGeometry {
     constructor() {

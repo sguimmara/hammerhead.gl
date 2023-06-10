@@ -9,6 +9,9 @@ export class ObservableEvent {
 export type EventHandler = (event: ObservableEvent) => void;
 export type EventType = string;
 
+/**
+ * Trait for objects that emit events.
+ */
 export interface Observable {
     /**
      * Registers an event handler on this object.

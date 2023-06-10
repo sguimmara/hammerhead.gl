@@ -1,11 +1,12 @@
-import Context from "../../../src/core/Context";
-import { deg2rad } from "../../../src/core/MathUtils";
-import Camera from "../../../src/objects/Camera";
-import BasicMaterial from "../../../src/materials/BasicMaterial";
-import chroma from "chroma-js";
-import { frameObject, loadPLYModel } from "../../lib";
-import Mesh from "../../../src/objects/Mesh";
-import { CullingMode, FrontFace, RenderingMode } from "../../../src/materials/Material";
+import chroma from 'chroma-js';
+import Context from 'hammerhead.gl/core/Context';
+import { deg2rad } from 'hammerhead.gl/core/MathUtils';
+import BasicMaterial from 'hammerhead.gl/materials/BasicMaterial';
+import { CullingMode, FrontFace, RenderingMode } from 'hammerhead.gl/materials/Material';
+import Camera from 'hammerhead.gl/objects/Camera';
+import Mesh from 'hammerhead.gl/objects/Mesh';
+
+import { frameObject, loadPLYModel } from '../../lib';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 

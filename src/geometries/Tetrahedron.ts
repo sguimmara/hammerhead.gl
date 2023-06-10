@@ -1,16 +1,16 @@
-import chroma from "chroma-js";
-import { deg2rad } from "../core/MathUtils";
-import BufferGeometry from "./BufferGeometry"
+import { MathUtils } from '@/core';
+import BufferGeometry from './BufferGeometry';
+import chroma from 'chroma-js';
 
 export default class Tetrahedron extends BufferGeometry {
     constructor() {
         super({ vertexCount: 4, indexCount: 12 })
 
-        const b0x = Math.cos(deg2rad(-120));
-        const b0z = Math.sin(deg2rad(-120));
+        const b0x = Math.cos(MathUtils.deg2rad(-120));
+        const b0z = Math.sin(MathUtils.deg2rad(-120));
 
-        const b1x = Math.cos(deg2rad(120));
-        const b1z = Math.sin(deg2rad(120));
+        const b1x = Math.cos(MathUtils.deg2rad(120));
+        const b1z = Math.sin(MathUtils.deg2rad(120));
 
         this.setPositions([
             b0z, 0, b0x, // Base 0 (b0)

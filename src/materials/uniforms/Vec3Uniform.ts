@@ -1,6 +1,6 @@
 import { Vec3, vec3 } from "wgpu-matrix";
-import { Visitor } from "../../core/Visitable";
 import BufferUniform from "./BufferUniform";
+import { Visitor } from "@/core";
 
 export default class Vec3Uniform extends BufferUniform {
     value: Vec3;

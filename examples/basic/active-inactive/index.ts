@@ -1,16 +1,15 @@
-import Context from '../../../src/core/Context';
-import Mesh from '../../../src/objects/Mesh';
-import GeometryBuilder from '../../../src/geometries/GeometryBuilder';
-import BasicMaterial from '../../../src/materials/BasicMaterial';
+import Context from 'hammerhead.gl/core/Context';
+import GeometryBuilder from 'hammerhead.gl/geometries/GeometryBuilder';
+import BasicMaterial from 'hammerhead.gl/materials/BasicMaterial';
+import Camera from 'hammerhead.gl/objects/Camera';
+import Mesh from 'hammerhead.gl/objects/Mesh';
+
 import { bindToggle, load8bitImage } from '../../lib';
-import Camera from '../../../src/objects/Camera';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
 async function main() {
-    const img = new Image();
-
-    const logo = await load8bitImage(img, '/webgpu.png');
+    const logo = await load8bitImage('/webgpu.png');
 
     const context = await Context.create(canvas);
     const renderer = context.renderer;

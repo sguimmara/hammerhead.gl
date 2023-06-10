@@ -1,6 +1,4 @@
-import Sized from "../../core/Sized";
-import Version from "../../core/Version";
-import { Visitable, Visitor } from "../../core/Visitable";
+import { Sized, Visitable, Version, Visitor } from "@/core";
 import BufferUniform from "./BufferUniform";
 
 type ObjectValue = Sized & Visitable & Version;

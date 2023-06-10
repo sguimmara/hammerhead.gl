@@ -1,5 +1,4 @@
-import Destroy from "../core/Destroy";
-import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatcher";
+import { Observable, Destroy, EventDispatcher, EventHandler } from "@/core";
 
 let TEXTURE_ID = 0;
 
@@ -11,9 +10,9 @@ class Texture implements Observable, Destroy {
     readonly data: BufferSource;
 
     constructor(options: {
-        width: number,
-        height: number,
-        data: BufferSource,
+        width: number;
+        height: number;
+        data: BufferSource;
     }) {
         this.id = TEXTURE_ID++;
         this.width = options.width;
@@ -27,7 +26,7 @@ class Texture implements Observable, Destroy {
     }
 
     destroy() {
-        this.dispatcher.dispatch('destroy');
+        this.dispatcher.dispatch("destroy");
     }
 }
 

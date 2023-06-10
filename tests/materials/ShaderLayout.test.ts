@@ -1,4 +1,5 @@
-import { AttributeType, ShaderLayout, UniformType } from '../../src/materials/ShaderLayout';
+import { describe, expect, it } from 'vitest'
+import { AttributeType, ShaderLayout, UniformType } from '@/materials';
 
 describe('parse', () => {
     it('should return the correct attributes', () => {
@@ -53,7 +54,7 @@ describe('parse', () => {
             @group(GLOBAL_UNIFORMS) @binding(0) var colorTexture: texture_2d<f32>;
             @group(OBJECT_UNIFORMS) @binding(2) var colorSampler: sampler;
 
-            @group(OBJECT_UNIFORMS) @binding(1) var<uniform> color: vec4f;
+            @group(MATERIAL_UNIFORMS) @binding(1) var<uniform> color: vec4f;
         `;
 
         const layout = ShaderLayout.parse(fragmentShader, vertexShader);
@@ -62,7 +63,7 @@ describe('parse', () => {
         expect(uniforms.length).toEqual(2);
 
         const binding1 = uniforms[0];
-        expect(binding1.group).toEqual(1);
+        expect(binding1.group).toEqual(2);
         expect(binding1.binding).toEqual(2);
         expect(binding1.type).toEqual(UniformType.Sampler);
         expect(binding1.name).toEqual('colorSampler');

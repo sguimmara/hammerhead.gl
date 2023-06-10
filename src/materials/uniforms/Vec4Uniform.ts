@@ -1,7 +1,7 @@
 import { Color } from "chroma-js";
 import { Vec4, vec4 } from "wgpu-matrix";
-import { Visitor } from "../../core/Visitable";
 import BufferUniform from "./BufferUniform";
+import { Visitor } from "@/core";
 
 export default class Vec4Uniform extends BufferUniform {
     value: Vec4;

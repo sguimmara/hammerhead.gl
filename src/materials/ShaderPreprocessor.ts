@@ -15,16 +15,9 @@ function getChunk(key: string): string {
     return chunks.get(key);
 }
 
-function process(input: string): string {
-    const re = /#chunk (\w+)/;
-
-    throw new Error('not implemented');
-}
-
 export default {
     setChunk,
     getChunk,
-    process,
 }
 
 setChunk('constants', constants);

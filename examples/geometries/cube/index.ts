@@ -1,23 +1,26 @@
-import Context from '../../../src/core/Context';
-import Mesh from '../../../src/objects/Mesh';
-import BasicMaterial from '../../../src/materials/BasicMaterial';
 import chroma from 'chroma-js';
-import Camera from '../../../src/objects/Camera';
-import Cube from '../../../src/geometries/Cube';
-import { RenderingMode } from '../../../src/materials/Material';
-import { deg2rad } from '../../../src/core/MathUtils';
-import { frameObject } from '../../lib';
-import WireCube from '../../../src/geometries/WireCube';
+import Context from 'hammerhead.gl/core/Context';
+import { deg2rad } from 'hammerhead.gl/core/MathUtils';
+import Cube from 'hammerhead.gl/geometries/Cube';
+import WireCube from 'hammerhead.gl/geometries/WireCube';
+import BasicMaterial from 'hammerhead.gl/materials/BasicMaterial';
+import { RenderingMode } from 'hammerhead.gl/materials/Material';
+import Camera from 'hammerhead.gl/objects/Camera';
+import Mesh from 'hammerhead.gl/objects/Mesh';
+import { frameObject, load8bitImage } from '../../lib';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
 async function main() {
+    const logo = await load8bitImage('/webgpu.png');
     const context = await Context.create(canvas);
     const renderer = context.renderer;
     renderer.clearColor = chroma('gray');
 
     const cube = new Mesh({
-        material: new BasicMaterial().withDiffuseColor(chroma('yellow')),
+        material: new BasicMaterial()
+            .withDiffuseColor(chroma('yellow'))
+            .withColorTexture(logo),
         geometry: new Cube(),
     });
 

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "lib": ["ES2022", "DOM"],
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "node",
+    "noEmit": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "baseUrl": "../src",
+    "paths": {
+      "@/*": ["./*"]
+    },
+    "typeRoots": [ "../node_modules/@webgpu/types", "../node_modules/@types"]
+  },
+  "include": ["**/*"],
+}

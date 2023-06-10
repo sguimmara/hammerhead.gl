@@ -1,4 +1,4 @@
-import Texture from "../../textures/Texture";
+import { Texture } from "@/textures";
 import Uniform from "./Uniform";
 
 export default class TextureUniform implements Uniform {

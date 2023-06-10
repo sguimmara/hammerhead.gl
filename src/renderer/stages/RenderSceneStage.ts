@@ -1,12 +1,10 @@
-import BufferGeometry from "../../geometries/BufferGeometry";
-import { RenderingMode } from "../../materials/Material";
-import ObjectUniform from "../../materials/uniforms/ObjectUniform";
-import Mesh from "../../objects/Mesh";
-import Bucket from "../Bucket";
-import BufferStore from "../BufferStore";
-import PipelineManager from "../PipelineManager";
-import TextureStore from "../TextureStore";
-import Stage from "./Stage";
+import { BufferGeometry } from '@/geometries';
+import { RenderingMode } from '@/materials';
+import { ObjectUniform } from '@/materials/uniforms';
+import { Mesh } from '@/objects';
+import { Bucket, BufferStore, PipelineManager, TextureStore } from '@/renderer';
+
+import Stage from './Stage';
 
 /**
  * A render pipeline stage that render the scene into a color attachment.
@@ -41,28 +39,45 @@ class RenderSceneStage extends Stage {
         this.pipelineManager.bindPerObjectUniforms(pass, mesh);
 
         switch (material.renderingMode) {
-            case RenderingMode.Triangles: {
-                if (this.currentGeometry == null || this.currentGeometry != geometry) {
-                    this.currentGeometry = geometry;
-                    this.pipelineManager.bindVertexBuffers(geometry, pass);
-                }
+            case RenderingMode.Triangles:
+                {
+                    if (
+                        this.currentGeometry == null ||
+                        this.currentGeometry != geometry
+                    ) {
+                        this.currentGeometry = geometry;
+                        this.pipelineManager.bindVertexBuffers(geometry, pass);
+                    }
 
-                pass.drawIndexed(geometry.indexCount);
-            }
-            break;
+                    pass.drawIndexed(geometry.indexCount);
+                }
+                break;
             case RenderingMode.TriangleLines: {
-                this.pipelineManager.bindVertexBufferUniforms(this.currentPipeline, geometry, pass);
+                this.pipelineManager.bindVertexBufferUniforms(
+                    this.currentPipeline,
+                    geometry,
+                    pass
+                );
                 const triangleCount = geometry.indexBuffer.value.length / 3;
                 pass.draw(6 * triangleCount, 1, 0, 0);
             }
-            case RenderingMode.LineList: {
-                this.pipelineManager.bindVertexBufferUniforms(this.currentPipeline, geometry, pass);
-                const lineCount = geometry.indexBuffer.value.length / 2;
-                pass.draw(6 * lineCount, 1, 0, 0);
-            }
-            break;
+            case RenderingMode.LineList:
+                {
+                    this.pipelineManager.bindVertexBufferUniforms(
+                        this.currentPipeline,
+                        geometry,
+                        pass
+                    );
+                    const lineCount = geometry.indexBuffer.value.length / 2;
+                    pass.draw(6 * lineCount, 1, 0, 0);
+                }
+                break;
             case RenderingMode.Points: {
-                this.pipelineManager.bindVertexBufferUniforms(this.currentPipeline, geometry, pass);
+                this.pipelineManager.bindVertexBufferUniforms(
+                    this.currentPipeline,
+                    geometry,
+                    pass
+                );
                 const vertexCount = geometry.vertexCount;
                 pass.draw(6 * vertexCount);
             }
@@ -81,7 +96,7 @@ class RenderSceneStage extends Stage {
 
     executeStage(encoder: GPUCommandEncoder) {
         if (!this.output) {
-            throw new Error('no output texture to render into');
+            throw new Error("no output texture to render into");
         }
         this.currentPipeline = null;
         this.currentGeometry = null;

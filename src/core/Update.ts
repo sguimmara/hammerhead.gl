@@ -1,7 +1,7 @@
 /**
  * Trait for objects that can be periodically updated.
  */
-export default interface Update {
+export interface Update {
     /**
      * Updates this object.
      */

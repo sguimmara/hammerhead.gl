@@ -1,14 +1,15 @@
-import Context from '../../../src/core/Context';
-import Mesh from '../../../src/objects/Mesh';
-import BasicMaterial from '../../../src/materials/BasicMaterial';
-import chroma, { Color } from 'chroma-js';
-import { deg2rad } from '../../../src/core/MathUtils';
-import Camera from '../../../src/objects/Camera';
-import Object3D from '../../../src/objects/Object3D';
-import { frameBounds, loadPLYModel, wait } from '../../lib';
-import Box3 from '../../../src/core/Box3';
+import chroma from 'chroma-js';
+import Box3 from 'hammerhead.gl/core/Box3';
+import Context from 'hammerhead.gl/core/Context';
+import { deg2rad } from 'hammerhead.gl/core/MathUtils';
+import BasicMaterial from 'hammerhead.gl/materials/BasicMaterial';
+import { CullingMode, FrontFace, RenderingMode } from 'hammerhead.gl/materials/Material';
+import Camera from 'hammerhead.gl/objects/Camera';
+import Mesh from 'hammerhead.gl/objects/Mesh';
+import Object3D from 'hammerhead.gl/objects/Object3D';
 import { vec3 } from 'wgpu-matrix';
-import { CullingMode, FrontFace, RenderingMode } from '../../../src/materials/Material';
+
+import { frameBounds, loadPLYModel, wait } from '../../lib';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -16,10 +17,6 @@ async function main() {
     const context = await Context.create(canvas);
     const renderer = context.renderer;
     renderer.clearColor = chroma('gray');
-
-    const wireframe = new BasicMaterial({
-        renderingMode: RenderingMode.TriangleLines,
-    }).withDiffuseColor(chroma('black'));
 
     const geometry = await loadPLYModel('/files/hammerhead.ply');
 

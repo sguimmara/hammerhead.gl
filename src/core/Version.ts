@@ -1,11 +1,20 @@
 /**
- * Traits for objects that can change over time.
+ * Trait for objects that can change over time.
  */
-export default interface Version {
+export interface Version {
     getVersion(): number;
     incrementVersion(): void;
 }
 
+/**
+ * Wraps a type and version it.
+ * @example
+ *
+ * const foo = new MyType();
+ * const versioned = new Versioned<MyType>(foo);
+ *
+ * const currentVersion = versioned.getVersion();
+ */
 export class Versioned<T> implements Version {
     value: T;
     private version: number;

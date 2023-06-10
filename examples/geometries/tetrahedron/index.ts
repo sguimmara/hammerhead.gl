@@ -1,12 +1,11 @@
-import Context from '../../../src/core/Context';
-import Mesh from '../../../src/objects/Mesh';
-import GeometryBuilder from '../../../src/geometries/GeometryBuilder';
-import BasicMaterial from '../../../src/materials/BasicMaterial';
 import chroma from 'chroma-js';
-import { deg2rad } from '../../../src/core/MathUtils';
-import Camera from '../../../src/objects/Camera';
-import Tetrahedron from '../../../src/geometries/Tetrahedron';
-import { CullingMode, FrontFace, RenderingMode } from '../../../src/materials/Material';
+import Context from 'hammerhead.gl/core/Context';
+import { deg2rad } from 'hammerhead.gl/core/MathUtils';
+import Tetrahedron from 'hammerhead.gl/geometries/Tetrahedron';
+import BasicMaterial from 'hammerhead.gl/materials/BasicMaterial';
+import { RenderingMode } from 'hammerhead.gl/materials/Material';
+import Camera from 'hammerhead.gl/objects/Camera';
+import Mesh from 'hammerhead.gl/objects/Mesh';
 import { frameObject } from '../../lib';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;

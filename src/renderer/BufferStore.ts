@@ -1,9 +1,7 @@
-import Destroy from "../core/Destroy";
-import Service from "../core/Service";
-import { VertexBufferSlot } from "../core/constants";
-import BufferGeometry from "../geometries/BufferGeometry";
-import BufferUniform from "../materials/uniforms/BufferUniform";
-import BufferWriter from "./BufferWriter";
+import { Destroy, Service, VertexBufferSlot } from '@/core';
+import { BufferGeometry } from '@/geometries';
+import { BufferUniform } from '@/materials/uniforms';
+import BufferWriter from './BufferWriter';
 
 class GeometryStorage implements Destroy {
     currentVersion: number;

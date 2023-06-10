@@ -1,6 +1,4 @@
-import Sized from "../../core/Sized";
-import Version from "../../core/Version";
-import { Visitable, Visitor } from "../../core/Visitable";
+import { Sized, Version, Visitable, Visitor } from "@/core";
 import Uniform from "./Uniform";
 
 export default abstract class BufferUniform implements Sized, Visitable, Version, Uniform {

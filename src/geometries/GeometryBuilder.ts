@@ -1,7 +1,7 @@
-import { Vec2, vec2 } from "wgpu-matrix";
-import BufferGeometry from "./BufferGeometry";
-import chroma from "chroma-js";
-import { deg2rad } from "../core/MathUtils";
+import chroma from 'chroma-js';
+import { Vec2, vec2 } from 'wgpu-matrix';
+
+import BufferGeometry from './BufferGeometry';
 
 class GeometryBuilder {
     static quad(center: Vec2, size: Vec2): BufferGeometry {

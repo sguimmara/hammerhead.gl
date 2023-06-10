@@ -1,6 +1,6 @@
-import Context from '../../../src/core/Context';
 import chroma from 'chroma-js';
-import Camera from '../../../src/objects/Camera';
+import { Context } from 'hammerhead.gl/core';
+import { Camera } from 'hammerhead.gl/objects';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 

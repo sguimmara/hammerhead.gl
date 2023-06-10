@@ -1,18 +1,15 @@
-import { Color } from "chroma-js";
-import { mat4 } from "wgpu-matrix";
-import Container from "../core/Container";
-import Destroy from "../core/Destroy";
-import PostProcessingMaterial from "../materials/postprocessing/PostProcessingMaterial";
-import ObjectUniform from "../materials/uniforms/ObjectUniform";
-import BufferStore from "./BufferStore";
-import GlobalValues from "./GlobalValues";
-import PipelineManager from "./PipelineManager";
-import TextureStore from "./TextureStore";
-import PostProcessingStage from "./stages/PostProcessingStage";
-import RenderSceneStage from "./stages/RenderSceneStage";
-import Stage from "./stages/Stage";
-import RenderCommand from "./RenderCommand";
-import Camera from "../objects/Camera";
+import { Container, Destroy } from '@/core';
+import { PostProcessingMaterial } from '@/materials/postprocessing';
+import { ObjectUniform } from '@/materials/uniforms';
+import { Camera } from '@/objects';
+import { Color } from 'chroma-js';
+
+import { PipelineManager } from '.';
+import BufferStore from './BufferStore';
+import GlobalValues from './GlobalValues';
+import RenderCommand from './RenderCommand';
+import { PostProcessingStage, RenderSceneStage, Stage } from './stages';
+import TextureStore from './TextureStore';
 
 class RenderPipeline implements Destroy {
     private readonly stages: Stage[];
@@ -23,7 +20,7 @@ class RenderPipeline implements Destroy {
     private readonly sceneStage: RenderSceneStage;
 
     private finalRenderTexture: GPUTexture;
-    private intermediateTextures : GPUTexture[];
+    private intermediateTextures: GPUTexture[];
 
     private globalUniform: ObjectUniform;
     private globalValues: GlobalValues;
@@ -31,17 +28,21 @@ class RenderPipeline implements Destroy {
     private clearColor: Color;
     private lastFrame: number;
 
-    constructor(
-        device: GPUDevice,
-        container: Container
-    ) {
+    constructor(device: GPUDevice, container: Container) {
         this.device = device;
         this.globalValues = new GlobalValues();
         this.globalUniform = new ObjectUniform(this.globalValues);
-        this.pipelineManager = container.get<PipelineManager>('PipelineManager');
-        this.bufferStore = container.get<BufferStore>('BufferStore');
-        this.textureStore = container.get<TextureStore>('TextureStore');
-        this.sceneStage = new RenderSceneStage(this.device, this.bufferStore, this.pipelineManager, this.textureStore, this.globalUniform);
+        this.pipelineManager =
+            container.get<PipelineManager>("PipelineManager");
+        this.bufferStore = container.get<BufferStore>("BufferStore");
+        this.textureStore = container.get<TextureStore>("TextureStore");
+        this.sceneStage = new RenderSceneStage(
+            this.device,
+            this.bufferStore,
+            this.pipelineManager,
+            this.textureStore,
+            this.globalUniform
+        );
         this.stages = [this.sceneStage];
         this.intermediateTextures = [null, null];
     }
@@ -50,7 +51,7 @@ class RenderPipeline implements Destroy {
      * Removes all stage (except for the default render stage).
      */
     resetPipeline() {
-        this.stages.forEach(s => s.destroy());
+        this.stages.forEach((s) => s.destroy());
         this.stages.length = 1;
     }
 
@@ -59,16 +60,20 @@ class RenderPipeline implements Destroy {
     }
 
     destroy() {
-        this.stages.forEach(s => s.destroy());
+        this.stages.forEach((s) => s.destroy());
     }
 
     private createSwapTexture(reference: GPUTexture) {
         return this.device.createTexture({
-            label: 'swap',
-            dimension: '2d',
+            label: "swap",
+            dimension: "2d",
             format: reference.format,
             size: [reference.width, reference.height],
-            usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING
+            usage:
+                GPUTextureUsage.COPY_DST |
+                GPUTextureUsage.COPY_SRC |
+                GPUTextureUsage.RENDER_ATTACHMENT |
+                GPUTextureUsage.TEXTURE_BINDING,
         });
     }
 
@@ -79,8 +84,7 @@ class RenderPipeline implements Destroy {
             this.pipelineManager,
             this.textureStore,
             this.globalUniform
-        )
-        .withMaterial(material);
+        ).withMaterial(material);
 
         this.stages.push(stage);
 
@@ -99,7 +103,8 @@ class RenderPipeline implements Destroy {
         this.globalValues.viewMatrix = camera.getViewMatrix();
 
         const aspect = target.width / target.height;
-        this.globalValues.projectionMatrix = camera.updateProjectionMatrix(aspect);
+        this.globalValues.projectionMatrix =
+            camera.updateProjectionMatrix(aspect);
         this.globalValues.incrementVersion();
     }
 
@@ -108,9 +113,9 @@ class RenderPipeline implements Destroy {
         const target = command.target;
 
         if (this.finalRenderTexture != target) {
-            this.intermediateTextures.forEach(t => {
+            this.intermediateTextures.forEach((t) => {
                 t?.destroy();
-            })
+            });
             this.intermediateTextures[0] = this.createSwapTexture(target);
             this.intermediateTextures[1] = this.createSwapTexture(target);
             this.finalRenderTexture = target;
@@ -119,7 +124,9 @@ class RenderPipeline implements Destroy {
         this.updateGlobalValues(target, command.camera);
 
         this.sceneStage
-            .withOutput(this.stages.length > 1 ? this.intermediateTextures[0] : target)
+            .withOutput(
+                this.stages.length > 1 ? this.intermediateTextures[0] : target
+            )
             .withClearColor(this.clearColor)
             .withRenderBuckets(command.buckets)
             .executeStage(encoder);

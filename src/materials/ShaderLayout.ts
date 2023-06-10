@@ -1,4 +1,4 @@
-import { BindGroups } from "../core/constants";
+import { BindGroups } from "@/core";
 
 export class UniformInfo {
     readonly binding: number;
@@ -163,7 +163,7 @@ function parseUniforms(shaderCode: string): UniformInfo[] {
             const info = new UniformInfo(group, binding, type, name);
 
             // TODO we ignore the global binding for now
-            if (group === BindGroups.MaterialUniforms) {
+            if (group !== BindGroups.GlobalValues) {
                 result.push(info);
             }
         }

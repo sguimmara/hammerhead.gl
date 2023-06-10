@@ -1,18 +1,19 @@
 import { Color } from "chroma-js";
-import { Vec4, Vec2, vec4 } from "wgpu-matrix";
-import Destroy from "../core/Destroy";
-import { Observable, EventHandler, EventDispatcher } from "../core/EventDispatcher";
-import Sampler from "../textures/Sampler";
-import Texture from "../textures/Texture";
-import { UniformType, UniformInfo, ShaderLayout } from "./ShaderLayout";
-import BufferUniform from "./uniforms/BufferUniform";
-import SamplerUniform from "./uniforms/SamplerUniform";
-import ScalarUniform from "./uniforms/ScalarUniform";
-import TextureUniform from "./uniforms/TextureUniform";
-import Uniform from "./uniforms/Uniform";
-import Vec2Uniform from "./uniforms/Vec2Uniform";
-import Vec4Uniform from "./uniforms/Vec4Uniform";
-import Mat4Uniform from "./uniforms/Mat4Uniform";
+import { Vec2, Vec4, vec4 } from "wgpu-matrix";
+
+import { ShaderLayout, UniformInfo, UniformType } from "./ShaderLayout";
+import { Observable, Destroy, EventDispatcher, EventHandler } from "@/core";
+import { Sampler, Texture } from "@/textures";
+import {
+    TextureUniform,
+    SamplerUniform,
+    ScalarUniform,
+    Vec2Uniform,
+    Vec4Uniform,
+    Mat4Uniform,
+    Uniform,
+    BufferUniform,
+} from "./uniforms";
 
 let MATERIAL_ID = 0;
 
@@ -31,7 +32,7 @@ export enum CullingMode {
 
 export enum FrontFace {
     CW,
-    CCW
+    CCW,
 }
 
 function allocateUniform(type: UniformType) {
@@ -85,10 +86,10 @@ abstract class Material implements Observable, Destroy {
     constructor(options: {
         fragmentShader: string;
         vertexShader: string;
-        requiresObjectUniforms?: boolean,
-        renderingMode?: RenderingMode,
-        cullingMode?: CullingMode,
-        frontFace?: FrontFace,
+        requiresObjectUniforms?: boolean;
+        renderingMode?: RenderingMode;
+        cullingMode?: CullingMode;
+        frontFace?: FrontFace;
     }) {
         this.id = MATERIAL_ID++;
         this.requiresObjectUniforms = options.requiresObjectUniforms ?? true;
@@ -96,7 +97,10 @@ abstract class Material implements Observable, Destroy {
         this.vertexShader = options.vertexShader;
         this.cullingMode = options.cullingMode ?? CullingMode.Back;
         this.frontFace = options.frontFace ?? FrontFace.CW;
-        this.layout = ShaderLayout.parse(this.fragmentShader, this.vertexShader);
+        this.layout = ShaderLayout.parse(
+            this.fragmentShader,
+            this.vertexShader
+        );
         this.renderingMode = options.renderingMode ?? RenderingMode.Triangles;
         this.dispatcher = new EventDispatcher<Material>(this);
         this.uniforms = allocateUniforms(this.layout.uniforms);
@@ -180,11 +184,11 @@ abstract class Material implements Observable, Destroy {
 
     getBufferUniforms(): BufferUniform[] {
         const result: BufferUniform[] = [];
-        this.uniforms.forEach(u => {
+        this.uniforms.forEach((u) => {
             if (u instanceof BufferUniform) {
                 result.push(u);
             }
-        })
+        });
         return result;
     }
 

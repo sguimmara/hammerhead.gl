@@ -1,5 +1,9 @@
-import Destroy from "./Destroy";
+import { Destroy } from "@/core";
 
-export default interface Service extends Destroy {
+/**
+ * A service that can be registered and used
+ * via a dependency injection pattern.
+ */
+export interface Service extends Destroy {
     type: string;
 }

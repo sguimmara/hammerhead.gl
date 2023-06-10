@@ -6,13 +6,17 @@
     "module": "ES2022",
     "moduleResolution": "node",
     "noEmit": false,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": true,
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["./*"]
+    },
     "typeRoots": [ "./node_modules/@webgpu/types", "./node_modules/@types"]
   },
-  "include": ["src/**/*", "examples/**/*", "index.ts"],
-  "exclude": ["**/*.spec.ts"]
+  "include": ["src/**/*", "index.ts"],
 }

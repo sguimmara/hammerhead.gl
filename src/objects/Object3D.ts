@@ -1,7 +1,11 @@
-import Box3 from "../core/Box3";
-import Destroy from "../core/Destroy";
-import { EventDispatcher, EventHandler, Observable } from "../core/EventDispatcher";
-import Transform from "../core/Transform";
+import {
+    Observable,
+    Destroy,
+    EventDispatcher,
+    Transform,
+    EventHandler,
+    Box3,
+} from "@/core";
 
 let ID = 0;
 
@@ -36,12 +40,12 @@ export default class Object3D implements Observable, Destroy {
      * Returns the axis-aligned bounding box (AABB) of this object.
      */
     getWorldBounds(): Box3 {
-        const children = this.children.map(c => c.getWorldBounds());
+        const children = this.children.map((c) => c.getWorldBounds());
         return Box3.union(children);
     }
 
     destroy(): void {
-        this.dispatch('destroy');
+        this.dispatch("destroy");
     }
 
     protected dispatch(type: string) {
@@ -60,7 +64,7 @@ export default class Object3D implements Observable, Destroy {
             this.children.push(child);
         }
         child.transform.localMatrixNeedsUpdate = true;
-        child.dispatch('added');
+        child.dispatch("added");
     }
 
     /**

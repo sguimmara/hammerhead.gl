@@ -1,7 +1,5 @@
 import { Mat4, mat4, Vec3 } from "wgpu-matrix";
-import Version from "./Version";
-import { Visitable, Visitor } from "./Visitable";
-import Sized from "./Sized";
+import { Sized, Version, Visitable, Visitor } from "@/core";
 
 const DEFAULT_UP = [0, 1, 0];
 

@@ -1,22 +1,23 @@
-import { BindGroups } from "../../core/constants";
-import PostProcessingMaterial from "../../materials/postprocessing/PostProcessingMaterial";
-import ObjectUniform from "../../materials/uniforms/ObjectUniform";
-import BufferStore from "../BufferStore";
-import PipelineManager from "../PipelineManager";
-import TextureStore from "../TextureStore";
-import Stage from "./Stage";
+import { BindGroups } from '@/core';
+import { PostProcessingMaterial } from '@/materials/postprocessing';
+import { ObjectUniform } from '@/materials/uniforms';
+
+import BufferStore from '../BufferStore';
+import PipelineManager from '../PipelineManager';
+import TextureStore from '../TextureStore';
+import Stage from './Stage';
 
 class PostProcessingStage extends Stage {
     private pipeline: GPURenderPipeline;
     private bindGroup: GPUBindGroup;
-    private material : PostProcessingMaterial;
+    private material: PostProcessingMaterial;
 
     constructor(
         device: GPUDevice,
         bufferStore: BufferStore,
         pipelineManager: PipelineManager,
         textureStore: TextureStore,
-        GlobalValues: ObjectUniform,
+        GlobalValues: ObjectUniform
     ) {
         super(device, bufferStore, pipelineManager, textureStore, GlobalValues);
     }
@@ -34,7 +35,7 @@ class PostProcessingStage extends Stage {
         const pass = encoder.beginRenderPass(this.renderPassDescriptor);
 
         pass.setPipeline(this.pipeline);
-        const entries : GPUBindGroupEntry[] = [
+        const entries: GPUBindGroupEntry[] = [
             { binding: 0, resource: this.inputView },
             { binding: 1, resource: this.inputSampler },
         ];
@@ -42,15 +43,21 @@ class PostProcessingStage extends Stage {
         const uniforms = this.material.layout.uniforms;
         if (uniforms.length > 2) {
             for (let i = 2; i < uniforms.length; i++) {
-                this.pipelineManager.getBindGroupEntries(this.material, i, entries);
+                this.pipelineManager.getBindGroupEntries(
+                    this.material,
+                    i,
+                    entries
+                );
             }
         }
 
         this.pipelineManager.bindGlobalUniforms(pass, this.GlobalValues);
         this.bindGroup = this.device.createBindGroup({
-            label: 'stage texture bind group',
-            layout: this.pipeline.getBindGroupLayout(BindGroups.MaterialUniforms),
-            entries
+            label: "stage texture bind group",
+            layout: this.pipeline.getBindGroupLayout(
+                BindGroups.MaterialUniforms
+            ),
+            entries,
         });
         pass.setBindGroup(BindGroups.MaterialUniforms, this.bindGroup);
 

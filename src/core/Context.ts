@@ -1,9 +1,10 @@
-import Container from "./Container";
-import { EventDispatcher, EventHandler, Observable } from "./EventDispatcher";
-import BufferStore from "../renderer/BufferStore";
-import PipelineManager from "../renderer/PipelineManager";
-import TextureStore from "../renderer/TextureStore";
-import Renderer from "../renderer/Renderer";
+import { Container, Observable, EventDispatcher, EventHandler } from "@/core";
+import {
+    BufferStore,
+    PipelineManager,
+    Renderer,
+    TextureStore,
+} from "@/renderer";
 
 class ContextInfo {
     buffers: number;
@@ -24,7 +25,11 @@ class Context implements Observable {
     readonly device: GPUDevice;
     readonly renderer: Renderer;
 
-    private constructor(context: GPUCanvasContext, device: GPUDevice, canvas: HTMLCanvasElement) {
+    private constructor(
+        context: GPUCanvasContext,
+        device: GPUDevice,
+        canvas: HTMLCanvasElement
+    ) {
         this.context = context;
         this.device = device;
         this.dispatcher = new EventDispatcher<Context>(this);
@@ -39,14 +44,20 @@ class Context implements Observable {
 
         this.renderer = new Renderer(this.device, this.context, this.container);
 
-        const observer = new ResizeObserver(entries => {
+        const observer = new ResizeObserver((entries) => {
             for (const entry of entries) {
                 const canvas = entry.target as HTMLCanvasElement;
                 const width = entry.contentBoxSize[0].inlineSize;
                 const height = entry.contentBoxSize[0].blockSize;
-                canvas.width = Math.min(width, this.device.limits.maxTextureDimension2D);
-                canvas.height = Math.min(height, this.device.limits.maxTextureDimension2D);
-                this.dispatcher.dispatch('resized');
+                canvas.width = Math.min(
+                    width,
+                    this.device.limits.maxTextureDimension2D
+                );
+                canvas.height = Math.min(
+                    height,
+                    this.device.limits.maxTextureDimension2D
+                );
+                this.dispatcher.dispatch("resized");
             }
         });
 
@@ -57,7 +68,7 @@ class Context implements Observable {
         this.dispatcher.on(type, handler);
     }
 
-    getInfo(): ContextInfo {
+    getInfo(): ContextInfo {
         const info = new ContextInfo();
 
         info.buffers = this.bufferStore.getBufferCount();
@@ -76,7 +87,7 @@ class Context implements Observable {
      * @param canvas The canvas.
      */
     static async create(canvas: HTMLCanvasElement): Promise<Context> {
-        const context = canvas.getContext('webgpu');
+        const context = canvas.getContext("webgpu");
         const adapter = await navigator.gpu?.requestAdapter();
         const device = await adapter?.requestDevice();
         const format = navigator.gpu.getPreferredCanvasFormat();
@@ -85,7 +96,7 @@ class Context implements Observable {
             format,
         });
         if (device == null) {
-            throw new Error('WebGPU is not supported on this browser.');
+            throw new Error("WebGPU is not supported on this browser.");
         }
 
         return new Context(context, device, canvas);

@@ -1,5 +1,5 @@
-import chroma from "chroma-js";
-import BufferGeometry from "./BufferGeometry";
+import BufferGeometry from './BufferGeometry';
+import chroma from 'chroma-js';
 
 export default class WireCube extends BufferGeometry {
     constructor() {
