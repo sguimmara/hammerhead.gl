@@ -9,11 +9,11 @@
   "scripts": {
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "lint": "tsc --noEmit",
-    "build": "tsc",
+    "lint": "ttsc --noEmit",
+    "build": "ttsc",
     "doc": "typedoc src/index.ts",
     "start": "vite",
-    "prepack": "shx rm -fr dist/ && shx mkdir dist && node scripts/prepare-package.mjs && npm run build"
+    "prepack": "shx rm -fr dist/ && shx mkdir dist && npx copyfiles -u 1 './src/**/*.wgsl' dist && node scripts/prepare-package.mjs && npm run build"
   },
   "devDependencies": {
     "@loaders.gl/core": "^3.4.4",
@@ -29,7 +29,7 @@
     "shx": "^0.3.4",
     "ts-node": "^10.9.1",
     "typedoc": "^0.24.8",
-    "typescript": "^5.1.3",
+    "typescript": "^4.9.5",
     "url": "^0.11.0",
     "vite": "^4.3.9",
     "vite-plugin-glsl": "^1.1.2",
@@ -39,6 +39,8 @@
   },
   "dependencies": {
     "chroma-js": "^2.4.2",
+    "ttypescript": "^1.5.15",
+    "typescript-transform-paths": "^3.4.6",
     "wgpu-matrix": "^2.4.0"
   }
 }
