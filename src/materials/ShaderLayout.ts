@@ -51,6 +51,7 @@ export class ShaderLayout {
     }
 
     static parse(fragmentShader: string, vertexShader: string): ShaderLayout {
+        // TODO parse uniforms in both fragment and vertex shader
         const uniforms = parseUniforms(fragmentShader);
         const attributes = getAttributes(vertexShader);
         return new ShaderLayout(attributes, uniforms);
