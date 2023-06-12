@@ -2,7 +2,7 @@
   "name": "hammerhead.gl",
   "author": "Sébastien Guimmara",
   "license": "MIT",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "description": "A 3D renderer written in TypeScript and WebGPU.",
   "main": "index.js",
