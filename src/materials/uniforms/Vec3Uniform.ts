@@ -14,7 +14,7 @@ export default class Vec3Uniform extends BufferUniform {
     }
 
     getByteSize(): number {
-        return 8;
+        return 12;
     }
 
     visit(visitor: Visitor): void {

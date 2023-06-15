@@ -1,17 +1,15 @@
-import chroma, { Color } from 'chroma-js';
-import fragmentShader from './BasicMaterial.frag.wgsl';
-import triangleVertexShader from './default.vert.wgsl';
-import lineListVertexShader from './line-list.vert.wgsl';
-import pointsVertexShader from './points.vert.wgsl';
-import wireframeVertexShader from './wireframe.vert.wgsl';
-import { Texture } from '@/textures';
-import Material, { RenderingMode, CullingMode, FrontFace } from './Material';
+import chroma, { Color } from "chroma-js";
+import fragmentShader from "./BasicMaterial.frag.wgsl";
+import triangleVertexShader from "./default.vert.wgsl";
+import lineListVertexShader from "./line-list.vert.wgsl";
+import pointsVertexShader from "./points.vert.wgsl";
+import wireframeVertexShader from "./wireframe.vert.wgsl";
+import { Texture } from "@/textures";
+import Material, { RenderingMode, CullingMode, FrontFace } from "./Material";
 
-const WHITE = chroma('white');
+const WHITE = chroma("white");
 
-function selectVertexShader(params: {
-    renderingMode?: RenderingMode
-}): string {
+function selectVertexShader(params: { renderingMode?: RenderingMode }): string {
     const { renderingMode } = params;
     if (renderingMode) {
         switch (renderingMode) {
@@ -28,25 +26,36 @@ function selectVertexShader(params: {
 }
 
 class BasicMaterial extends Material {
-    constructor(params: {
-        renderingMode?: RenderingMode,
-        cullingMode?: CullingMode,
-        frontFace?: FrontFace,
-    } = {}) {
+    private readonly colorBinding: number;
+    private readonly colorTextureBinding: number;
+
+    constructor(
+        params: {
+            renderingMode?: RenderingMode;
+            cullingMode?: CullingMode;
+            frontFace?: FrontFace;
+        } = {}
+    ) {
         super({
             fragmentShader,
             vertexShader: selectVertexShader(params),
-            ...params });
+            ...params,
+        });
+
+        this.colorBinding = this.layout.getUniformBinding("color");
+        this.colorTextureBinding =
+            this.layout.getUniformBinding("colorTexture");
+
         this.withDiffuseColor(WHITE);
     }
 
     withDiffuseColor(color: Color) {
-        this.setColor(2, color);
+        this.setColor(this.colorBinding, color);
         return this;
     }
 
     withColorTexture(texture: Texture) {
-        this.setTexture(0, texture);
+        this.setTexture(this.colorTextureBinding, texture);
         return this;
     }
 }

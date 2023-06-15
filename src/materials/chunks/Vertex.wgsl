@@ -1,5 +1,5 @@
 struct Vertex {
-    @location(0) position: vec3f,
-    @location(1) texcoord: vec2f,
-    @location(2) color: vec4f,
+    ATTRIBUTE(position, vec3f)
+    ATTRIBUTE(texcoord, vec2f)
+    ATTRIBUTE(color, vec4f)
 };

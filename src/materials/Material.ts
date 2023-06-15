@@ -1,7 +1,8 @@
 import { Color } from "chroma-js";
 import { Vec2, Vec4, vec4 } from "wgpu-matrix";
 
-import { ShaderLayout, UniformInfo, UniformType } from "./ShaderLayout";
+import { ShaderLayout, UniformInfo } from "./ShaderLayout";
+import ShaderPreprocessor from "./ShaderPreprocessor";
 import { Observable, Destroy, EventDispatcher, EventHandler } from "@/core";
 import { Sampler, Texture } from "@/textures";
 import {
@@ -9,11 +10,13 @@ import {
     SamplerUniform,
     ScalarUniform,
     Vec2Uniform,
+    Vec3Uniform,
     Vec4Uniform,
     Mat4Uniform,
     Uniform,
     BufferUniform,
 } from "./uniforms";
+import UniformType from "./UniformType";
 
 let MATERIAL_ID = 0;
 
@@ -41,12 +44,12 @@ function allocateUniform(type: UniformType) {
             return new TextureUniform();
         case UniformType.Sampler:
             return new SamplerUniform();
-        case UniformType.Scalar:
+        case UniformType.Float32:
             return new ScalarUniform();
         case UniformType.Vec2:
             return new Vec2Uniform();
         case UniformType.Vec3:
-            throw new Error("not implemented");
+            return new Vec3Uniform();
         case UniformType.Vec4:
             return new Vec4Uniform();
         case UniformType.Mat4:
@@ -67,7 +70,7 @@ function allocateUniforms(layout: UniformInfo[]): Uniform[] {
 
 export type MaterialEvents = 'destroy';
 
-abstract class Material implements Observable<MaterialEvents>, Destroy {
+class Material implements Observable<MaterialEvents>, Destroy {
     private readonly dispatcher: EventDispatcher<Material, MaterialEvents>;
     private readonly uniforms: Uniform[];
     readonly id: number;
@@ -92,20 +95,20 @@ abstract class Material implements Observable<MaterialEvents>, Destroy {
         renderingMode?: RenderingMode;
         cullingMode?: CullingMode;
         frontFace?: FrontFace;
+        renderOrder?: number,
     }) {
         this.id = MATERIAL_ID++;
         this.requiresObjectUniforms = options.requiresObjectUniforms ?? true;
-        this.fragmentShader = options.fragmentShader;
-        this.vertexShader = options.vertexShader;
+        const shaderInfo = ShaderPreprocessor.process(options.vertexShader, options.fragmentShader);
+        this.fragmentShader = shaderInfo.fragment;
+        this.vertexShader = shaderInfo.vertex;
+        this.layout = shaderInfo.layout;
         this.cullingMode = options.cullingMode ?? CullingMode.Back;
         this.frontFace = options.frontFace ?? FrontFace.CW;
-        this.layout = ShaderLayout.parse(
-            this.fragmentShader,
-            this.vertexShader
-        );
         this.renderingMode = options.renderingMode ?? RenderingMode.Triangles;
         this.dispatcher = new EventDispatcher<Material, MaterialEvents>(this);
         this.uniforms = allocateUniforms(this.layout.uniforms);
+        this.renderOrder = options.renderOrder ?? 0;
     }
 
     destroy() {
