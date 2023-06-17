@@ -4,6 +4,7 @@ import { BasicMaterial, RenderingMode } from "hammerhead.gl/materials";
 import { Camera, Mesh } from "hammerhead.gl/objects";
 
 import { frameObject, loadPLYModel } from "../../lib";
+import { Pane } from "tweakpane";
 
 let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
@@ -40,6 +41,18 @@ async function main() {
     requestAnimationFrame(renderLoop);
 
     context.on("resized", render);
+
+    const pane = new Pane();
+
+    const params = {
+        pointSize: 2,
+    };
+
+    pane.addInput(params, 'pointSize', { min: 0, max: 20 })
+        .on('change', ev => {
+            material.withPointSize(ev.value);
+            render();
+        });
 }
 
 main();

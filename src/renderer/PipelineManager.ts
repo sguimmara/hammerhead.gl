@@ -176,18 +176,25 @@ class PipelineManager implements Service {
         }
     }
 
+    getVisibility(uniform: UniformInfo): number {
+        return (uniform.presentInVertexShader ? GPUShaderStage.VERTEX : 0)
+             | (uniform.presentInFragmentShader ? GPUShaderStage.FRAGMENT : 0);
+    }
+
     getBindGroupLayoutEntry(uniform: UniformInfo): GPUBindGroupLayoutEntry {
+        const visibility = this.getVisibility(uniform);
+
         switch (uniform.type) {
             case UniformType.Texture2D:
                 return {
                     binding: uniform.binding,
-                    visibility: GPUShaderStage.FRAGMENT,
+                    visibility,
                     texture: {},
                 };
             case UniformType.Sampler:
                 return {
                     binding: uniform.binding,
-                    visibility: GPUShaderStage.FRAGMENT,
+                    visibility,
                     sampler: {},
                 };
             case UniformType.Float32:
@@ -197,7 +204,7 @@ class PipelineManager implements Service {
             case UniformType.GlobalValues:
                 return {
                     binding: uniform.binding,
-                    visibility: GPUShaderStage.FRAGMENT,
+                    visibility,
                     buffer: {},
                 };
             default:
