@@ -9,6 +9,7 @@ import {
 import { Camera, Mesh } from "hammerhead.gl/objects";
 
 import { frameObject, loadPLYModel } from "../../lib";
+import { Pane } from "tweakpane";
 
 let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
@@ -52,6 +53,16 @@ async function main() {
     requestAnimationFrame(renderLoop);
 
     context.on("resized", render);
+
+    const pane = new Pane();
+    const params = {
+        offset: 0.002,
+    };
+    pane.addInput(params, "offset", {
+        label: 'wireframe offset',
+        min: -1,
+        max: 1,
+    }).on("change", (ev) => wireframe.withLineOffset(ev.value));
 }
 
 main();

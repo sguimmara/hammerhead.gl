@@ -5,6 +5,8 @@
 
 @group(OBJECT_UNIFORMS) @binding(0) var<uniform> modelMatrix: mat4x4f;
 
+UNIFORM(offset, f32);
+
 @vertex fn vs(vertex : Vertex) -> VSOutput {
     var localToElement = array<u32, 6>(0u, 1u, 1u, 1u, 1u, 0u);
 
@@ -26,8 +28,7 @@
     var p = globals.projectionMatrix;
     var viewPosition = v * m * position;
     // To avoid z-fighting with solid meshes
-    // TODO can we do better ?
-    viewPosition.w += 0.002;
+    viewPosition.w += offset;
     var projected = p * viewPosition;
 
     var color = vec4<f32>(
