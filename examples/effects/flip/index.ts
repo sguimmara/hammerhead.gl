@@ -3,8 +3,9 @@ import { ScreenQuad } from "hammerhead.gl/geometries";
 import { BasicMaterial } from "hammerhead.gl/materials";
 import { Flip } from "hammerhead.gl/materials/postprocessing";
 import { Camera, Mesh } from "hammerhead.gl/objects";
+import { Pane } from 'tweakpane';
 
-import { bindToggle, load8bitImage } from "../../lib";
+import { load8bitImage } from "../../lib";
 
 let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
@@ -35,15 +36,23 @@ async function main() {
 
     context.on("resized", render);
 
-    bindToggle("toggle-flip-x", (v: boolean) => {
-        flip.withFlipX(v);
-        render();
-    });
+    const pane = new Pane();
 
-    bindToggle("toggle-flip-y", (v: boolean) => {
-        flip.withFlipY(v);
-        render();
-    });
+    const params = {
+        flipX: false,
+        flipY: false,
+    };
+
+    pane.addInput(params, 'flipX')
+        .on('change', ev => {
+            flip.withFlipX(ev.value);
+            render();
+        });
+    pane.addInput(params, 'flipY')
+        .on('change', ev => {
+            flip.withFlipY(ev.value);
+            render()
+        });
 }
 
 main();
