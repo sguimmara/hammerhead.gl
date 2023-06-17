@@ -1,4 +1,4 @@
-import { Service, Container, BindGroups, VertexBufferSlot } from "@/core";
+import { Service, Container, BindGroups, VertexBufferSlot, Versioned } from "@/core";
 import { BufferGeometry } from "@/geometries";
 import { Material, RenderingMode } from "@/materials";
 import { CullingMode, FrontFace } from "@/materials/Material";
@@ -23,7 +23,7 @@ class PerGeometry {
 }
 
 class PerMaterial {
-    material: Material;
+    material: Versioned<Material>;
     vertexShader: GPUShaderModule;
     fragmentShader: GPUShaderModule;
     pipeline: GPURenderPipeline;
@@ -112,7 +112,7 @@ class PipelineManager implements Service {
         });
 
         this.perMaterialMap.forEach((o) => {
-            o.material.getBufferUniforms().forEach((u) => {
+            o.material.value.getBufferUniforms().forEach((u) => {
                 this.bufferStore.destroyUniformBuffer(u);
             });
         });
@@ -487,11 +487,102 @@ class PipelineManager implements Service {
         };
     }
 
+    updatePipeline(perMaterial: PerMaterial) {
+        const material = perMaterial.material.value;
+        if (perMaterial.material.getVersion() === material.getVersion()) {
+            return;
+        }
+
+        perMaterial.material.setVersion(material.getVersion());
+
+        const colorTarget: GPUColorTargetState = {
+            format: navigator.gpu.getPreferredCanvasFormat(),
+            blend: {
+                color: {
+                    operation: material.colorBlending.op,
+                    srcFactor: material.colorBlending.srcFactor,
+                    dstFactor: material.colorBlending.dstFactor,
+                },
+                alpha: {
+                    operation: material.alphaBlending.op,
+                    srcFactor: material.alphaBlending.srcFactor,
+                    dstFactor: material.alphaBlending.dstFactor,
+                },
+            },
+        };
+
+        const bindGroupLayouts: GPUBindGroupLayout[] = [
+            this.globalUniformLayout,
+            this.getMaterialLayout(material),
+        ];
+
+        if (material.requiresObjectUniforms) {
+            bindGroupLayouts.push(this.objectUniformLayout);
+        }
+
+        if (material.renderingMode != RenderingMode.Triangles) {
+            bindGroupLayouts.push(this.vertexUniformLayout);
+        }
+
+        const layout = this.device.createPipelineLayout({
+            bindGroupLayouts,
+        });
+
+        const attributes = material.layout.attributes;
+
+        let buffers: GPUVertexBufferLayout[] = [];
+        if (material.renderingMode === RenderingMode.Triangles) {
+            buffers = attributes.map((attr) =>
+                this.getVertexBufferLayout(attr)
+            );
+        }
+
+        const pipeline = this.device.createRenderPipeline({
+            label: `Material ${material.id}`,
+            layout,
+            depthStencil: {
+                format: "depth32float", // TODO expose as global config
+                depthWriteEnabled: material.depthWriteEnabled,
+                depthCompare: material.depthCompare,
+            },
+            primitive: this.getPrimitiveState(material),
+            vertex: {
+                module: perMaterial.vertexShader,
+                entryPoint: "vs",
+                buffers,
+            },
+            fragment: {
+                module: perMaterial.fragmentShader,
+                entryPoint: "fs",
+                targets: [colorTarget],
+            },
+        });
+
+        perMaterial.pipeline = pipeline;
+
+        const entries: GPUBindGroupEntry[] = [];
+
+        const uniforms = material.layout.uniforms;
+        for (let i = 0; i < uniforms.length; i++) {
+            this.getBindGroupEntries(material, i, entries);
+        }
+
+        const materialBindGroup = this.device.createBindGroup({
+            layout: pipeline.getBindGroupLayout(
+                BindGroups.MaterialUniforms
+            ),
+            entries,
+        });
+
+        perMaterial.materialBindGroup = materialBindGroup;
+    }
+
     getPipeline(material: Material): GPURenderPipeline {
         let perMaterial = this.perMaterialMap.get(material.id);
         if (!perMaterial) {
             perMaterial = new PerMaterial();
-            perMaterial.material = material;
+            perMaterial.material = new Versioned(material);
+            perMaterial.material.setVersion(-1);
             perMaterial.vertexShader = this.createShaderModule(
                 material.vertexShader
             );
@@ -499,94 +590,15 @@ class PipelineManager implements Service {
                 material.fragmentShader
             );
 
-            // TODO get blending mode from material.
-            const colorTarget: GPUColorTargetState = {
-                format: navigator.gpu.getPreferredCanvasFormat(),
-                blend: {
-                    color: {
-                        operation: "add",
-                        srcFactor: "src-alpha",
-                        dstFactor: "one-minus-src-alpha",
-                    },
-                    alpha: {
-                        operation: "subtract",
-                        srcFactor: "src-alpha",
-                        dstFactor: "one-minus-src-alpha",
-                    },
-                },
-            };
-
-            const bindGroupLayouts: GPUBindGroupLayout[] = [
-                this.globalUniformLayout,
-                this.getMaterialLayout(material),
-            ];
-
-            if (material.requiresObjectUniforms) {
-                bindGroupLayouts.push(this.objectUniformLayout);
-            }
-
-            if (material.renderingMode != RenderingMode.Triangles) {
-                bindGroupLayouts.push(this.vertexUniformLayout);
-            }
-
-            const layout = this.device.createPipelineLayout({
-                bindGroupLayouts,
-            });
-
-            const attributes = material.layout.attributes;
-
-            let buffers: GPUVertexBufferLayout[] = [];
-            if (material.renderingMode === RenderingMode.Triangles) {
-                buffers = attributes.map((attr) =>
-                    this.getVertexBufferLayout(attr)
-                );
-            }
-
-            // TODO get depth buffer behaviour from material
-            const pipeline = this.device.createRenderPipeline({
-                label: `Material ${material.id}`,
-                layout,
-                depthStencil: {
-                    format: "depth32float", // TODO expose as global config
-                    depthWriteEnabled: material.depthWriteEnabled,
-                    depthCompare: "less", // TODO get from material
-                },
-                primitive: this.getPrimitiveState(material),
-                vertex: {
-                    module: perMaterial.vertexShader,
-                    entryPoint: "vs",
-                    buffers,
-                },
-                fragment: {
-                    module: perMaterial.fragmentShader,
-                    entryPoint: "fs",
-                    targets: [colorTarget],
-                },
-            });
-
-            perMaterial.pipeline = pipeline;
-
-            const entries: GPUBindGroupEntry[] = [];
-
-            const uniforms = material.layout.uniforms;
-            for (let i = 0; i < uniforms.length; i++) {
-                this.getBindGroupEntries(material, i, entries);
-            }
-
-            const materialBindGroup = this.device.createBindGroup({
-                layout: pipeline.getBindGroupLayout(
-                    BindGroups.MaterialUniforms
-                ),
-                entries,
-            });
-
-            perMaterial.materialBindGroup = materialBindGroup;
+            this.updatePipeline(perMaterial);
 
             this.perMaterialMap.set(material.id, perMaterial);
 
             material.on("destroy", (evt) =>
                 this.onMaterialDestroyed(evt.emitter as Material)
             );
+        } else {
+            this.updatePipeline(perMaterial);
         }
 
         return perMaterial.pipeline;

@@ -9,81 +9,97 @@ import {
 import { Camera, Mesh, Object3D } from "hammerhead.gl/objects";
 
 import { load8bitImage } from "../../lib";
+import { Pane } from "tweakpane";
+import { BlendFactor, BlendOp } from "hammerhead.gl/materials/Material";
 
 let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
 async function main() {
-    const logo = await load8bitImage("/webgpu-transparent.png");
+    const checkerboard = await load8bitImage("/checkerboard.jpg");
     const explosion = await load8bitImage("/explosion.png");
 
     const context = await Context.create(canvas);
     const renderer = context.renderer;
-    renderer.clearColor = chroma("gray");
-
-    const material = new BasicMaterial().withColorTexture(logo);
+    renderer.clearColor = chroma("cyan");
 
     const background = new Mesh({
-        material,
+        material: new BasicMaterial()
+            .withColorTexture(checkerboard)
+            .withDiffuseColor(chroma([255, 255, 255, 0.4], 'rgb')),
         geometry: new ScreenQuad(),
     });
 
     background.transform.setPosition(0, 0, -0.2);
 
-    function makeTile(material: Material, x: number, y: number, z: number) {
-        const tile = new Mesh({
-            material,
-            geometry: new Quad(),
-        });
+    const tile = new Mesh({
+        material: new BasicMaterial().withColorTexture(explosion),
+        geometry: new Quad(),
+    });
 
-        const wireframe = new Mesh({
-            material: new BasicMaterial({
-                renderingMode: RenderingMode.LineList,
-            }).withDiffuseColor(chroma("yellow")),
-            geometry: new WireQuad(),
-        });
+    const wireframe = new Mesh({
+        material: new BasicMaterial({
+            renderingMode: RenderingMode.LineList,
+        }).withDiffuseColor(chroma("yellow")),
+        geometry: new WireQuad(),
+    });
 
-        tile.add(wireframe);
-
-        tile.transform.setScale(0.5, 0.5, 0.5);
-        tile.transform.setPosition(x, y, z);
-
-        return tile;
-    }
-
-    const normal = makeTile(
-        new BasicMaterial().withColorTexture(explosion),
-        -0.7,
-        0.7,
-        -0.1
-    );
-    const blend = makeTile(
-        new BasicMaterial().withColorTexture(explosion),
-        0,
-        0.7,
-        -0.1
-    );
-    const add = makeTile(
-        new BasicMaterial().withColorTexture(explosion),
-        +0.7,
-        0.7,
-        -0.1
-    );
+    tile.add(wireframe);
 
     const root = new Object3D();
 
     root.add(background);
-    root.add(normal);
-    root.add(blend);
-    root.add(add);
+    root.add(tile);
 
     const camera = new Camera("orthographic");
 
-    function renderLoop() {
+    function render() {
         renderer.render(root, camera);
-        requestAnimationFrame(renderLoop);
     }
 
-    requestAnimationFrame(renderLoop);
+    context.on('resized', () => render());
+
+    render();
+
+    const pane = new Pane();
+
+    function createFolder(material: Material) {
+        const colorFolder = pane.addFolder({
+            title: 'color blending',
+            expanded: true,
+        });
+
+        const alphaFolder = pane.addFolder({
+            title: 'alpha blending',
+            expanded: true,
+        });
+
+        colorFolder.addInput(material.colorBlending, 'op', {
+            options: BlendOp,
+        });
+        colorFolder.addInput(material.colorBlending, 'srcFactor', {
+            options: BlendFactor,
+        });
+        colorFolder.addInput(material.colorBlending, 'dstFactor', {
+            options: BlendFactor,
+        });
+
+        alphaFolder.addInput(material.alphaBlending, 'op', {
+            options: BlendOp,
+        });
+        alphaFolder.addInput(material.alphaBlending, 'srcFactor', {
+            options: BlendFactor,
+        });
+        alphaFolder.addInput(material.alphaBlending, 'dstFactor', {
+            options: BlendFactor,
+        });
+    }
+
+    createFolder(tile.material);
+
+    pane.on('change', () => {
+        tile.material.incrementVersion();
+        render();
+    });
 }
 
 main();

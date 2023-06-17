@@ -32,6 +32,7 @@ class BasicMaterial extends Material {
     private readonly colorBinding: number;
     private readonly colorTextureBinding: number;
     private readonly pointSizeBinding: number;
+    private readonly offsetBinding: number;
 
     constructor(
         params: {
@@ -50,12 +51,24 @@ class BasicMaterial extends Material {
         this.colorTextureBinding =
             this.layout.getUniformBinding("colorTexture");
 
-        if (this.renderingMode === RenderingMode.Points) {
-            this.pointSizeBinding = this.layout.getUniformBinding('pointSize');
-            this.withPointSize(2);
+        switch (this.renderingMode) {
+            case RenderingMode.TriangleLines:
+            case RenderingMode.LineList:
+                this.offsetBinding = this.layout.getUniformBinding('offset');
+                this.withLineOffset(0.002);
+                break;
+            case RenderingMode.Points:
+                this.pointSizeBinding = this.layout.getUniformBinding('pointSize');
+                this.withPointSize(2);
+                break;
         }
 
         this.withDiffuseColor(WHITE);
+    }
+
+    withLineOffset(size: number) {
+        this.setScalar(this.offsetBinding, size);
+        return this;
     }
 
     withPointSize(size: number) {

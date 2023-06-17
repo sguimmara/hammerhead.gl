@@ -1,6 +1,20 @@
 import { CullingMode, FrontFace, Material, RenderingMode } from "@/materials";
 import { describe, expect, it } from "vitest";
 
+describe('Version', () => {
+    describe('incrementVersion', () => {
+        it('should increment version', () => {
+            const mat = new Material({ fragmentShader: "", vertexShader: "" });
+
+            const version = mat.getVersion();
+
+            mat.incrementVersion();
+
+            expect(mat.getVersion()).toEqual(version + 1);
+        });
+    });
+});
+
 describe("constructor", () => {
     it("should assign a unique id", () => {
         const mat1 = new Material({ fragmentShader: "", vertexShader: "" });

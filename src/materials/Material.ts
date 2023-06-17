@@ -3,7 +3,7 @@ import { Vec2, Vec4, vec4 } from "wgpu-matrix";
 
 import { ShaderLayout, UniformInfo } from "./ShaderLayout";
 import ShaderPreprocessor from "./ShaderPreprocessor";
-import { Observable, Destroy, EventDispatcher, EventHandler } from "@/core";
+import { Observable, Destroy, EventDispatcher, EventHandler, Version } from "@/core";
 import { Sampler, Texture } from "@/textures";
 import {
     TextureUniform,
@@ -38,6 +38,74 @@ export enum FrontFace {
     CCW,
 }
 
+export enum BlendOp {
+    Add = "add",
+    Subtract = "subtract",
+    ReverseSubtract = "reverse-subtract",
+    Min = "min",
+    Max = "max",
+}
+
+export enum BlendFactor {
+    Zero = "zero",
+    One = "one",
+    Src = "src",
+    OneMinusSrc = "one-minus-src",
+    SrcAlpha = "src-alpha",
+    OneMinusSrcAlpha = "one-minus-src-alpha",
+    Dst = "dst",
+    OneMinusDst = "one-minus-dst",
+    DstAlpha = "dst-alpha",
+    OneMinusDstAlpha = "one-minus-dst-alpha",
+    SrcAlphaSaturated = "src-alpha-saturated",
+    Constant = "constant",
+    OneMinusConstant = "one-minus-constant",
+}
+
+export enum DepthCompare {
+    Never = "never",
+    Less = "less",
+    Equal = "equal",
+    LessEqual = "less-equal",
+    Greater = "greater",
+    NotEqual = "not-equal",
+    GreaterEqual = "greater-equal",
+    Always = "always",
+}
+
+export class Blending {
+    srcFactor: BlendFactor;
+    dstFactor: BlendFactor;
+    op: BlendOp;
+
+    static none(): Blending {
+        const result = new Blending();
+        result.op = BlendOp.Add;
+        result.srcFactor = BlendFactor.One;
+        result.dstFactor = BlendFactor.One;
+
+        return result;
+    }
+
+    static defaultColor(): Blending {
+        const result = new Blending();
+        result.op = BlendOp.Add;
+        result.srcFactor = BlendFactor.SrcAlpha;
+        result.dstFactor = BlendFactor.OneMinusSrcAlpha;
+
+        return result;
+    }
+
+    static defaultAlpha(): Blending {
+        const result = new Blending();
+        result.op = BlendOp.Subtract;
+        result.srcFactor = BlendFactor.SrcAlpha;
+        result.dstFactor = BlendFactor.OneMinusSrcAlpha;
+
+        return result;
+    }
+}
+
 function allocateUniform(type: UniformType) {
     switch (type) {
         case UniformType.Texture2D:
@@ -70,7 +138,7 @@ function allocateUniforms(layout: UniformInfo[]): Uniform[] {
 
 export type MaterialEvents = 'destroy';
 
-class Material implements Observable<MaterialEvents>, Destroy {
+class Material implements Observable<MaterialEvents>, Destroy, Version {
     private readonly dispatcher: EventDispatcher<Material, MaterialEvents>;
     private readonly uniforms: Uniform[];
     readonly id: number;
@@ -82,6 +150,10 @@ class Material implements Observable<MaterialEvents>, Destroy {
     readonly renderingMode: RenderingMode;
     readonly cullingMode: CullingMode;
     readonly frontFace: FrontFace;
+    private version: number = 0;
+    depthCompare: DepthCompare = DepthCompare.Less;
+    colorBlending: Blending = Blending.defaultColor();
+    alphaBlending: Blending = Blending.defaultAlpha();
 
     renderOrder: number = 0;
 
@@ -109,6 +181,14 @@ class Material implements Observable<MaterialEvents>, Destroy {
         this.dispatcher = new EventDispatcher<Material, MaterialEvents>(this);
         this.uniforms = allocateUniforms(this.layout.uniforms);
         this.renderOrder = options.renderOrder ?? 0;
+    }
+
+    getVersion(): number {
+        return this.version;
+    }
+
+    incrementVersion(): void {
+        this.version++;
     }
 
     destroy() {
@@ -141,7 +221,9 @@ class Material implements Observable<MaterialEvents>, Destroy {
      * @param value The value.
      */
     protected setSampler(binding: number, value: Sampler) {
-        this.uniforms[binding].value = value;
+        const uniform = this.uniforms[binding] as BufferUniform;
+        uniform.value = value;
+        uniform.incrementVersion();
     }
 
     /**
@@ -184,7 +266,9 @@ class Material implements Observable<MaterialEvents>, Destroy {
      * @param value The value.
      */
     protected setTexture(binding: number, texture: Texture) {
-        this.uniforms[binding].value = texture;
+        const uniform = this.uniforms[binding] as TextureUniform;
+        uniform.value = texture;
+        uniform.incrementVersion();
     }
 
     getBufferUniforms(): BufferUniform[] {
