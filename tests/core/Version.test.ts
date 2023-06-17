@@ -16,7 +16,7 @@ describe("Versioned", () => {
         });
     });
 
-    describe('incrementVersion/getVersion', () => {
+    describe('incrementVersion/getVersion/setVersion', () => {
         it('should return the correct value', () => {
             const v = new Versioned(19);
 
@@ -27,6 +27,9 @@ describe("Versioned", () => {
 
             v.incrementVersion();
             expect(v.getVersion()).toEqual(2);
+
+            v.setVersion(99);
+            expect(v.getVersion()).toEqual(99);
         });
     });
 });
