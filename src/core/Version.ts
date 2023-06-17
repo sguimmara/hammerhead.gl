@@ -24,6 +24,10 @@ export class Versioned<T> implements Version {
         this.version = 0;
     }
 
+    setVersion(v: number) {
+        this.version = v;
+    }
+
     incrementVersion(): void {
         this.version++;
     }
