@@ -5,6 +5,8 @@
 
 @group(OBJECT_UNIFORMS) @binding(0) var<uniform> modelMatrix: mat4x4f;
 
+UNIFORM(pointSize, f32)
+
 @vertex fn vs(vertex : Vertex) -> VSOutput {
     var vertexIndex = vertex.vertexID / 6u;
     var localIndex = vertex.vertexID % 6u;
@@ -21,8 +23,6 @@
     var p = globals.projectionMatrix;
     var coord = p * v * m * position;
 
-    // TODO expose in a uniform
-    var pointSize = 2f;
     var halfSize = pointSize / 2f;
     var transX = coord.w / globals.screenSize.x * halfSize;
     var transY = coord.w / globals.screenSize.y * halfSize;

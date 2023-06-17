@@ -31,6 +31,7 @@ function selectVertexShader(params: { renderingMode?: RenderingMode }): string {
 class BasicMaterial extends Material {
     private readonly colorBinding: number;
     private readonly colorTextureBinding: number;
+    private readonly pointSizeBinding: number;
 
     constructor(
         params: {
@@ -49,7 +50,17 @@ class BasicMaterial extends Material {
         this.colorTextureBinding =
             this.layout.getUniformBinding("colorTexture");
 
+        if (this.renderingMode === RenderingMode.Points) {
+            this.pointSizeBinding = this.layout.getUniformBinding('pointSize');
+            this.withPointSize(2);
+        }
+
         this.withDiffuseColor(WHITE);
+    }
+
+    withPointSize(size: number) {
+        this.setScalar(this.pointSizeBinding, size);
+        return this;
     }
 
     withDiffuseColor(color: Color) {
