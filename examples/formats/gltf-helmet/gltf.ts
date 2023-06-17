@@ -83,6 +83,7 @@ function processTexture(texInfo: gltf.GLTFTexturePostprocessed): Texture {
 
 function processMaterial(material: gltf.GLTFMaterialPostprocessed): Material {
     const albedo = processTexture(material.pbrMetallicRoughness.baseColorTexture.texture);
+    albedo.format = 'rgba8unorm-srgb';
 
     // TODO
     // When a mesh primitive uses any triangle-based topology (i.e., triangles, triangle strip, or triangle fan),
