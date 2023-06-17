@@ -7,7 +7,7 @@ import Texture from 'hammerhead.gl/textures/Texture';
 import Mesh from 'hammerhead.gl/objects/Mesh';
 import Camera from 'hammerhead.gl/objects/Camera';
 import Box3 from 'hammerhead.gl/core/Box3';
-import ImageSource from '../src/textures/ImageSource';
+import ImageSource from 'hammerhead.gl/textures/ImageSource';
 
 export async function wait(ms: number) {
     return new Promise((resolve) => {
