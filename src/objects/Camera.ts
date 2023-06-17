@@ -1,27 +1,25 @@
-import { MathUtils, Transform } from '@/core';
+import { MathUtils } from '@/core';
 import { Mat4, mat4 } from 'wgpu-matrix';
+import Object3D from './Object3D';
 
 export type CameraMode = 'orthographic' | 'perspective';
 
 const DEFAULT_FOV = MathUtils.deg2rad(45);
 
-// TODO implement Object3D
-
 /**
  * A camera.
  */
-export default class Camera {
+export default class Camera extends Object3D {
     mode: CameraMode;
 
-    transform: Transform;
     projectionMatrix: Mat4;
     fieldOfView: number = DEFAULT_FOV;
     nearPlane: number = 0.1 ;
     farPlane: number = 1000;
 
     constructor(mode : CameraMode) {
+        super();
         this.mode = mode;
-        this.transform = new Transform();
     }
 
     getViewMatrix() {
