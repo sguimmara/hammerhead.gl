@@ -1,77 +1,45 @@
+import { BindGroups } from '@/core';
+import { ShaderLayout, AttributeType, UniformType, AttributeInfo, UniformInfo } from '@/materials';
 import { describe, expect, it } from 'vitest';
-import { AttributeType, ShaderLayout, UniformType } from '@/materials';
 
-describe('parse', () => {
-    it('should return the correct attributes', () => {
-        const shaderCode = `
-            struct VSOutput {
-                @builtin(position) position: vec4f,
-                @location(0) texcoord: vec2f,
-            };
+describe('getAttributeLocation', () => {
+    it('should throw if the attribute is not found', () => {
+        const layout = new ShaderLayout([], []);
 
-            struct Vertex {
-                @location(0) position: vec3f,
-                @location(1) texcoord: vec2f,
-                @location(2) foo: vec2f,
-                @location(3) bar: vec4f,
-            };
-        `
-
-        const layout = ShaderLayout.parse('', shaderCode);
-        const attributes = layout.attributes;
-
-        expect(attributes.length).toEqual(4);
-
-        expect(attributes[0].location).toEqual(0);
-        expect(attributes[0].type).toEqual(AttributeType.Vec3);
-
-        expect(attributes[1].location).toEqual(1);
-        expect(attributes[1].type).toEqual(AttributeType.Vec2);
-
-        expect(attributes[2].location).toEqual(2);
-        expect(attributes[2].type).toEqual(AttributeType.Vec2);
-
-        expect(attributes[3].location).toEqual(3);
-        expect(attributes[3].type).toEqual(AttributeType.Vec4);
+        expect(() => layout.getAttributeLocation('foo')).toThrow(/no such attribute: foo/);
     });
 
-    it('should return the correct uniforms', () => {
-        const vertexShader = `
-            struct VSOutput {
-                @builtin(position) position: vec4f,
-                @location(0) texcoord: vec2f,
-            };
+    it('should return the correct location', () => {
+        const attrs = [
+            new AttributeInfo(1, AttributeType.Vec2, 'foo'),
+            new AttributeInfo(4, AttributeType.Vec2, 'bar'),
+            new AttributeInfo(0, AttributeType.Vec2, 'baz'),
+        ]
+        const layout = new ShaderLayout(attrs, []);
 
-            struct Vertex {
-                @location(0) position: vec3f,
-                @location(1) texcoord: vec2f,
-                @location(2) foo: vec2f,
-                @location(3) bar: vec4f,
-            };
-        `
+        expect(layout.getAttributeLocation('foo')).toEqual(1);
+        expect(layout.getAttributeLocation('bar')).toEqual(4);
+        expect(layout.getAttributeLocation('baz')).toEqual(0);
+    });
+});
 
-        const fragmentShader = `
-            @group(GLOBAL_UNIFORMS) @binding(0) var colorTexture: texture_2d<f32>;
-            @group(OBJECT_UNIFORMS) @binding(2) var colorSampler: sampler;
+describe('getUniformBinding', () => {
+    it('should throw if the uniform is not found', () => {
+        const layout = new ShaderLayout([], []);
 
-            @group(MATERIAL_UNIFORMS) @binding(1) var<uniform> color: vec4f;
-        `;
+        expect(() => layout.getUniformBinding('foo')).toThrow(/no such uniform: foo/);
+    });
 
-        const layout = ShaderLayout.parse(fragmentShader, vertexShader);
-        const uniforms = layout.uniforms;
+    it('should return the correct location', () => {
+        const uniforms = [
+            new UniformInfo(BindGroups.MaterialUniforms, 1, UniformType.Vec2, 'foo'),
+            new UniformInfo(BindGroups.MaterialUniforms, 4, UniformType.Vec2, 'bar'),
+            new UniformInfo(BindGroups.MaterialUniforms, 0, UniformType.Vec2, 'baz'),
+        ]
+        const layout = new ShaderLayout([], uniforms);
 
-        expect(uniforms.length).toEqual(2);
-
-        const binding1 = uniforms[0];
-        expect(binding1.group).toEqual(2);
-        expect(binding1.binding).toEqual(2);
-        expect(binding1.type).toEqual(UniformType.Sampler);
-        expect(binding1.name).toEqual('colorSampler');
-
-        const binding2 = uniforms[1];
-        expect(binding2.group).toEqual(1);
-        expect(binding2.binding).toEqual(1);
-        expect(binding2.type).toEqual(UniformType.Vec4);
-        expect(binding2.name).toEqual('color');
+        expect(layout.getUniformBinding('foo')).toEqual(1);
+        expect(layout.getUniformBinding('bar')).toEqual(4);
+        expect(layout.getUniformBinding('baz')).toEqual(0);
     });
 });

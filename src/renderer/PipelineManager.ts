@@ -164,7 +164,7 @@ class PipelineManager implements Service {
             const info = uniforms[i];
             const slot = info.binding;
             switch (info.type) {
-                case UniformType.Scalar:
+                case UniformType.Float32:
                 case UniformType.Vec2:
                 case UniformType.Vec3:
                 case UniformType.Vec4: {
@@ -190,7 +190,7 @@ class PipelineManager implements Service {
                     visibility: GPUShaderStage.FRAGMENT,
                     sampler: {},
                 };
-            case UniformType.Scalar:
+            case UniformType.Float32:
             case UniformType.Vec2:
             case UniformType.Vec3:
             case UniformType.Vec4:
@@ -302,7 +302,7 @@ class PipelineManager implements Service {
                 );
                 entries.push({ binding: slot, resource: sampler });
                 break;
-            case UniformType.Scalar:
+            case UniformType.Float32:
             case UniformType.Vec2:
             case UniformType.Vec3:
             case UniformType.Vec4: {
