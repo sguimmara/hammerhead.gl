@@ -162,7 +162,7 @@ class TextureStore implements Service {
         const source = texture.source;
         const gpuTexture = this.device.createTexture({
             size: [source.width, source.height],
-            format: "rgba8unorm", // TODO expose from texture (see the gltf spec that mandates sRGB for albedo)
+            format: texture.format,
             label: texture.label,
             usage,
         });

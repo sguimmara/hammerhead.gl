@@ -16,6 +16,7 @@ export default class Texture implements Observable<TextureEvents>, Destroy {
     readonly source: Source;
 
     label: string;
+    format: GPUTextureFormat = 'rgba8unorm';
 
     constructor(options: {
         source?: Source;
