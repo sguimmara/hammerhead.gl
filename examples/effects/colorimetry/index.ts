@@ -4,7 +4,8 @@ import { BasicMaterial } from "hammerhead.gl/materials";
 import { Colorimetry } from "hammerhead.gl/materials/postprocessing";
 import { Camera, Mesh } from "hammerhead.gl/objects";
 
-import { bindSlider, load8bitImage } from "../../lib";
+import { load8bitImage } from "../../lib";
+import { Pane } from "tweakpane";
 
 let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
@@ -38,15 +39,23 @@ async function main() {
 
     context.on("resized", render);
 
-    bindSlider("slider-saturation", (v: number) => {
-        colorimetry.withSaturation(v);
-        render();
-    });
+    const pane = new Pane();
 
-    bindSlider("slider-brightness", (v: number) => {
-        colorimetry.withBrightness(v);
-        render();
-    });
+    const params = {
+        saturation: 1,
+        brightness: 1,
+    };
+
+    pane.addInput(params, 'saturation', { min: 0, max: 3 })
+        .on('change', ev => {
+            colorimetry.withSaturation(ev.value);
+            render();
+        });
+    pane.addInput(params, 'brightness', { min: 0, max: 3 })
+        .on('change', ev => {
+            colorimetry.withBrightness(ev.value);
+            render()
+        });
 }
 
 main();

@@ -8,20 +8,6 @@ import Mesh from 'hammerhead.gl/objects/Mesh';
 import Camera from 'hammerhead.gl/objects/Camera';
 import Box3 from 'hammerhead.gl/core/Box3';
 
-export function bindSlider(elementId: string, fn: Function) {
-    const slider = document.getElementById(elementId) as HTMLInputElement;
-    if (slider) {
-        slider.oninput = () => fn(Number.parseFloat(slider.value));
-    }
-}
-
-export function bindToggle(elementId: string, fn: Function) {
-    const toggle = document.getElementById(elementId) as HTMLInputElement;
-    if (toggle) {
-        toggle.oninput = () => fn(toggle.checked);
-    }
-}
-
 export async function wait(ms: number) {
     return new Promise((resolve) => {
         setTimeout(resolve, ms);

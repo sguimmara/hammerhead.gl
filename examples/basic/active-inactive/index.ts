@@ -3,7 +3,8 @@ import { ScreenQuad } from "hammerhead.gl/geometries";
 import { BasicMaterial } from "hammerhead.gl/materials";
 import { Camera, Mesh } from "hammerhead.gl/objects";
 
-import { bindToggle, load8bitImage } from "../../lib";
+import { load8bitImage } from "../../lib";
+import { Pane } from "tweakpane";
 
 let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
@@ -30,15 +31,23 @@ async function main() {
 
     context.on("resized", render);
 
-    bindToggle("toggle-active", (v: boolean) => {
-        mesh.active = v;
-        render();
-    });
+    const pane = new Pane();
 
-    bindToggle("toggle-active-material", (v: boolean) => {
-        mesh.material.active = v;
-        render();
-    });
+    const params = {
+        mesh: mesh.active,
+        material: material.active,
+    };
+
+    pane.addInput(params, 'mesh')
+        .on('change', ev => {
+            mesh.active = ev.value;
+            render();
+        });
+    pane.addInput(params, 'material')
+        .on('change', ev => {
+            material.active = ev.value;
+            render()
+        });
 }
 
 main();
