@@ -28,7 +28,9 @@ export class AttributeDeclaration {
 
     toString(): string {
         if (this.location == null) {
-            throw new ShaderError(`missing location for attribute "${this.name}"`);
+            throw new ShaderError(
+                `missing location for attribute "${this.name}"`
+            );
         }
 
         const type = getString(this.type);
@@ -81,9 +83,12 @@ function getChunk(key: string): string {
 
 function getString(type: AttributeType): string {
     switch (type) {
-        case AttributeType.Vec2: return 'vec2f';
-        case AttributeType.Vec3: return 'vec3f';
-        case AttributeType.Vec4: return 'vec4f';
+        case AttributeType.Vec2:
+            return "vec2f";
+        case AttributeType.Vec3:
+            return "vec3f";
+        case AttributeType.Vec4:
+            return "vec4f";
     }
 }
 
@@ -182,13 +187,18 @@ function checkDuplicateNames(declarations: UniformDeclaration[]) {
     const names = new Set<string>();
     for (const decl of declarations) {
         if (names.has(decl.name)) {
-            throw new ShaderError(`duplicate uniform declaration: ${decl.name}`);
+            throw new ShaderError(
+                `duplicate uniform declaration: ${decl.name}`
+            );
         }
         names.add(decl.name);
     }
 }
 
-function checkUniformDeclarations(vertexUniforms: UniformDeclaration[], fragmentUniforms: UniformDeclaration[]) {
+function checkUniformDeclarations(
+    vertexUniforms: UniformDeclaration[],
+    fragmentUniforms: UniformDeclaration[]
+) {
     checkDuplicateNames(vertexUniforms);
     checkDuplicateNames(fragmentUniforms);
 }
@@ -207,13 +217,18 @@ function assignAttributeLocations(attributes: AttributeDeclaration[]) {
     }
 }
 
-function assignUniformBindings(vertexUniforms: UniformDeclaration[], fragmentUniforms: UniformDeclaration[]) {
+function assignUniformBindings(
+    vertexUniforms: UniformDeclaration[],
+    fragmentUniforms: UniformDeclaration[]
+) {
     let currentBinding = 0;
     for (const vUniform of vertexUniforms) {
         for (const fUniform of fragmentUniforms) {
             if (fUniform.name === vUniform.name) {
                 if (fUniform.type !== vUniform.type) {
-                    throw new ShaderError(`uniform '${fUniform.name}' is present in both vertex and fragment shaders, but with different types.`);
+                    throw new ShaderError(
+                        `uniform '${fUniform.name}' is present in both vertex and fragment shaders, but with different types.`
+                    );
                 }
 
                 fUniform.binding = vUniform.binding = currentBinding;
@@ -239,7 +254,10 @@ function assignUniformBindings(vertexUniforms: UniformDeclaration[], fragmentUni
     }
 }
 
-function expandAttributeDeclarations(source: string, decls: AttributeDeclaration[]): string {
+function expandAttributeDeclarations(
+    source: string,
+    decls: AttributeDeclaration[]
+): string {
     let output = source;
     for (const decl of decls) {
         output = output.replace(decl.text, decl.toString());
@@ -247,7 +265,10 @@ function expandAttributeDeclarations(source: string, decls: AttributeDeclaration
     return output;
 }
 
-function expandUniformDeclarations(source: string, decls: UniformDeclaration[]): string {
+function expandUniformDeclarations(
+    source: string,
+    decls: UniformDeclaration[]
+): string {
     let output = source;
     for (const decl of decls) {
         output = output.replace(decl.text, decl.toString());
@@ -255,7 +276,10 @@ function expandUniformDeclarations(source: string, decls: UniformDeclaration[]):
     return output;
 }
 
-function mergeUniformDeclarations(vs: UniformDeclaration[], fs: UniformDeclaration[]): UniformDeclaration[] {
+function mergeUniformDeclarations(
+    vs: UniformDeclaration[],
+    fs: UniformDeclaration[]
+): UniformDeclaration[] {
     const map = new Map<string, UniformDeclaration>();
 
     for (const decl of vs) {
@@ -305,7 +329,10 @@ function doProcess(vertexShader: string, fragmentShader: string): ShaderInfo {
     assignUniformBindings(vsDecls, fsDecls);
     assignAttributeLocations(attrs);
 
-    const processedFragment = expandUniformDeclarations(fragmentShader, fsDecls);
+    const processedFragment = expandUniformDeclarations(
+        fragmentShader,
+        fsDecls
+    );
     let processedvertex = expandUniformDeclarations(vertexShader, vsDecls);
     processedvertex = expandAttributeDeclarations(processedvertex, attrs);
 
