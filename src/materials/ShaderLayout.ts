@@ -8,17 +8,23 @@ export class UniformInfo {
     readonly type: UniformType;
     readonly group: BindGroups;
     readonly name: string;
+    readonly presentInVertexShader: boolean;
+    readonly presentInFragmentShader: boolean;
 
     constructor(
         group: BindGroups,
         binding: number,
         type: UniformType,
-        name: string
+        name: string,
+        presentInVertexShader: boolean,
+        presentInFragmentShader: boolean,
     ) {
         this.name = name;
         this.group = group;
         this.binding = binding;
         this.type = type;
+        this.presentInVertexShader = presentInVertexShader;
+        this.presentInFragmentShader = presentInFragmentShader;
     }
 }
 

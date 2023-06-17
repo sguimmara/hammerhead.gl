@@ -338,9 +338,20 @@ function doProcess(vertexShader: string, fragmentShader: string): ShaderInfo {
 
     const uniformDeclarations = mergeUniformDeclarations(vsDecls, fsDecls);
 
-    const attributes = attrs.map(decl => new AttributeInfo(decl.location, decl.type, decl.name));
-    const uniforms = uniformDeclarations
-        .map(decl => new UniformInfo(BindGroups.MaterialUniforms, decl.binding, decl.type, decl.name));
+    const attributes = attrs.map(
+        (decl) => new AttributeInfo(decl.location, decl.type, decl.name)
+    );
+    const uniforms = uniformDeclarations.map(
+        (decl) =>
+            new UniformInfo(
+                BindGroups.MaterialUniforms,
+                decl.binding,
+                decl.type,
+                decl.name,
+                decl.presentInVertexShader,
+                decl.presentInFragmentShader,
+            )
+    );
 
     const layout = new ShaderLayout(attributes, uniforms);
 
