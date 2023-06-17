@@ -6,7 +6,7 @@ describe('getData', () => {
         const buffer = new Float32Array();
         const source = new RawSource(buffer, 111, 222);
 
-        expect(source.getData()).toBe(buffer);
+        expect(source.getImage()).toBe(buffer);
     });
 });
 

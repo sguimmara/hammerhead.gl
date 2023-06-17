@@ -1,5 +1,11 @@
 import { Service } from "@/core";
-import { AddressMode, FilterMode, Sampler, Texture } from "@/textures";
+import { AddressMode, FilterMode, Sampler, Source, Texture } from "@/textures";
+
+type GPUImage =
+    | ImageBitmap
+    | HTMLVideoElement
+    | HTMLCanvasElement
+    | OffscreenCanvas;
 
 /**
  * Manages WebGPU textures.
@@ -31,11 +37,11 @@ class TextureStore implements Service {
         this.emptyTextureView = this.emptyTexture.createView();
         const white = new Uint8ClampedArray(4);
         white.set([255, 255, 255, 255]);
-        this.updateTexture(white, this.emptyTexture);
+        this.updateTextureFromBufferSource(white, this.emptyTexture);
     }
 
     getType(): string {
-        return 'TextureStore';
+        return "TextureStore";
     }
 
     destroy() {
@@ -95,16 +101,40 @@ class TextureStore implements Service {
         return this.textures.size;
     }
 
-    private updateTexture(
-        data: BufferSource | SharedArrayBuffer,
-        dst: GPUTexture
-    ) {
+    /**
+     * Updates a GPUTexture from a CPU buffer.
+     * @param buf The CPU buffer.
+     * @param dst The GPUTexture.
+     */
+    private updateTextureFromBufferSource(buf: BufferSource, dst: GPUTexture) {
         this.device.queue.writeTexture(
             { texture: dst },
-            data,
+            buf,
             { bytesPerRow: dst.width * 4 },
             { width: dst.width, height: dst.height }
         );
+    }
+
+    /**
+     * Updates a GPUTexture from a GPU image.
+     * @param source The GPU image.
+     * @param dst The GPUTexture.
+     */
+    private updateTextureFromGPUImage(source: GPUImage, dst: GPUTexture) {
+        this.device.queue.copyExternalImageToTexture(
+            { source, flipY: false }, // TODO expose flipy
+            { texture: dst },
+            [source.width, source.height]
+        );
+    }
+
+    private writeTexture(source: Source, texture: GPUTexture) {
+        const data = source.getImage();
+        if (source.isGPUImage) {
+            this.updateTextureFromGPUImage(data as GPUImage, texture);
+        } else {
+            this.updateTextureFromBufferSource(data as BufferSource, texture);
+        }
     }
 
     getOrCreateTexture(texture: Texture): {
@@ -124,11 +154,17 @@ class TextureStore implements Service {
 
         texture.on("destroy", () => this.onTextureDestroyed(texture));
 
+        let usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST;
+        if (texture.source.isGPUImage) {
+            usage |= GPUTextureUsage.RENDER_ATTACHMENT;
+        }
+
         const source = texture.source;
         const gpuTexture = this.device.createTexture({
             size: [source.width, source.height],
-            format: "rgba8unorm",
-            usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST,
+            format: "rgba8unorm", // TODO expose from texture (see the gltf spec that mandates sRGB for albedo)
+            label: texture.label,
+            usage,
         });
 
         const result = {
@@ -137,8 +173,8 @@ class TextureStore implements Service {
         };
         this.textures.set(texture.id, result);
 
-        // Support versioned textures
-        this.updateTexture(source.getData(), gpuTexture);
+        // TODO Support versioned textures
+        this.writeTexture(source, gpuTexture);
 
         return result;
     }
