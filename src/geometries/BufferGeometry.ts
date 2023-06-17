@@ -15,6 +15,8 @@ let BUFFER_GEOMETRY_ID = 0;
 
 export type GeometryEvents = "destroy";
 
+type IndexSize = 'uint16' | 'uint32';
+
 /**
  * Base class for all geometries.
  */
@@ -28,15 +30,16 @@ export default class BufferGeometry implements Observable<GeometryEvents>, Destr
     readonly vertexBuffers: Map<VertexBufferSlot, Versioned<Float32Array>>;
     // Note the absence of Uin16Array: this cannot be used with
     // the vertex pulling technique in vertex shaders
-    readonly indexBuffer: Versioned<Uint32Array>;
+    readonly indexBuffer: Versioned<Uint32Array | Uint16Array>;
     readonly vertexCount: number;
     readonly indexCount: number;
     private cachedBounds: Box3;
+    readonly indexSize: IndexSize;
 
     constructor(options: {
         vertexCount: number;
         indexCount: number;
-        indexBuffer?: Uint32Array;
+        indexBuffer?: Uint32Array | Uint16Array;
         vertices?: Float32Array;
         texcoordBuffer?: Float32Array;
         colorBuffer?: Float32Array;
@@ -50,8 +53,11 @@ export default class BufferGeometry implements Observable<GeometryEvents>, Destr
                 : new Versioned(new Float32Array(options.vertexCount * 3))
         );
         this.indexBuffer = new Versioned(
-            options.indexBuffer ?? new Uint32Array(options.indexCount)
-        );
+            options.indexBuffer ?? (options.indexCount <= 65536
+                ? new Uint16Array(options.indexCount)
+                : new Uint32Array(options.indexCount))
+                );
+        this.indexSize = this.indexBuffer.value instanceof Uint16Array ? 'uint16' : 'uint32';
         if (options.texcoordBuffer) {
             if (!this.vertexBuffers.has(VertexBufferSlot.TexCoord)) {
                 this.vertexBuffers.set(

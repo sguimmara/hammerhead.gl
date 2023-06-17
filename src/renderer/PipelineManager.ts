@@ -372,7 +372,7 @@ class PipelineManager implements Service {
         }
         pass.setIndexBuffer(
             this.bufferStore.getIndexBuffer(geometry),
-            "uint32"
+            geometry.indexSize,
         );
     }
 
@@ -424,6 +424,8 @@ class PipelineManager implements Service {
         );
         const indexBuffer = this.bufferStore.getIndexBuffer(geometry);
 
+        // TODO vertex pulling does not support uint16 indices
+        // We need to convert the Uint16Array into an Uint32Array
         return [
             {
                 binding: VertexBufferSlot.Position,

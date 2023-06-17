@@ -175,9 +175,9 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
         this.fragmentShader = shaderInfo.fragment;
         this.vertexShader = shaderInfo.vertex;
         this.layout = shaderInfo.layout;
-        this.cullingMode = options.cullingMode ?? CullingMode.Back;
-        this.frontFace = options.frontFace ?? FrontFace.CW;
-        this.renderingMode = options.renderingMode ?? RenderingMode.Triangles;
+        this.cullingMode = options.cullingMode ?? CullingMode.Back; // TODO this should be in the geometry itself
+        this.frontFace = options.frontFace ?? FrontFace.CW; // TODO this should be in the geometry itself
+        this.renderingMode = options.renderingMode ?? RenderingMode.Triangles; // TODO this should be in the geometry itself
         this.dispatcher = new EventDispatcher<Material, MaterialEvents>(this);
         this.uniforms = allocateUniforms(this.layout.uniforms);
         this.renderOrder = options.renderOrder ?? 0;
