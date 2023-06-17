@@ -17,7 +17,7 @@ class TextureStore implements Service {
     >;
     private readonly device: GPUDevice;
     private readonly emptyTexture: GPUTexture;
-    private readonly samplers = new Map<number, GPUSampler>();
+    private readonly samplers = new Map<string, GPUSampler>();
     private readonly emptyTextureView: GPUTextureView;
 
     constructor(device: GPUDevice) {
@@ -52,49 +52,23 @@ class TextureStore implements Service {
     }
 
     private createSampler(sampler: Sampler): GPUSampler {
-        function toFilter(mode: FilterMode): GPUFilterMode {
-            switch (mode) {
-                case FilterMode.Linear:
-                    return "linear";
-                case FilterMode.Nearest:
-                    return "nearest";
-                default:
-                    throw new Error("invalid filter mode");
-            }
-        }
-
-        function toAddressMode(mode: AddressMode): GPUAddressMode {
-            switch (mode) {
-                case AddressMode.ClampToEdge:
-                    return "clamp-to-edge";
-                case AddressMode.Repeat:
-                    return "repeat";
-                case AddressMode.Mirror:
-                    return "mirror-repeat";
-                default:
-                    throw new Error("invalid address mod");
-            }
-        }
-
         return this.device.createSampler({
-            magFilter: toFilter(sampler.magFilter),
-            minFilter: toFilter(sampler.minFilter),
-            addressModeU: toAddressMode(sampler.addressModeU),
-            addressModeV: toAddressMode(sampler.addressModeV),
+            magFilter: sampler.magFilter,
+            minFilter: sampler.minFilter,
+            addressModeU: sampler.addressModeU,
+            addressModeV: sampler.addressModeV,
         });
     }
 
     getOrCreateSampler(value: Sampler): GPUSampler {
-        const code =
-            (value.magFilter << 2) |
-            (value.addressModeU << 1) |
-            value.addressModeV;
-        if (!this.samplers.has(code)) {
+        const key = value.magFilter + value.minFilter + value.addressModeU + value.addressModeV;
+
+        if (!this.samplers.has(key)) {
             const sampler = this.createSampler(value);
-            this.samplers.set(code, sampler);
+            this.samplers.set(key, sampler);
             return sampler;
         }
-        return this.samplers.get(code);
+        return this.samplers.get(key);
     }
 
     getTextureCount(): number {

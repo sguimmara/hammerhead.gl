@@ -6,6 +6,6 @@ it('should assign default values', () => {
 
     expect(sampler.magFilter).toEqual(FilterMode.Linear);
     expect(sampler.minFilter).toEqual(FilterMode.Linear);
-    expect(sampler.addressModeU).toEqual(AddressMode.ClampToEdge);
-    expect(sampler.addressModeV).toEqual(AddressMode.ClampToEdge);
+    expect(sampler.addressModeU).toEqual(AddressMode.Repeat);
+    expect(sampler.addressModeV).toEqual(AddressMode.Repeat);
 });
