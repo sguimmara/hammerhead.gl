@@ -1,6 +1,8 @@
+import { Color } from '@tweakpane/core';
 import chroma from 'chroma-js';
 import { Context } from 'hammerhead.gl/core';
 import { Camera } from 'hammerhead.gl/objects';
+import { Pane } from 'tweakpane';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
@@ -10,13 +12,25 @@ async function main() {
 
     const camera = new Camera('perspective');
     function render() {
-        renderer.clearColor = chroma.random();
         renderer.render(null, camera);
     }
 
     setInterval(render, 500);
 
     context.on('resized', render);
+
+    const PARAMS = {
+        clearColor: {r: 255, g: 0, b: 55},
+      };
+
+    const pane = new Pane();
+
+    pane.addInput(PARAMS, 'clearColor').on('change', ev => {
+        const rgb = ev.value;
+        const c = chroma(rgb.r, rgb.g, rgb.b);
+        renderer.clearColor = c;
+        render();
+    })
 }
 
 main();
