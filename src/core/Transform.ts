@@ -1,4 +1,4 @@
-import { Mat4, mat4, Vec3 } from "wgpu-matrix";
+import { Mat4, mat4, quat, Quat, Vec3 } from "wgpu-matrix";
 import { Sized, Version, Visitable, Visitor } from "@/core";
 
 const DEFAULT_UP = [0, 1, 0];
@@ -11,7 +11,7 @@ export default class Transform implements Version, Sized, Visitable {
     position: Vec3 = [0, 0, 0];
     worldMatrix: Mat4 = mat4.identity();
     localMatrix: Mat4 = mat4.identity();
-    rotation: Vec3 = [0, 0, 0]; // TODO use Quaternion
+    quaternion: Quat = quat.identity();
 
     private version: number = 0;
     private parentVersion: number = -1;
@@ -24,7 +24,7 @@ export default class Transform implements Version, Sized, Visitable {
     private updatePRSFromLocalMatrix() {
         mat4.getTranslation(this.localMatrix, this.position);
         mat4.getScaling(this.localMatrix, this.scale);
-        // TODO rotation
+        quat.fromMat(this.localMatrix, this.quaternion);
     }
 
     lookAt(x: number|Vec3, y?: number, z?: number) {
@@ -50,6 +50,17 @@ export default class Transform implements Version, Sized, Visitable {
             this.position[0] = v[0];
             this.position[1] = v[1];
             this.position[2] = v[2];
+        }
+        this.incrementVersion();
+        this.localMatrixNeedsUpdate = true;
+    }
+
+    setQuaternion(x: number|Quat, y?: number, z?: number, w?: number) {
+        if (typeof x === 'number') {
+            quat.set(x, y, z, w, this.quaternion);
+        } else {
+            const q = x as Quat;
+            quat.set(q[0], q[1], q[2], q[3], this.quaternion);
         }
         this.incrementVersion();
         this.localMatrixNeedsUpdate = true;
@@ -98,7 +109,7 @@ export default class Transform implements Version, Sized, Visitable {
 
     rotateX(radians: number) {
         if (radians != 0) {
-            this.rotation[0] += radians;
+            quat.rotateX(this.quaternion, radians, this.quaternion);
             this.incrementVersion();
             this.localMatrixNeedsUpdate = true;
         }
@@ -106,7 +117,7 @@ export default class Transform implements Version, Sized, Visitable {
 
     rotateY(radians: number) {
         if (radians != 0) {
-            this.rotation[1] += radians;
+            quat.rotateY(this.quaternion, radians, this.quaternion);
             this.incrementVersion();
             this.localMatrixNeedsUpdate = true;
         }
@@ -114,7 +125,7 @@ export default class Transform implements Version, Sized, Visitable {
 
     rotateZ(radians: number) {
         if (radians != 0) {
-            this.rotation[2] += radians;
+            quat.rotateZ(this.quaternion, radians, this.quaternion);
             this.incrementVersion();
             this.localMatrixNeedsUpdate = true;
         }
@@ -126,10 +137,7 @@ export default class Transform implements Version, Sized, Visitable {
 
 
     private updateLocalMatrix() {
-        mat4.identity(this.localMatrix);
-        mat4.rotateX(this.localMatrix, this.rotation[0], this.localMatrix);
-        mat4.rotateY(this.localMatrix, this.rotation[1], this.localMatrix);
-        mat4.rotateZ(this.localMatrix, this.rotation[2], this.localMatrix);
+        mat4.fromQuat(this.quaternion, this.localMatrix);
         mat4.scale(this.localMatrix, this.scale, this.localMatrix);
         mat4.setTranslation(this.localMatrix, this.position, this.localMatrix);
         this.localMatrixNeedsUpdate = false;
