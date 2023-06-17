@@ -19,6 +19,8 @@ export default interface Source {
      */
     isGPUImage: boolean;
 
+    flipY: boolean;
+
     /**
      * The width, in pixels.
      */

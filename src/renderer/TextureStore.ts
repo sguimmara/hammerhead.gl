@@ -117,22 +117,22 @@ class TextureStore implements Service {
 
     /**
      * Updates a GPUTexture from a GPU image.
-     * @param source The GPU image.
+     * @param source The image source.
      * @param dst The GPUTexture.
      */
-    private updateTextureFromGPUImage(source: GPUImage, dst: GPUTexture) {
+    private updateTextureFromGPUImage(source: Source, dst: GPUTexture) {
         this.device.queue.copyExternalImageToTexture(
-            { source, flipY: false }, // TODO expose flipy
+            { source: source.getImage() as GPUImage, flipY: source.flipY }, // TODO expose flipy
             { texture: dst },
             [source.width, source.height]
         );
     }
 
     private writeTexture(source: Source, texture: GPUTexture) {
-        const data = source.getImage();
         if (source.isGPUImage) {
-            this.updateTextureFromGPUImage(data as GPUImage, texture);
+            this.updateTextureFromGPUImage(source, texture);
         } else {
+            const data = source.getImage();
             this.updateTextureFromBufferSource(data as BufferSource, texture);
         }
     }

@@ -8,6 +8,7 @@ export default class RawSource implements Source {
     private readonly _width: number;
     private readonly _height: number;
     readonly isGPUImage: boolean = false;
+    flipY: boolean = false;
 
     constructor(buffer: BufferSource, width: number, height: number) {
         this.buffer = buffer;

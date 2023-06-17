@@ -11,6 +11,7 @@ type Input =
  */
 export default class ImageSource implements Source {
     image: Input;
+    flipY: boolean = false;
     readonly isGPUImage: boolean = true;
 
     constructor(image: Input) {
