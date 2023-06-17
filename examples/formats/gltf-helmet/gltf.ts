@@ -122,12 +122,13 @@ function processNode(
 
     result.label = node.name ?? "GLTFNode";
 
-    // TODO ZUP ?
     const xform : Transform = result.transform;
     if (node.scale) {
         xform.setScale(node.scale);
     }
-    // TODO rotation
+    if (node.rotation) {
+        xform.setQuaternion(node.rotation);
+    }
     if (node.translation) {
         xform.setPosition(node.translation);
     }
