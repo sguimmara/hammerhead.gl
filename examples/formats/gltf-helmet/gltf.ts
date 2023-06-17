@@ -2,52 +2,12 @@ import { Mesh, Object3D, Scene } from "hammerhead.gl/objects";
 import { parse } from "@loaders.gl/core";
 import * as gltf from "@loaders.gl/gltf";
 import { Scene as GltfScene } from "@loaders.gl/gltf/dist/lib/types/gltf-postprocessed-schema";
-import { BufferGeometry, Cube } from "hammerhead.gl/geometries";
-import { BasicMaterial, FrontFace, Material, PBRMaterial, RenderingMode } from "hammerhead.gl/materials";
+import { BufferGeometry } from "hammerhead.gl/geometries";
+import { FrontFace, Material, MetallicRoughnessMaterial } from "hammerhead.gl/materials";
 import chroma from "chroma-js";
 import { Transform } from "hammerhead.gl/core";
 import Texture from "hammerhead.gl/textures/Texture";
 import ImageSource from "hammerhead.gl/textures/ImageSource";
-import { load8bitImage } from "../../lib";
-import { TextureInfo } from "@loaders.gl/gltf/dist/lib/types/gltf-json-schema";
-
-const GL : WebGL2RenderingContext = null;
-
-function sizeof(componentType: number, type: string) {
-    let count;
-    switch (type) {
-        case 'SCALAR': count = 1; break;
-        case 'VEC2': count = 2; break;
-        case 'VEC3': count = 3; break;
-        case 'VEC4': count = 4; break;
-        case 'VEC4': count = 4; break;
-        case 'MAT3': count = 9; break;
-        case 'MAT4': count = 16; break;
-    }
-
-    let size;
-
-    switch (componentType) {
-        case GL.FLOAT: size = 4; break;
-        case GL.INT: size = 4; break;
-        case GL.INT: size = 4; break;
-        case GL.BYTE: size = 1; break;
-        case GL.UNSIGNED_BYTE: size = 1; break;
-        case GL.SHORT: size = 2; break;
-        case GL.UNSIGNED_SHORT: size = 2; break;
-    }
-
-    return size * count;
-}
-
-function expandToUInt32Array(uint16: Uint16Array) : Uint32Array {
-    const result = new Uint32Array(uint16.length);
-    for (let i = 0; i < uint16.length; i++) {
-        result[i] = uint16[i];
-    }
-
-    return result;
-}
 
 function processGeometry(
     mesh: gltf.GLTFMeshPrimitivePostprocessed,
@@ -55,16 +15,19 @@ function processGeometry(
     let vertexCount = mesh.attributes['POSITION'].count;
     let vertices = mesh.attributes['POSITION'].value as Float32Array;
 
-    const indices = expandToUInt32Array(mesh.indices.value as Uint16Array);
+    const indices = mesh.indices.value;
     const result = new BufferGeometry({ indexCount: indices.length, vertexCount, vertices, indexBuffer: indices });
 
     for (const attr of Object.keys(mesh.attributes)) {
         switch (attr) {
             case 'TEXCOORD_0':
-                const buf = mesh.attributes[attr].value as Float32Array;
-                result.setTexCoords(buf);
+                const texCoord0 = mesh.attributes[attr].value as Float32Array;
+                result.setTexCoords(texCoord0);
                 break;
-            // TODO NORMAL
+            case 'NORMAL':
+                const normals = mesh.attributes[attr].value as Float32Array;
+                result.setNormals(normals);
+                break;
         }
     }
 
@@ -90,7 +53,7 @@ function processMaterial(material: gltf.GLTFMaterialPostprocessed): Material {
     // the determinant of the node’s global transform defines the winding order of that primitive.
     // If the determinant is a positive value, the winding order triangle faces is counterclockwise;
     // in the opposite case, the winding order is clockwise.
-    return new PBRMaterial({ frontFace: FrontFace.CCW })
+    return new MetallicRoughnessMaterial({ frontFace: FrontFace.CCW })
         .setAlbedoTexture(albedo);
 }
 
@@ -165,11 +128,6 @@ export async function loadGltfScene(
 ): Promise<Scene[]> {
     const res = await fetch(uri);
     const buf = await res.arrayBuffer();
-
-    // TODO remove
-    if (!DEFAULT_TEXTURE) {
-        DEFAULT_TEXTURE = await load8bitImage('/checkerboard.jpg');
-    }
 
     const data: gltf.GLTFPostprocessed = await parse(buf, gltf.GLTFLoader, {
         baseUri,
