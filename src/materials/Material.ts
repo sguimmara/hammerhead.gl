@@ -62,6 +62,17 @@ export enum BlendFactor {
     OneMinusConstant = "one-minus-constant",
 }
 
+export enum DepthCompare {
+    Never = "never",
+    Less = "less",
+    Equal = "equal",
+    LessEqual = "less-equal",
+    Greater = "greater",
+    NotEqual = "not-equal",
+    GreaterEqual = "greater-equal",
+    Always = "always",
+}
+
 export class Blending {
     srcFactor: BlendFactor;
     dstFactor: BlendFactor;
@@ -140,6 +151,7 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
     readonly cullingMode: CullingMode;
     readonly frontFace: FrontFace;
     private version: number = 0;
+    depthCompare: DepthCompare = DepthCompare.Less;
     colorBlending: Blending = Blending.defaultColor();
     alphaBlending: Blending = Blending.defaultAlpha();
 

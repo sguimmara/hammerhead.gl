@@ -1,5 +1,5 @@
 import BasicMaterial from './BasicMaterial';
-import Material, { RenderingMode, FrontFace, CullingMode, BlendFactor, BlendOp, Blending } from './Material';
+import Material, { RenderingMode, FrontFace, CullingMode, BlendFactor, BlendOp, Blending, DepthCompare } from './Material';
 import { ShaderLayout, AttributeInfo, UniformInfo } from './ShaderLayout';
 import AttributeType from "./AttributeType";
 import UniformType from "./UniformType";
@@ -8,6 +8,7 @@ import * as postprocessing from './postprocessing';
 import ShaderPreprocessor from './ShaderPreprocessor';
 
 export {
+    DepthCompare,
     BlendFactor,
     BlendOp,
     Blending,

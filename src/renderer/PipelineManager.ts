@@ -537,14 +537,13 @@ class PipelineManager implements Service {
             );
         }
 
-        // TODO get depth buffer behaviour from material
         const pipeline = this.device.createRenderPipeline({
             label: `Material ${material.id}`,
             layout,
             depthStencil: {
                 format: "depth32float", // TODO expose as global config
                 depthWriteEnabled: material.depthWriteEnabled,
-                depthCompare: "less", // TODO get from material
+                depthCompare: material.depthCompare,
             },
             primitive: this.getPrimitiveState(material),
             vertex: {
