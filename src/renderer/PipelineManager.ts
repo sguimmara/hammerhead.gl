@@ -363,7 +363,7 @@ class PipelineManager implements Service {
     }
 
     bindVertexBuffers(geometry: BufferGeometry, pass: GPURenderPassEncoder) {
-        for (const key of geometry.vertexBuffers.keys()) {
+        for (const key of geometry.attributes.keys()) {
             const gpuBuffer = this.bufferStore.getOrCreateVertexBuffer(
                 geometry,
                 key
@@ -410,6 +410,7 @@ class PipelineManager implements Service {
     private getAttributesAsBindGroupEntries(
         geometry: BufferGeometry
     ): GPUBindGroupEntry[] {
+        // TODO adapt the collected attributes from the needs of the material
         const posBuffer = this.bufferStore.getOrCreateVertexBuffer(
             geometry,
             VertexBufferSlot.Position

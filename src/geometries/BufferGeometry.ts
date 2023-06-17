@@ -27,7 +27,7 @@ export default class BufferGeometry implements Observable<GeometryEvents>, Destr
     >;
     readonly id: number;
 
-    readonly vertexBuffers: Map<VertexBufferSlot, Versioned<Float32Array>>;
+    readonly attributes: Map<VertexBufferSlot, Versioned<Float32Array>>;
     // Note the absence of Uin16Array: this cannot be used with
     // the vertex pulling technique in vertex shaders
     readonly indexBuffer: Versioned<Uint32Array | Uint16Array>;
@@ -45,8 +45,8 @@ export default class BufferGeometry implements Observable<GeometryEvents>, Destr
         colorBuffer?: Float32Array;
     }) {
         this.id = BUFFER_GEOMETRY_ID++;
-        this.vertexBuffers = new Map();
-        this.vertexBuffers.set(
+        this.attributes = new Map();
+        this.attributes.set(
             VertexBufferSlot.Position,
             options.vertices
                 ? new Versioned(options.vertices)
@@ -59,16 +59,16 @@ export default class BufferGeometry implements Observable<GeometryEvents>, Destr
                 );
         this.indexSize = this.indexBuffer.value instanceof Uint16Array ? 'uint16' : 'uint32';
         if (options.texcoordBuffer) {
-            if (!this.vertexBuffers.has(VertexBufferSlot.TexCoord)) {
-                this.vertexBuffers.set(
+            if (!this.attributes.has(VertexBufferSlot.TexCoord)) {
+                this.attributes.set(
                     VertexBufferSlot.TexCoord,
                     new Versioned(options.texcoordBuffer)
                 );
             }
         }
         if (options.colorBuffer) {
-            if (!this.vertexBuffers.has(VertexBufferSlot.Color)) {
-                this.vertexBuffers.set(
+            if (!this.attributes.has(VertexBufferSlot.Color)) {
+                this.attributes.set(
                     VertexBufferSlot.Color,
                     new Versioned<Float32Array>(options.colorBuffer)
                 );
@@ -96,7 +96,7 @@ export default class BufferGeometry implements Observable<GeometryEvents>, Destr
     getLocalBounds() {
         if (!this.cachedBounds) {
             this.cachedBounds = Box3.fromPoints(
-                this.vertexBuffers.get(VertexBufferSlot.Position).value
+                this.attributes.get(VertexBufferSlot.Position).value
             );
         }
         return this.cachedBounds;
@@ -111,11 +111,11 @@ export default class BufferGeometry implements Observable<GeometryEvents>, Destr
     }
 
     getVertexBuffer(slot: VertexBufferSlot): Versioned<Float32Array> | null {
-        return this.vertexBuffers.get(slot);
+        return this.attributes.get(slot);
     }
 
     setPositions(positions: ArrayLike<number>) {
-        const item = this.vertexBuffers.get(VertexBufferSlot.Position);
+        const item = this.attributes.get(VertexBufferSlot.Position);
         if (item.value !== positions) {
             item.value.set(positions, 0);
         }
@@ -123,14 +123,14 @@ export default class BufferGeometry implements Observable<GeometryEvents>, Destr
     }
 
     setColors(colors?: Color[] | Color) {
-        if (!this.vertexBuffers.has(VertexBufferSlot.Color)) {
-            this.vertexBuffers.set(
+        if (!this.attributes.has(VertexBufferSlot.Color)) {
+            this.attributes.set(
                 VertexBufferSlot.Color,
                 new Versioned(new Float32Array(this.vertexCount * 4))
             );
         }
 
-        const item = this.vertexBuffers.get(VertexBufferSlot.Color);
+        const item = this.attributes.get(VertexBufferSlot.Color);
         if (Array.isArray(colors)) {
             const values = colors.flatMap((c) => c.gl());
             item.value.set(values);
@@ -149,19 +149,27 @@ export default class BufferGeometry implements Observable<GeometryEvents>, Destr
         this.cachedBounds = null;
     }
 
-    setTexCoords(coords?: ArrayLike<number>) {
-        if (!this.vertexBuffers.has(VertexBufferSlot.TexCoord)) {
-            this.vertexBuffers.set(
-                VertexBufferSlot.TexCoord,
-                new Versioned(new Float32Array(this.vertexCount * 2))
+    private setAttribute(buf: ArrayLike<number>, slot: number, components: number) {
+        if (!this.attributes.has(slot)) {
+            this.attributes.set(
+                slot,
+                new Versioned(new Float32Array(this.vertexCount * components))
             );
         }
 
-        if (coords) {
-            const item = this.vertexBuffers.get(VertexBufferSlot.TexCoord);
-            item.value.set(coords, 0);
+        if (buf) {
+            const item = this.attributes.get(slot);
+            item.value.set(buf, 0);
             this.invalidate(item);
         }
+    }
+
+    setTexCoords(coords?: ArrayLike<number>) {
+        this.setAttribute(coords, VertexBufferSlot.TexCoord, 2);
+    }
+
+    setNormals(normals?: ArrayLike<number>) {
+        this.setAttribute(normals, VertexBufferSlot.Normals, 3);
     }
 
     setIndices(indices: ArrayLike<number>) {

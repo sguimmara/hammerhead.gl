@@ -3,6 +3,7 @@ export enum VertexBufferSlot {
     TexCoord,
     Color,
     Index,
+    Normals,
 }
 
 export enum BindGroups {
