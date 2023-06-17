@@ -124,8 +124,9 @@ class TextureStore implements Service {
 
         texture.on("destroy", () => this.onTextureDestroyed(texture));
 
+        const source = texture.source;
         const gpuTexture = this.device.createTexture({
-            size: [texture.width, texture.height],
+            size: [source.width, source.height],
             format: "rgba8unorm",
             usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST,
         });
@@ -136,7 +137,8 @@ class TextureStore implements Service {
         };
         this.textures.set(texture.id, result);
 
-        this.updateTexture(texture.data, gpuTexture);
+        // Support versioned textures
+        this.updateTexture(source.getData(), gpuTexture);
 
         return result;
     }
