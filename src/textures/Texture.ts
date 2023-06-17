@@ -1,4 +1,5 @@
 import { Observable, Destroy, EventDispatcher, EventHandler } from "@/core";
+import Source from "./Source";
 
 let TEXTURE_ID = 0;
 
@@ -9,24 +10,16 @@ export type TextureEvents = 'destroy';
  */
 export default class Texture implements Observable<TextureEvents>, Destroy {
     private readonly dispatcher: EventDispatcher<Texture, TextureEvents>;
-    /** The width, in pixels. */
-    readonly width: number;
-    /** The height, in pixels. */
-    readonly height: number;
     /** The unique identifier of this texture. */
     readonly id: number;
-    /** The underlying pixel buffer. */
-    readonly data: BufferSource;
+    /** The data source. */
+    readonly source: Source;
 
     constructor(options: {
-        width: number;
-        height: number;
-        data: BufferSource;
-    }) {
+        source?: Source;
+    } = {}) {
         this.id = TEXTURE_ID++;
-        this.width = options.width;
-        this.height = options.height;
-        this.data = options.data;
+        this.source = options.source;
         this.dispatcher = new EventDispatcher<Texture, TextureEvents>(this);
     }
 

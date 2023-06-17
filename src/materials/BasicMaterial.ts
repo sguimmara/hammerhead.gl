@@ -25,6 +25,9 @@ function selectVertexShader(params: { renderingMode?: RenderingMode }): string {
     return triangleVertexShader;
 }
 
+/**
+ * A simple material with no support for lighting.
+ */
 class BasicMaterial extends Material {
     private readonly colorBinding: number;
     private readonly colorTextureBinding: number;

@@ -7,6 +7,7 @@ import Texture from 'hammerhead.gl/textures/Texture';
 import Mesh from 'hammerhead.gl/objects/Mesh';
 import Camera from 'hammerhead.gl/objects/Camera';
 import Box3 from 'hammerhead.gl/core/Box3';
+import ImageSource from '../src/textures/ImageSource';
 
 export async function wait(ms: number) {
     return new Promise((resolve) => {
@@ -56,20 +57,8 @@ export function load8bitImage(url: string): Promise<Texture> {
         img.src = url;
         img.onerror = reject;
         img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext('2d');
-            if (!ctx) {
-                throw new Error('could not acquire 2d context');
-            }
-            ctx.drawImage(img, 0, 0);
-            const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const texture = new Texture({
-                width: img.width,
-                height: img.height,
-                data: data.data
-            });
+            const source = new ImageSource(img);
+            const texture = new Texture({ source });
             resolve(texture);
         }
     });
