@@ -143,7 +143,7 @@ class BufferStore implements Service {
         }
 
         const gpuBuffer = this.device.createBuffer({
-            label: `BufferGeometry ${mesh.id} @${slot}`,
+            label: `Mesh ${mesh.id} @${slot}`,
             size: buf.byteLength,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.STORAGE | GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
         });
@@ -166,7 +166,7 @@ class BufferStore implements Service {
         }
 
         const gpuBuffer = this.device.createBuffer({
-            label: `BufferGeometry ${mesh.id} @index`,
+            label: `Mesh ${mesh.id} @index`,
             size: mesh.getIndices().byteLength,
             usage: GPUBufferUsage.INDEX | GPUBufferUsage.STORAGE | GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
         });

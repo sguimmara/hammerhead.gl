@@ -1,5 +1,5 @@
 import { Box3 } from "@/core";
-import { BufferGeometry, Mesh } from "@/geometries";
+import { Mesh } from "@/geometries";
 import { Material } from "@/materials";
 import { vec3 } from "wgpu-matrix";
 
@@ -7,11 +7,11 @@ import Object3D from "./Object3D";
 
 /**
  * A renderable {@link Object3D} that combines a {@link Material}
- * and a {@link BufferGeometry} to display meshes.
+ * and a {@link Mesh} to display meshes.
  * @example
  * const mesh = new MeshObject({
  *      material: new BasicMaterial(),
- *      geometry: new Cube(),
+ *      mesh: new Cube(),
  * });
  */
 // TODO remove

@@ -1,4 +1,4 @@
-import { BufferGeometry, Mesh } from '@/geometries';
+import { Mesh } from '@/geometries';
 import { RenderingMode } from '@/materials';
 import { ObjectUniform } from '@/materials/uniforms';
 import { MeshObject } from '@/scene';
