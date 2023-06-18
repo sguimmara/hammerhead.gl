@@ -2,6 +2,7 @@ import { BindGroups } from "@/core";
 import ShaderError from "./ShaderError";
 import UniformType from "./UniformType";
 import AttributeType from "./AttributeType";
+import { Attribute } from "@/geometries";
 
 export class UniformInfo {
     readonly binding: number;
@@ -31,9 +32,9 @@ export class UniformInfo {
 export class AttributeInfo {
     readonly location: number;
     readonly type: AttributeType;
-    readonly name: string;
+    readonly name: Attribute;
 
-    constructor(location: number, type: AttributeType, name: string) {
+    constructor(location: number, type: AttributeType, name: Attribute) {
         this.location = location;
         this.type = type;
         this.name = name;
@@ -49,7 +50,7 @@ export class ShaderLayout {
         this.uniforms = uniforms;
     }
 
-    getAttributeLocation(name: string): number {
+    getAttributeLocation(name: Attribute): number {
         // We expect the caller to cache the result.
         const array = this.attributes;
         for (let i = 0; i < array.length; i++) {

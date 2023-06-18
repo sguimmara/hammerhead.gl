@@ -1,4 +1,4 @@
-import { BufferGeometry } from '@/geometries';
+import { BufferGeometry, Mesh } from '@/geometries';
 import { RenderingMode } from '@/materials';
 import { ObjectUniform } from '@/materials/uniforms';
 import { MeshObject } from '@/scene';
@@ -13,7 +13,7 @@ class RenderSceneStage extends Stage {
     private renderList: Bucket[];
     private pass: GPURenderPassEncoder;
     private currentPipeline: GPURenderPipeline = null;
-    private currentGeometry: BufferGeometry;
+    private currentGeometry: Mesh;
 
     constructor(
         device: GPUDevice,
@@ -25,9 +25,9 @@ class RenderSceneStage extends Stage {
         super(device, bufferStore, pipelineManager, textureStore, globalValues);
     }
 
-    renderMesh(mesh: MeshObject, pass: GPURenderPassEncoder) {
-        const material = mesh.material;
-        const geometry = mesh.geometry;
+    renderMesh(meshObject: MeshObject, pass: GPURenderPassEncoder) {
+        const material = meshObject.material;
+        const mesh = meshObject.mesh;
 
         const pipeline = this.pipelineManager.getPipeline(material);
         if (this.currentPipeline == null || pipeline != this.currentPipeline) {
@@ -36,49 +36,49 @@ class RenderSceneStage extends Stage {
         }
 
         this.pipelineManager.bindPerMaterialUniforms(material, pass);
-        this.pipelineManager.bindPerObjectUniforms(pass, mesh);
+        this.pipelineManager.bindPerObjectUniforms(pass, meshObject);
 
         switch (material.renderingMode) {
             case RenderingMode.Triangles:
                 {
                     if (
                         this.currentGeometry == null ||
-                        this.currentGeometry != geometry
+                        this.currentGeometry != mesh
                     ) {
-                        this.currentGeometry = geometry;
-                        this.pipelineManager.bindVertexBuffers(geometry, pass);
+                        this.currentGeometry = mesh;
+                        this.pipelineManager.bindVertexBuffers(mesh, material, pass);
                     }
 
-                    pass.drawIndexed(geometry.indexCount);
+                    pass.drawIndexed(mesh.indexCount);
                 }
                 break;
             case RenderingMode.TriangleLines: {
                 this.pipelineManager.bindVertexBufferUniforms(
                     this.currentPipeline,
-                    geometry,
+                    mesh,
                     pass
                 );
-                const triangleCount = geometry.indexBuffer.value.length / 3;
+                const triangleCount = mesh.indexCount / 3;
                 pass.draw(6 * triangleCount, 1, 0, 0);
             }
             case RenderingMode.LineList:
                 {
                     this.pipelineManager.bindVertexBufferUniforms(
                         this.currentPipeline,
-                        geometry,
+                        mesh,
                         pass
                     );
-                    const lineCount = geometry.indexBuffer.value.length / 2;
+                    const lineCount = mesh.indexCount / 2;
                     pass.draw(6 * lineCount, 1, 0, 0);
                 }
                 break;
             case RenderingMode.Points: {
                 this.pipelineManager.bindVertexBufferUniforms(
                     this.currentPipeline,
-                    geometry,
+                    mesh,
                     pass
                 );
-                const vertexCount = geometry.vertexCount;
+                const vertexCount = mesh.vertexCount;
                 pass.draw(6 * vertexCount);
             }
         }

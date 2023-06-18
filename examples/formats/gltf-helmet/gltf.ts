@@ -2,36 +2,36 @@ import { MeshObject, Object3D, Scene } from "hammerhead.gl/scene";
 import { parse } from "@loaders.gl/core";
 import * as gltf from "@loaders.gl/gltf";
 import { Scene as GltfScene } from "@loaders.gl/gltf/dist/lib/types/gltf-postprocessed-schema";
-import { BufferGeometry } from "hammerhead.gl/geometries";
+import { Mesh } from "hammerhead.gl/geometries";
 import { FrontFace, Material, MetallicRoughnessMaterial } from "hammerhead.gl/materials";
-import chroma from "chroma-js";
 import { Transform } from "hammerhead.gl/core";
 import Texture from "hammerhead.gl/textures/Texture";
 import ImageSource from "hammerhead.gl/textures/ImageSource";
 
 function processGeometry(
     mesh: gltf.GLTFMeshPrimitivePostprocessed,
-): BufferGeometry {
-    let vertexCount = mesh.attributes['POSITION'].count;
+): Mesh {
     let vertices = mesh.attributes['POSITION'].value as Float32Array;
 
     const indices = mesh.indices.value;
-    const result = new BufferGeometry({ indexCount: indices.length, vertexCount, vertices, indexBuffer: indices });
+    const result = new Mesh();
+
+    result.setIndices(indices);
+    result.setAttribute('position', vertices);
 
     for (const attr of Object.keys(mesh.attributes)) {
         switch (attr) {
             case 'TEXCOORD_0':
                 const texCoord0 = mesh.attributes[attr].value as Float32Array;
-                result.setTexCoords(texCoord0);
+                result.setAttribute('texcoord', texCoord0);
                 break;
             case 'NORMAL':
                 const normals = mesh.attributes[attr].value as Float32Array;
-                result.setNormals(normals);
+                result.setAttribute('normal', normals);
                 break;
+            // TODO missing attributes
         }
     }
-
-    result.setColors(chroma('white'));
 
     return result;
 }
@@ -63,10 +63,10 @@ function processMesh(
     const result: MeshObject[] = [];
 
     for (const prim of mesh.primitives) {
-        const geometry = processGeometry(prim);
+        const mesh = processGeometry(prim);
         const material = processMaterial(prim.material);
 
-        result.push(new MeshObject({ material, geometry }));
+        result.push(new MeshObject({ material, mesh }));
     }
 
     return result;

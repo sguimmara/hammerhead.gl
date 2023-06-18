@@ -1,5 +1,11 @@
-import { Service, Container, BindGroups, VertexBufferSlot, Versioned } from "@/core";
-import { BufferGeometry } from "@/geometries";
+import {
+    Service,
+    Container,
+    BindGroups,
+    VertexBufferSlot,
+    Versioned,
+} from "@/core";
+import { BufferGeometry, Mesh } from "@/geometries";
 import { Material, RenderingMode } from "@/materials";
 import { CullingMode, FrontFace } from "@/materials/Material";
 import {
@@ -103,7 +109,7 @@ class PipelineManager implements Service {
     }
 
     getType(): string {
-        return 'PipelineManager';
+        return "PipelineManager";
     }
 
     destroy() {
@@ -177,8 +183,10 @@ class PipelineManager implements Service {
     }
 
     getVisibility(uniform: UniformInfo): number {
-        return (uniform.presentInVertexShader ? GPUShaderStage.VERTEX : 0)
-             | (uniform.presentInFragmentShader ? GPUShaderStage.FRAGMENT : 0);
+        return (
+            (uniform.presentInVertexShader ? GPUShaderStage.VERTEX : 0) |
+            (uniform.presentInFragmentShader ? GPUShaderStage.FRAGMENT : 0)
+        );
     }
 
     getBindGroupLayoutEntry(uniform: UniformInfo): GPUBindGroupLayoutEntry {
@@ -362,23 +370,29 @@ class PipelineManager implements Service {
         };
     }
 
-    bindVertexBuffers(geometry: BufferGeometry, pass: GPURenderPassEncoder) {
-        for (const key of geometry.attributes.keys()) {
+    bindVertexBuffers(
+        mesh: Mesh,
+        material: Material,
+        pass: GPURenderPassEncoder
+    ) {
+        const attributes = material.layout.attributes;
+        for (let i = 0; i < attributes.length; i++) {
+            const attribute = attributes[i];
             const gpuBuffer = this.bufferStore.getOrCreateVertexBuffer(
-                geometry,
-                key
+                mesh,
+                attribute.name
             );
-            pass.setVertexBuffer(key, gpuBuffer);
+            pass.setVertexBuffer(attribute.location, gpuBuffer);
         }
         pass.setIndexBuffer(
-            this.bufferStore.getIndexBuffer(geometry),
-            geometry.indexSize,
+            this.bufferStore.getIndexBuffer(mesh),
+            mesh.indexSize
         );
     }
 
     bindVertexBufferUniforms(
         pipeline: GPURenderPipeline,
-        geometry: BufferGeometry,
+        geometry: Mesh,
         pass: GPURenderPassEncoder
     ) {
         let perGeometry = this.perGeometryMap.get(geometry.id);
@@ -408,40 +422,41 @@ class PipelineManager implements Service {
      * Useful for vertex pulling.
      */
     private getAttributesAsBindGroupEntries(
-        geometry: BufferGeometry
+        geometry: Mesh
     ): GPUBindGroupEntry[] {
         // TODO adapt the collected attributes from the needs of the material
         const posBuffer = this.bufferStore.getOrCreateVertexBuffer(
             geometry,
-            VertexBufferSlot.Position
+            "position"
         );
         const colBuffer = this.bufferStore.getOrCreateVertexBuffer(
             geometry,
-            VertexBufferSlot.Color
+            "color"
         );
         const uvBuffer = this.bufferStore.getOrCreateVertexBuffer(
             geometry,
-            VertexBufferSlot.TexCoord
+            "texcoord"
         );
         const indexBuffer = this.bufferStore.getIndexBuffer(geometry);
 
         // TODO vertex pulling does not support uint16 indices
         // We need to convert the Uint16Array into an Uint32Array
+        // TODO make bindings dynamic from the material layout
         return [
             {
-                binding: VertexBufferSlot.Position,
+                binding: 0,
                 resource: { buffer: posBuffer },
             },
             {
-                binding: VertexBufferSlot.TexCoord,
+                binding: 1,
                 resource: { buffer: uvBuffer },
             },
             {
-                binding: VertexBufferSlot.Color,
+                binding: 2,
                 resource: { buffer: colBuffer },
             },
             {
-                binding: VertexBufferSlot.Index,
+                binding: 3,
                 resource: { buffer: indexBuffer },
             },
         ];
@@ -571,9 +586,7 @@ class PipelineManager implements Service {
         }
 
         const materialBindGroup = this.device.createBindGroup({
-            layout: pipeline.getBindGroupLayout(
-                BindGroups.MaterialUniforms
-            ),
+            layout: pipeline.getBindGroupLayout(BindGroups.MaterialUniforms),
             entries,
         });
 

@@ -1,7 +1,7 @@
 import chroma from "chroma-js";
 import { Context, MathUtils } from "hammerhead.gl/core";
 import { BasicMaterial, RenderingMode } from "hammerhead.gl/materials";
-import { Camera, Mesh } from "hammerhead.gl/scene";
+import { Camera, MeshObject } from "hammerhead.gl/scene";
 
 import { frameObject, loadPLYModel } from "../../lib";
 import { Pane } from "tweakpane";
@@ -12,18 +12,18 @@ async function main() {
     const context = await Context.create(canvas);
     const renderer = context.renderer;
 
-    const geometry = await loadPLYModel("/files/hammerhead.ply");
+    const mesh = await loadPLYModel("/files/hammerhead.ply");
 
     const material = new BasicMaterial({
         renderingMode: RenderingMode.Points,
     }).withDiffuseColor(chroma("cyan"));
 
-    const mesh = new Mesh({ geometry, material });
+    const shark = new MeshObject({ mesh, material });
     const camera = new Camera("perspective");
-    frameObject(mesh, camera);
+    frameObject(shark, camera);
 
     function render() {
-        renderer.render(mesh, camera);
+        renderer.render(shark, camera);
     }
 
     let now = performance.now();
@@ -34,7 +34,7 @@ async function main() {
         const dt = (current - now) / 1000;
         const degrees = 40 * dt;
         now = current;
-        mesh.transform.rotateY(MathUtils.deg2rad(degrees));
+        shark.transform.rotateY(MathUtils.deg2rad(degrees));
         requestAnimationFrame(renderLoop);
     }
 

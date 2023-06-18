@@ -14,7 +14,7 @@ const tmpBuckets: Map<number, Bucket> = new Map();
 /**
  * The WebGPU renderer.
  */
-class WebGPURenderer {
+class Renderer {
     private readonly device: GPUDevice;
     private readonly context: GPUCanvasContext;
 
@@ -62,7 +62,7 @@ class WebGPURenderer {
                     // Sort by material to reduce pipeline switches
                     b.meshes.sort((a, b) => {
                         if (a.material.id === b.material.id) {
-                            return a.geometry.id - b.geometry.id;
+                            return a.mesh.id - b.mesh.id;
                         }
                         return a.material.id - b.material.id;
                     });
@@ -116,4 +116,4 @@ class WebGPURenderer {
     }
 }
 
-export default WebGPURenderer;
+export default Renderer;

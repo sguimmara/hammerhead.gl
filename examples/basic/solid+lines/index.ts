@@ -6,7 +6,7 @@ import {
     FrontFace,
     RenderingMode,
 } from "hammerhead.gl/materials";
-import { Camera, Mesh } from "hammerhead.gl/scene";
+import { Camera, MeshObject } from "hammerhead.gl/scene";
 
 import { frameObject, loadPLYModel } from "../../lib";
 import { Pane } from "tweakpane";
@@ -18,7 +18,7 @@ async function main() {
     const renderer = context.renderer;
     renderer.clearColor = chroma("gray");
 
-    const geometry = await loadPLYModel("/files/hammerhead.ply");
+    const mesh = await loadPLYModel("/files/hammerhead.ply");
     const solid = new BasicMaterial({
         renderingMode: RenderingMode.Triangles,
         frontFace: FrontFace.CW,
@@ -28,9 +28,9 @@ async function main() {
         renderingMode: RenderingMode.TriangleLines,
     }).withDiffuseColor(chroma("black"));
 
-    const solidMesh = new Mesh({ geometry, material: solid });
-    const wireframeMesh = new Mesh({ geometry, material: wireframe });
-    solidMesh.add(wireframeMesh);
+    const solidMesh = new MeshObject({ mesh, material: solid });
+    const wireframeMesh = new MeshObject({ mesh, material: wireframe });
+    // solidMesh.add(wireframeMesh);
     const camera = new Camera("perspective");
     frameObject(solidMesh, camera);
 
