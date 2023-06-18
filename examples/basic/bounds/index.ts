@@ -1,6 +1,6 @@
 import chroma from 'chroma-js';
 import { Context, MathUtils } from 'hammerhead.gl/core';
-import { Object3D, Mesh, Camera } from 'hammerhead.gl/scene';
+import { Object3D, MeshObject, Camera } from 'hammerhead.gl/scene';
 import { BoundsHelper } from 'hammerhead.gl/helpers';
 import { BasicMaterial, RenderingMode, FrontFace } from 'hammerhead.gl/materials';
 import { frameBounds, loadPLYModel } from '../../lib';
@@ -12,7 +12,7 @@ async function main() {
     const renderer = context.renderer;
     renderer.clearColor = chroma('gray');
 
-    const geometry = await loadPLYModel('/files/hammerhead.ply');
+    const mesh = await loadPLYModel('/files/hammerhead.ply');
     const cyan = new BasicMaterial({
         frontFace: FrontFace.CCW,
     }).withDiffuseColor(chroma('cyan'));
@@ -21,12 +21,12 @@ async function main() {
     }).withDiffuseColor(chroma('purple'));
     const wireframe = new BasicMaterial({ renderingMode: RenderingMode.TriangleLines }).withDiffuseColor(chroma('black'));
 
-    const shark1 = new Mesh({ geometry, material: cyan});
-    const wireframe1 = new Mesh({ geometry, material: wireframe});
+    const shark1 = new MeshObject({ mesh, material: cyan});
+    const wireframe1 = new MeshObject({ mesh, material: wireframe});
     shark1.add(wireframe1);
 
-    const shark2 = new Mesh({ geometry, material: purple});
-    const wireframe2 = new Mesh({ geometry, material: wireframe});
+    const shark2 = new MeshObject({ mesh, material: purple});
+    const wireframe2 = new MeshObject({ mesh, material: wireframe});
     shark2.add(wireframe2);
 
     const camera = new Camera('perspective');

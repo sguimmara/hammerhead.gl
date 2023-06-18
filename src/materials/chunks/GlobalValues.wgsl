@@ -6,4 +6,4 @@ struct GlobalValues {
     projectionMatrix: mat4x4f,
 };
 
-@group(GLOBAL_UNIFORMS) @binding(0) var<uniform> globals: GlobalValues;
+@group(global) @binding(auto) var<uniform> globals: GlobalValues;

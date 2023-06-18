@@ -1,6 +1,4 @@
-import chroma from 'chroma-js';
-
-import BufferGeometry from './BufferGeometry';
+import Mesh from './Mesh';
 
 const A = 0;
 const B = 1;
@@ -15,7 +13,7 @@ const H = 7;
 // Note: even though we don't need a 32 bit buffer,
 // vertex pulling requires access to buffers as uniforms
 // and not attributes. And WebGPU uniforms do not support u16 data type.
-const indexBuffer = new Uint32Array([
+const indices = new Uint32Array([
     A, B, B, C, C, D, D, A, // bottom side
     E, H, H, G, G, F, F, E, // top side
     D, A, A, E, E, H, H, D, // left side
@@ -58,11 +56,10 @@ const vertices = new Float32Array([
 /**
  * A wireframe cube.
  */
-export default class WireCube extends BufferGeometry {
+export default class WireCube extends Mesh {
     constructor() {
-        super({ vertexCount: 8, indexCount: 48, indexBuffer, vertices });
-
-        this.setTexCoords();
-        this.setColors(chroma('white'));
+        super();
+        this.setAttribute('position', vertices);
+        this.setIndices(indices);
     }
 }

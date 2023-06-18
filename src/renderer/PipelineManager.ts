@@ -2,10 +2,9 @@ import {
     Service,
     Container,
     BindGroups,
-    VertexBufferSlot,
     Versioned,
 } from "@/core";
-import { BufferGeometry, Mesh } from "@/geometries";
+import { Mesh } from "@/geometries";
 import { Material, RenderingMode } from "@/materials";
 import { CullingMode, FrontFace } from "@/materials/Material";
 import {
@@ -226,11 +225,13 @@ class PipelineManager implements Service {
             return this.layouts.get(key);
         }
         const uniforms = material.layout.uniforms;
-        const entries = Array(uniforms.length);
+        const entries = [];
 
-        for (let i = 0; i < entries.length; i++) {
+        for (let i = 0; i < uniforms.length; i++) {
             const element = uniforms[i];
-            entries[i] = this.getBindGroupLayoutEntry(element);
+            if (element.group === BindGroups.MaterialUniforms) {
+                entries.push(this.getBindGroupLayoutEntry(element));
+            }
         }
 
         const layout = this.device.createBindGroupLayout({

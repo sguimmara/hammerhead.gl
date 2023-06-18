@@ -17,6 +17,7 @@ import {
     BufferUniform,
 } from "./uniforms";
 import UniformType from "./UniformType";
+import GlobalValues from "@/renderer/GlobalValues";
 
 let MATERIAL_ID = 0;
 
@@ -123,7 +124,7 @@ function allocateUniform(type: UniformType) {
         case UniformType.Mat4:
             return new Mat4Uniform();
         case UniformType.GlobalValues:
-            throw new Error("not implemented");
+            return new GlobalValues();
     }
 }
 

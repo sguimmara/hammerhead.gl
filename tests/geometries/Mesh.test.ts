@@ -26,10 +26,22 @@ describe('destroy', () => {
 });
 
 describe('getAttribute', () => {
-    it('should return null if no attribute is found', () => {
+    it('should throw if position attribute is not set', () => {
         const m = new Mesh();
 
-        expect(m.getAttribute('uv0')).toBeNull();
+        expect(() => m.getAttribute('position')).toThrow(/no position attribute/);
+    });
+
+    it('should return an inialized array if no attribute is found', () => {
+        const m = new Mesh();
+
+        m.setAttribute('position', new Float32Array(9));
+        expect(m.getAttribute('texcoord')).toHaveLength(6);
+        expect(m.getAttribute('texcoord1')).toHaveLength(6);
+        expect(m.getAttribute('texcoord2')).toHaveLength(6);
+        expect(m.getAttribute('normal')).toHaveLength(9);
+        expect(m.getAttribute('color')).toHaveLength(12);
+        expect(m.getAttribute('tangent')).toHaveLength(9);
     });
 });
 

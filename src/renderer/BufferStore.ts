@@ -1,4 +1,4 @@
-import { Destroy, Service, VertexBufferSlot } from '@/core';
+import { Destroy, Service } from '@/core';
 import { Attribute, Mesh } from '@/geometries';
 import { BufferUniform } from '@/materials/uniforms';
 import BufferWriter from './BufferWriter';

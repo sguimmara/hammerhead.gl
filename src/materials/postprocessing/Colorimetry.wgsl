@@ -1,7 +1,7 @@
 #include ../chunks/effect.header.wgsl;
 
-UNIFORM(saturation, f32)
-UNIFORM(brightness, f32)
+@group(material) @binding(auto) var<uniform> saturation: f32;
+@group(material) @binding(auto) var<uniform> brightness: f32;
 
 @fragment fn fs(input: VSOutput) -> @location(0) vec4f {
     var color = textureSample(colorTexture, colorSampler, input.texcoord);

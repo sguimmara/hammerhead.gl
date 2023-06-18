@@ -48,13 +48,23 @@ function processMaterial(material: gltf.GLTFMaterialPostprocessed): Material {
     const albedo = processTexture(material.pbrMetallicRoughness.baseColorTexture.texture);
     albedo.format = 'rgba8unorm-srgb';
 
+    const emissive = processTexture(material.emissiveTexture.texture);
+    const ao = processTexture(material.occlusionTexture.texture);
+    const normal = processTexture(material.normalTexture.texture);
+    const metalRoughness = processTexture(material.pbrMetallicRoughness.metallicRoughnessTexture.texture);
+    // emissive.format = 'rgba8unorm-srgb'; // TODO
+
     // TODO
     // When a mesh primitive uses any triangle-based topology (i.e., triangles, triangle strip, or triangle fan),
     // the determinant of the node’s global transform defines the winding order of that primitive.
     // If the determinant is a positive value, the winding order triangle faces is counterclockwise;
     // in the opposite case, the winding order is clockwise.
     return new MetallicRoughnessMaterial({ frontFace: FrontFace.CCW })
-        .setAlbedoTexture(albedo);
+        .setAlbedoTexture(albedo)
+        .setAmbientOcclusionTexture(ao)
+        .setNormalTexture(normal)
+        .setMetalRoughnessTexture(metalRoughness)
+        .setEmissiveTexture(emissive);
 }
 
 function processMesh(

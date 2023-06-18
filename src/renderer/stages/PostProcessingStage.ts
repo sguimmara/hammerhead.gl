@@ -61,7 +61,7 @@ class PostProcessingStage extends Stage {
         });
         pass.setBindGroup(BindGroups.MaterialUniforms, this.bindGroup);
 
-        this.pipelineManager.bindVertexBuffers(this.quad, pass);
+        this.pipelineManager.bindVertexBuffers(this.quad, this.material, pass);
 
         pass.drawIndexed(this.quad.indexCount);
 

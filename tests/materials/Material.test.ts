@@ -48,13 +48,13 @@ describe("constructor", () => {
 
     it('should allocate default values for uniforms', () => {
         const fragmentShader = `
-        UNIFORM(foo, vec4f)
-        UNIFORM(bar, vec2f)
+        @group(material) @binding(auto) var<uniform> foo : vec4f;
+        @group(material) @binding(auto) var<uniform> bar : vec2f;
         `;
 
         const vertexShader = `
-        UNIFORM(baz, vec3f)
-        UNIFORM(bar, vec2f)
+        @group(material) @binding(auto) var<uniform> baz : vec3f;
+        @group(material) @binding(auto) var<uniform> bar : vec2f;
         `;
 
         const mat = new Material({ fragmentShader, vertexShader });

@@ -6,7 +6,7 @@ import {
     FrontFace,
     RenderingMode,
 } from "hammerhead.gl/materials";
-import { Camera, Mesh, Object3D } from "hammerhead.gl/scene";
+import { Camera, MeshObject, Object3D } from "hammerhead.gl/scene";
 import { vec3 } from "wgpu-matrix";
 
 import { frameBounds, loadPLYModel, wait } from "../../lib";
@@ -18,33 +18,33 @@ async function main() {
     const renderer = context.renderer;
     renderer.clearColor = chroma("gray");
 
-    const geometry = await loadPLYModel("/files/hammerhead.ply");
+    const mesh = await loadPLYModel("/files/hammerhead.ply");
 
     function makeMesh(x: number, y: number, z: number, color: string) {
-        const mesh = new Mesh({
+        const object = new MeshObject({
             material: new BasicMaterial({
                 renderingMode: RenderingMode.Triangles,
                 frontFace: FrontFace.CW,
                 cullingMode: CullingMode.Front,
             }).withDiffuseColor(chroma(color)),
-            geometry,
+            mesh,
         });
 
-        mesh.label = color;
+        object.label = color;
 
-        const wireframeMesh = new Mesh({
+        const wireframeMesh = new MeshObject({
             material: new BasicMaterial({
                 renderingMode: RenderingMode.TriangleLines,
             }).withDiffuseColor(chroma.mix(chroma("black"), color, 0.2)),
-            geometry,
+            mesh,
         });
 
         wireframeMesh.label = color + "/wireframe";
 
-        mesh.add(wireframeMesh);
-        mesh.transform.setPosition(x, y, z);
+        object.add(wireframeMesh);
+        object.transform.setPosition(x, y, z);
 
-        return mesh;
+        return object;
     }
 
     const root = new Object3D();

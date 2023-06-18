@@ -17,22 +17,24 @@ async function main() {
 
     const cube = new MeshObject({
         material: new BasicMaterial().withColorTexture(logo),
-        geometry: new Quad(),
+        mesh: new Quad(),
     });
 
     const wirecube = new MeshObject({
         material: new BasicMaterial({
             renderingMode: RenderingMode.LineList,
         }).withDiffuseColor(chroma("black")),
-        geometry: new WireQuad(),
+        mesh: new WireQuad(),
     });
 
-    cube.geometry.setColors([
+    const colors = [
         chroma("red"),
         chroma("green"),
         chroma("blue"),
         chroma("yellow"),
-    ]);
+    ];
+
+    cube.mesh.setAttribute('color', new Float32Array(colors.flatMap(c => c.gl())));
 
     cube.add(wirecube);
 

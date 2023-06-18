@@ -1,6 +1,4 @@
-import chroma from 'chroma-js';
-
-import BufferGeometry from './BufferGeometry';
+import Mesh from './Mesh';
 
 const A = 0, B = 1, C = 2, D = 3;
 const indexBuffer = new Uint32Array([
@@ -31,13 +29,12 @@ const positions = [
 /**
  * A wireframe quad.
  */
-export default class WireQuad extends BufferGeometry {
+export default class WireQuad extends Mesh {
     constructor() {
-        super({ vertexCount: 4, indexCount: 8, indexBuffer });
+        super();
 
-        this.setPositions(positions);
-        this.setColors(chroma('white'));
-        this.setTexCoords(uv);
-        this.getLocalBounds();
+        this.setAttribute('position', new Float32Array(positions));
+        this.setIndices(indexBuffer);
+        this.setAttribute('texcoord', new Float32Array(uv));
     }
 }

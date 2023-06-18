@@ -15,7 +15,7 @@ export default class BoundsHelper extends MeshObject implements Update {
             material: new BasicMaterial({
                 renderingMode: RenderingMode.LineList,
             }).withDiffuseColor(params.color ?? chroma("yellow")),
-            geometry: new WireCube(),
+            mesh: new WireCube(),
         });
         this.source = params.source;
     }

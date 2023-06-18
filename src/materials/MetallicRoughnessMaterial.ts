@@ -29,6 +29,10 @@ class MetallicRoughnessMaterial extends Material {
     private readonly albedoTextureBinding: number;
     private readonly pointSizeBinding: number;
     private readonly offsetBinding: number;
+    private readonly emissiveTextureBinding: number;
+    private readonly aoTextureBinding: number;
+    private readonly normalTextureBinding: number;
+    private readonly metalRoughnessTextureBinding: number;
 
     constructor(
         params: {
@@ -45,6 +49,18 @@ class MetallicRoughnessMaterial extends Material {
 
         this.albedoTextureBinding =
             this.layout.getUniformBinding("albedoTexture");
+
+        this.aoTextureBinding =
+            this.layout.getUniformBinding("aoTexture");
+
+        this.normalTextureBinding =
+            this.layout.getUniformBinding("normalTexture");
+
+        this.metalRoughnessTextureBinding =
+            this.layout.getUniformBinding("metalRoughnessTexture");
+
+        this.emissiveTextureBinding =
+            this.layout.getUniformBinding("emissiveTexture");
 
         switch (this.renderingMode) {
             case RenderingMode.TriangleLines:
@@ -71,6 +87,26 @@ class MetallicRoughnessMaterial extends Material {
 
     setAlbedoTexture(texture: Texture) {
         this.setTexture(this.albedoTextureBinding, texture);
+        return this;
+    }
+
+    setAmbientOcclusionTexture(texture: Texture) {
+        this.setTexture(this.aoTextureBinding, texture);
+        return this;
+    }
+
+    setMetalRoughnessTexture(texture: Texture) {
+        this.setTexture(this.metalRoughnessTextureBinding, texture);
+        return this;
+    }
+
+    setNormalTexture(texture: Texture) {
+        this.setTexture(this.normalTextureBinding, texture);
+        return this;
+    }
+
+    setEmissiveTexture(texture: Texture) {
+        this.setTexture(this.emissiveTextureBinding, texture);
         return this;
     }
 }

@@ -15,7 +15,7 @@ export type Attribute =
     | "texcoord"
     | "texcoord1"
     | "texcoord2"
-    | "tangents"
+    | "tangent"
     | "color";
 
 export type IndexSize = "uint16" | "uint32";
@@ -51,7 +51,6 @@ export default class Mesh implements Version, Destroy, Observable<MeshEvents> {
     constructor() {
         this.id = ID++;
         this.attributes = new Map();
-        this.attributes.set("position", new Float32Array(0));
         this.dispatcher = new EventDispatcher(this);
     }
 
@@ -110,7 +109,7 @@ export default class Mesh implements Version, Destroy, Observable<MeshEvents> {
             case "texcoord":  return this.setAttribute(type, initializeArray(this.vertexCount, 2, 0));
             case "texcoord1":  return this.setAttribute(type, initializeArray(this.vertexCount, 2, 0));
             case "texcoord2":  return this.setAttribute(type, initializeArray(this.vertexCount, 2, 0));
-            case "tangents":  return this.setAttribute(type, initializeArray(this.vertexCount, 3, 0));
+            case "tangent":  return this.setAttribute(type, initializeArray(this.vertexCount, 3, 0));
             case "color": return this.setAttribute(type, initializeArray(this.vertexCount, 4, 1));
         }
     }

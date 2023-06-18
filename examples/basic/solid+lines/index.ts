@@ -30,7 +30,7 @@ async function main() {
 
     const solidMesh = new MeshObject({ mesh, material: solid });
     const wireframeMesh = new MeshObject({ mesh, material: wireframe });
-    // solidMesh.add(wireframeMesh);
+    solidMesh.add(wireframeMesh);
     const camera = new Camera("perspective");
     frameObject(solidMesh, camera);
 

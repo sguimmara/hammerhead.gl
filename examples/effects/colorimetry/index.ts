@@ -2,7 +2,7 @@ import { Context } from "hammerhead.gl/core";
 import { ScreenQuad } from "hammerhead.gl/geometries";
 import { BasicMaterial } from "hammerhead.gl/materials";
 import { Colorimetry } from "hammerhead.gl/materials/postprocessing";
-import { Camera, Mesh } from "hammerhead.gl/scene";
+import { Camera, MeshObject } from "hammerhead.gl/scene";
 
 import { load8bitImage } from "../../lib";
 import { Pane } from "tweakpane";
@@ -24,9 +24,9 @@ async function main() {
 
     const material = new BasicMaterial().withColorTexture(logo);
 
-    const mesh = new Mesh({
+    const mesh = new MeshObject({
         material,
-        geometry: new ScreenQuad(),
+        mesh: new ScreenQuad(),
     });
 
     const camera = new Camera("orthographic");

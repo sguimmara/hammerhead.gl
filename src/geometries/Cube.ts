@@ -1,13 +1,11 @@
-import chroma from 'chroma-js';
-
-import BufferGeometry from './BufferGeometry';
+import Mesh from './Mesh';
 
 /**
  * A solid cube.
  */
-export default class Cube extends BufferGeometry {
+export default class Cube extends Mesh {
     constructor() {
-        super({ vertexCount: 8, indexCount: 36 });
+        super();
 
         const half = 0.5;
         const xmin = -half;
@@ -54,9 +52,7 @@ export default class Cube extends BufferGeometry {
             Cf, Db, Df, Cf, Cb, Db, // top side
         ];
 
-        this.setPositions(vertices);
-        this.setIndices(indices);
-        this.setTexCoords();
-        this.setColors(chroma('white'));
+        this.setAttribute('position', new Float32Array(vertices));
+        this.setIndices(new Uint16Array(indices));
     }
 }
