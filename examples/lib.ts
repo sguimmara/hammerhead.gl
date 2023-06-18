@@ -4,8 +4,8 @@ import * as ply from '@loaders.gl/ply';
 
 import BufferGeometry from 'hammerhead.gl/geometries/BufferGeometry';
 import Texture from 'hammerhead.gl/textures/Texture';
-import Mesh from 'hammerhead.gl/objects/Mesh';
-import Camera from 'hammerhead.gl/objects/Camera';
+import MeshObject from 'hammerhead.gl/scene/MeshObject';
+import Camera from 'hammerhead.gl/scene/Camera';
 import Box3 from 'hammerhead.gl/core/Box3';
 import ImageSource from 'hammerhead.gl/textures/ImageSource';
 
@@ -22,7 +22,7 @@ export function frameBounds(bounds: Box3, camera: Camera) {
     camera.transform.lookAt(x, y, z);
 }
 
-export function frameObject(obj: Mesh, camera: Camera) {
+export function frameObject(obj: MeshObject, camera: Camera) {
     const geometry = obj.geometry;
     const bounds = geometry.getLocalBounds();
     frameBounds(bounds, camera);

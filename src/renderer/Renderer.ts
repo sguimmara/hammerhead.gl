@@ -5,7 +5,7 @@ import RenderCommand from "./RenderCommand";
 import RenderPipeline from "./RenderPipeline";
 import { Container } from "@/core";
 import { PostProcessingMaterial } from "@/materials/postprocessing";
-import { Object3D, Mesh, Camera } from "@/objects";
+import { Object3D, MeshObject, Camera } from "@/scene";
 
 const DEFAULT_CLEAR_COLOR = chroma("black");
 
@@ -39,7 +39,7 @@ class WebGPURenderer {
             tmpBuckets.forEach((b) => (b.meshes.length = 0));
             graph.traverse((obj) => {
                 obj.transform.updateWorldMatrix(obj.parent?.transform);
-                const mesh = obj as Mesh;
+                const mesh = obj as MeshObject;
                 if (mesh.isMesh) {
                     const material = mesh.material;
                     if (material && material.active) {

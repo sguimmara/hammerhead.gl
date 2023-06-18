@@ -1,7 +1,7 @@
 import { BufferGeometry } from '@/geometries';
 import { RenderingMode } from '@/materials';
 import { ObjectUniform } from '@/materials/uniforms';
-import { Mesh } from '@/objects';
+import { MeshObject } from '@/scene';
 import { Bucket, BufferStore, PipelineManager, TextureStore } from '@/renderer';
 
 import Stage from './Stage';
@@ -25,7 +25,7 @@ class RenderSceneStage extends Stage {
         super(device, bufferStore, pipelineManager, textureStore, globalValues);
     }
 
-    renderMesh(mesh: Mesh, pass: GPURenderPassEncoder) {
+    renderMesh(mesh: MeshObject, pass: GPURenderPassEncoder) {
         const material = mesh.material;
         const geometry = mesh.geometry;
 

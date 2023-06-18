@@ -2,7 +2,7 @@ import { Context } from "hammerhead.gl/core";
 import { ScreenQuad } from "hammerhead.gl/geometries";
 import { BasicMaterial } from "hammerhead.gl/materials";
 import { Colorimetry } from "hammerhead.gl/materials/postprocessing";
-import { Camera, Mesh } from "hammerhead.gl/objects";
+import { Camera, Mesh } from "hammerhead.gl/scene";
 
 import { load8bitImage } from "../../lib";
 import { Pane } from "tweakpane";

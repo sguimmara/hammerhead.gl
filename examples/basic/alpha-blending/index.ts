@@ -6,7 +6,7 @@ import {
     Material,
     RenderingMode,
 } from "hammerhead.gl/materials";
-import { Camera, Mesh, Object3D } from "hammerhead.gl/objects";
+import { Camera, Mesh, Object3D } from "hammerhead.gl/scene";
 
 import { load8bitImage } from "../../lib";
 import { Pane } from "tweakpane";

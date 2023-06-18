@@ -1,6 +1,6 @@
 import chroma from 'chroma-js';
 import { Context, MathUtils } from 'hammerhead.gl/core';
-import { Object3D, Mesh, Camera } from 'hammerhead.gl/objects';
+import { Object3D, Mesh, Camera } from 'hammerhead.gl/scene';
 import { BoundsHelper } from 'hammerhead.gl/helpers';
 import { BasicMaterial, RenderingMode, FrontFace } from 'hammerhead.gl/materials';
 import { frameBounds, loadPLYModel } from '../../lib';

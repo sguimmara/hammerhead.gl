@@ -1,4 +1,4 @@
-import { Camera } from '@/objects';
+import { Camera } from '@/scene';
 
 import { Bucket } from '@/renderer';
 

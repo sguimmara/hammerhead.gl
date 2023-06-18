@@ -6,7 +6,7 @@ import {
     FrontFace,
     RenderingMode,
 } from "hammerhead.gl/materials";
-import { Camera, Mesh, Object3D } from "hammerhead.gl/objects";
+import { Camera, Mesh, Object3D } from "hammerhead.gl/scene";
 import { vec3 } from "wgpu-matrix";
 
 import { frameBounds, loadPLYModel, wait } from "../../lib";

@@ -2,7 +2,7 @@ import chroma from "chroma-js";
 import { Context, MathUtils } from "hammerhead.gl/core";
 import { Cube, WireCube } from "hammerhead.gl/geometries";
 import { BasicMaterial, RenderingMode } from "hammerhead.gl/materials";
-import { Camera, Mesh } from "hammerhead.gl/objects";
+import { Camera, Mesh } from "hammerhead.gl/scene";
 
 import { frameObject, load8bitImage } from "../../lib";
 

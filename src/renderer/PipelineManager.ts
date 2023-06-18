@@ -9,7 +9,7 @@ import {
     AttributeType,
 } from "@/materials";
 import { ObjectUniform } from "@/materials/uniforms";
-import { Mesh } from "@/objects";
+import { MeshObject } from "@/scene";
 import { BufferStore, TextureStore } from "@/renderer";
 
 class PerObject {
@@ -148,7 +148,7 @@ class PipelineManager implements Service {
         return shaderModule;
     }
 
-    private onMeshDestroyed(mesh: Mesh) {
+    private onMeshDestroyed(mesh: MeshObject) {
         const perObject = this.perObjectMap.get(mesh.id);
 
         if (perObject) {
@@ -235,7 +235,7 @@ class PipelineManager implements Service {
         return layout;
     }
 
-    bindPerObjectUniforms(pass: GPURenderPassEncoder, mesh: Mesh) {
+    bindPerObjectUniforms(pass: GPURenderPassEncoder, mesh: MeshObject) {
         let perObject = this.perObjectMap.get(mesh.id);
         if (!perObject) {
             perObject = new PerObject();

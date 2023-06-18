@@ -1,4 +1,4 @@
-import { Mesh, Object3D, Scene } from "hammerhead.gl/objects";
+import { MeshObject, Object3D, Scene } from "hammerhead.gl/scene";
 import { parse } from "@loaders.gl/core";
 import * as gltf from "@loaders.gl/gltf";
 import { Scene as GltfScene } from "@loaders.gl/gltf/dist/lib/types/gltf-postprocessed-schema";
@@ -59,14 +59,14 @@ function processMaterial(material: gltf.GLTFMaterialPostprocessed): Material {
 
 function processMesh(
     mesh: gltf.GLTFMeshPostprocessed,
-): Mesh[] {
-    const result: Mesh[] = [];
+): MeshObject[] {
+    const result: MeshObject[] = [];
 
     for (const prim of mesh.primitives) {
         const geometry = processGeometry(prim);
         const material = processMaterial(prim.material);
 
-        result.push(new Mesh({ material, geometry }));
+        result.push(new MeshObject({ material, geometry }));
     }
 
     return result;

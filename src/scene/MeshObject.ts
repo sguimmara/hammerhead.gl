@@ -9,12 +9,13 @@ import Object3D from "./Object3D";
  * A renderable {@link Object3D} that combines a {@link Material}
  * and a {@link BufferGeometry} to display meshes.
  * @example
- * const mesh = new Mesh({
+ * const mesh = new MeshObject({
  *      material: new BasicMaterial(),
  *      geometry: new Cube(),
  * });
  */
-export default class Mesh extends Object3D {
+// TODO remove
+export default class MeshObject extends Object3D {
     material: Material;
     geometry: BufferGeometry;
     readonly isMesh: boolean = true;

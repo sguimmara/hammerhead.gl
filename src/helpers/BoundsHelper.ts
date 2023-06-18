@@ -1,13 +1,13 @@
 import { Box3, Update } from "@/core";
 import { WireCube } from "@/geometries";
 import { BasicMaterial, RenderingMode } from "@/materials";
-import { Mesh, Object3D } from "@/objects";
+import { MeshObject, Object3D } from "@/scene";
 import chroma, { Color } from "chroma-js";
 
 /**
  * Displays the bounds of an object.
  */
-export default class BoundsHelper extends Mesh implements Update {
+export default class BoundsHelper extends MeshObject implements Update {
     readonly source: Object3D;
 
     constructor(params: { source: Object3D; color?: Color }) {

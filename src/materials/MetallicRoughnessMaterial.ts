@@ -23,7 +23,7 @@ function selectVertexShader(params: { renderingMode?: RenderingMode }): string {
 }
 
 /**
- * A simple material with no support for lighting.
+ * A physically based material that follows the metallic/roughness model.
  */
 class MetallicRoughnessMaterial extends Material {
     private readonly albedoTextureBinding: number;

@@ -6,7 +6,7 @@ import {
     FrontFace,
     RenderingMode,
 } from "hammerhead.gl/materials";
-import { Camera, Mesh } from "hammerhead.gl/objects";
+import { Camera, Mesh } from "hammerhead.gl/scene";
 
 import { frameObject, loadPLYModel } from "../../lib";
 import { Pane } from "tweakpane";

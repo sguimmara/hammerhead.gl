@@ -2,7 +2,7 @@ import chroma from 'chroma-js';
 import { Context, VertexBufferSlot } from 'hammerhead.gl/core';
 import { BoundsHelper } from 'hammerhead.gl/helpers';
 import { BasicMaterial, CullingMode, FrontFace, RenderingMode } from 'hammerhead.gl/materials';
-import { Camera, Mesh, Object3D } from 'hammerhead.gl/objects';
+import { Camera, Mesh, Object3D } from 'hammerhead.gl/scene';
 
 import { loadPLYModel } from '../../lib';
 

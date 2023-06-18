@@ -1,5 +1,5 @@
 import Camera, { type CameraMode } from './Camera';
-import Mesh from './Mesh';
+import MeshObject from './MeshObject';
 import Object3D, { type Object3DEvents } from './Object3D';
 import Scene from './Scene';
 
@@ -8,6 +8,6 @@ export {
     Object3DEvents,
     Camera,
     CameraMode,
-    Mesh,
+    MeshObject,
     Scene
 }
