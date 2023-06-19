@@ -96,7 +96,7 @@ class TextureStore implements Service {
      */
     private updateTextureFromGPUImage(source: Source, dst: GPUTexture) {
         this.device.queue.copyExternalImageToTexture(
-            { source: source.getImage() as GPUImage, flipY: source.flipY }, // TODO expose flipy
+            { source: source.getImage() as GPUImage, flipY: source.flipY },
             { texture: dst },
             [source.width, source.height]
         );
