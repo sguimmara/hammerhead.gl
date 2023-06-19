@@ -144,12 +144,11 @@ export default class Transform implements Version, Sized, Visitable {
     }
 
     getViewMatrix() {
-        // TODO use world matrix
         if (this.localMatrixNeedsUpdate) {
             this.updateLocalMatrix();
         }
 
-        return mat4.inverse(this.localMatrix);
+        return mat4.inverse(this.worldMatrix);
     }
 
     /**

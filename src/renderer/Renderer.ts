@@ -87,6 +87,8 @@ class Renderer {
             throw new Error("no camera specified");
         }
 
+        camera.transform.updateWorldMatrix(camera.parent?.transform);
+
         this.renderPipeline.setClearColor(this.clearColor);
         const buckets = this.getRenderBuckets(root);
         const command = new RenderCommand({
