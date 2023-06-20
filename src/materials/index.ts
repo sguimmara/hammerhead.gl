@@ -1,5 +1,5 @@
 import BasicMaterial from './BasicMaterial';
-import Material, { RenderingMode, FrontFace, CullingMode, BlendFactor, BlendOp, Blending, DepthCompare } from './Material';
+import Material, { RenderingMode, BlendFactor, BlendOp, Blending, DepthCompare } from './Material';
 import { ShaderLayout, AttributeInfo, UniformInfo } from './ShaderLayout';
 import AttributeType from "./AttributeType";
 import UniformType from "./UniformType";
@@ -14,8 +14,6 @@ export {
     BlendOp,
     Blending,
     RenderingMode,
-    FrontFace,
-    CullingMode,
     Material,
     BasicMaterial,
     MetallicRoughnessMaterial,

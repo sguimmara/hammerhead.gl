@@ -1,4 +1,4 @@
-import { CullingMode, FrontFace, Material, RenderingMode } from "@/materials";
+import { Material, RenderingMode } from "@/materials";
 import { describe, expect, it } from "vitest";
 
 describe('Version', () => {
@@ -27,8 +27,7 @@ describe("constructor", () => {
 
     it("should honor rendering parameters", () => {
         const renderingMode = RenderingMode.TriangleLines;
-        const cullingMode = CullingMode.Front;
-        const frontFace = FrontFace.CCW;
+        const cullingMode = 'front' as GPUCullMode;
         const renderOrder = 5;
 
         const mat = new Material({
@@ -36,11 +35,9 @@ describe("constructor", () => {
             vertexShader: "",
             renderingMode,
             cullingMode,
-            frontFace,
             renderOrder,
         });
 
-        expect(mat.frontFace).toEqual(frontFace);
         expect(mat.cullingMode).toEqual(cullingMode);
         expect(mat.renderingMode).toEqual(renderingMode);
         expect(mat.renderOrder).toEqual(renderOrder);

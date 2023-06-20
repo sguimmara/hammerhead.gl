@@ -4,10 +4,9 @@ import Quad from './Quad';
 import WireQuad from './WireQuad';
 import WireCube from './WireCube';
 import ScreenQuad from './ScreenQuad';
-import Mesh, { type Attribute, type IndexSize, type MeshEvents } from './Mesh';
+import Mesh, { type Attribute, type MeshEvents } from './Mesh';
 
 export {
-    IndexSize,
     Attribute,
     Mesh,
     MeshEvents,

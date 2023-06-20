@@ -5,7 +5,7 @@ import lineListVertexShader from "./line-list.vert.wgsl";
 import pointsVertexShader from "./points.vert.wgsl";
 import wireframeVertexShader from "./wireframe.vert.wgsl";
 import { Texture } from "@/textures";
-import Material, { RenderingMode, CullingMode, FrontFace } from "./Material";
+import Material, { RenderingMode } from "./Material";
 
 const WHITE = chroma("white");
 
@@ -37,8 +37,8 @@ class BasicMaterial extends Material {
     constructor(
         params: {
             renderingMode?: RenderingMode;
-            cullingMode?: CullingMode;
-            frontFace?: FrontFace;
+            cullingMode?: GPUCullMode;
+            frontFace?: GPUFrontFace;
         } = {}
     ) {
         super({

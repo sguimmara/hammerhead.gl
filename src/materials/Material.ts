@@ -28,17 +28,6 @@ export enum RenderingMode {
     LineList,
 }
 
-export enum CullingMode {
-    Front,
-    Back,
-    None,
-}
-
-export enum FrontFace {
-    CW,
-    CCW,
-}
-
 export enum BlendOp {
     Add = "add",
     Subtract = "subtract",
