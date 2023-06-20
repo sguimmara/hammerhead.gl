@@ -2,6 +2,7 @@ import { Context, MathUtils } from "hammerhead.gl/core";
 import { Camera } from "hammerhead.gl/scene";
 import { loadGltfScene } from "./gltf";
 import { frameBounds } from "../../lib";
+import Inspector from "../../Inspector";
 
 let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
@@ -40,6 +41,8 @@ async function main() {
     requestAnimationFrame(renderLoop);
 
     context.on("resized", render);
+
+    const inspector = new Inspector(context);
 }
 
 main();

@@ -25,7 +25,7 @@ class PostProcessingStage extends Stage {
     withMaterial(material: PostProcessingMaterial) {
         if (this.material != material) {
             this.material = material;
-            this.pipeline = this.pipelineManager.getPipeline(this.material);
+            this.pipeline = this.pipelineManager.getPipeline(this.material, this.quad);
         }
 
         return this;

@@ -6,7 +6,6 @@ import {
 } from "@/core";
 import { Mesh } from "@/geometries";
 import { Material, RenderingMode } from "@/materials";
-import { CullingMode, FrontFace } from "@/materials/Material";
 import {
     UniformType,
     UniformInfo,
@@ -463,50 +462,15 @@ class PipelineManager implements Service {
         ];
     }
 
-    getPrimitiveState(material: Material): GPUPrimitiveState {
-        let topology: GPUPrimitiveTopology;
-        switch (material.renderingMode) {
-            case RenderingMode.Triangles:
-            case RenderingMode.Points:
-                topology = "triangle-list";
-                break;
-            case RenderingMode.TriangleLines:
-            case RenderingMode.LineList:
-                topology = "line-list";
-                break;
-        }
-
-        let cullMode: GPUCullMode;
-        switch (material.cullingMode) {
-            case CullingMode.Front:
-                cullMode = "front";
-                break;
-            case CullingMode.Back:
-                cullMode = "back";
-                break;
-            case CullingMode.None:
-                cullMode = "none";
-                break;
-        }
-
-        let frontFace: GPUFrontFace;
-        switch (material.frontFace) {
-            case FrontFace.CW:
-                frontFace = "cw";
-                break;
-            case FrontFace.CCW:
-                frontFace = "ccw";
-                break;
-        }
-
+    getPrimitiveState(material: Material, mesh: Mesh): GPUPrimitiveState {
         return {
-            topology,
-            frontFace,
-            cullMode,
+            topology: mesh.topology,
+            frontFace: mesh.frontFace,
+            cullMode: material.cullingMode,
         };
     }
 
-    updatePipeline(perMaterial: PerMaterial) {
+    updatePipeline(perMaterial: PerMaterial, mesh: Mesh) {
         const material = perMaterial.material.value;
         if (perMaterial.material.getVersion() === material.getVersion()) {
             return;
@@ -564,7 +528,7 @@ class PipelineManager implements Service {
                 depthWriteEnabled: material.depthWriteEnabled,
                 depthCompare: material.depthCompare,
             },
-            primitive: this.getPrimitiveState(material),
+            primitive: this.getPrimitiveState(material, mesh),
             vertex: {
                 module: perMaterial.vertexShader,
                 entryPoint: "vs",
@@ -594,8 +558,11 @@ class PipelineManager implements Service {
         perMaterial.materialBindGroup = materialBindGroup;
     }
 
-    getPipeline(material: Material): GPURenderPipeline {
+    getPipeline(material: Material, mesh: Mesh): GPURenderPipeline {
         let perMaterial = this.perMaterialMap.get(material.id);
+        // TODO since frontFace is a property of meshes
+        // this perMaterial map is now invalid/incomplete, as it only
+        // considers the material.
         if (!perMaterial) {
             perMaterial = new PerMaterial();
             perMaterial.material = new Versioned(material);
@@ -607,7 +574,7 @@ class PipelineManager implements Service {
                 material.fragmentShader
             );
 
-            this.updatePipeline(perMaterial);
+            this.updatePipeline(perMaterial, mesh);
 
             this.perMaterialMap.set(material.id, perMaterial);
 
@@ -615,7 +582,7 @@ class PipelineManager implements Service {
                 this.onMaterialDestroyed(evt.emitter as Material)
             );
         } else {
-            this.updatePipeline(perMaterial);
+            this.updatePipeline(perMaterial, mesh);
         }
 
         return perMaterial.pipeline;

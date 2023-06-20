@@ -149,8 +149,8 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
     readonly requiresObjectUniforms: boolean;
     readonly depthWriteEnabled: boolean = true;
     readonly renderingMode: RenderingMode;
-    readonly cullingMode: CullingMode;
-    readonly frontFace: FrontFace;
+    readonly cullingMode: GPUCullMode;
+    readonly frontFace: GPUFrontFace;
     private version: number = 0;
     depthCompare: DepthCompare = DepthCompare.Less;
     colorBlending: Blending = Blending.defaultColor();
@@ -166,8 +166,7 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
         vertexShader: string;
         requiresObjectUniforms?: boolean;
         renderingMode?: RenderingMode;
-        cullingMode?: CullingMode;
-        frontFace?: FrontFace;
+        cullingMode?: GPUCullMode;
         renderOrder?: number,
     }) {
         this.id = MATERIAL_ID++;
@@ -176,8 +175,7 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
         this.fragmentShader = shaderInfo.fragment;
         this.vertexShader = shaderInfo.vertex;
         this.layout = shaderInfo.layout;
-        this.cullingMode = options.cullingMode ?? CullingMode.Back; // TODO this should be in the geometry itself
-        this.frontFace = options.frontFace ?? FrontFace.CW; // TODO this should be in the geometry itself
+        this.cullingMode = options.cullingMode ?? 'back';
         this.renderingMode = options.renderingMode ?? RenderingMode.Triangles; // TODO this should be in the geometry itself
         this.dispatcher = new EventDispatcher<Material, MaterialEvents>(this);
         this.uniforms = allocateUniforms(this.layout.uniforms);

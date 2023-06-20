@@ -3,7 +3,7 @@ import { parse } from "@loaders.gl/core";
 import * as gltf from "@loaders.gl/gltf";
 import { Scene as GltfScene } from "@loaders.gl/gltf/dist/lib/types/gltf-postprocessed-schema";
 import { Mesh } from "hammerhead.gl/geometries";
-import { FrontFace, Material, MetallicRoughnessMaterial } from "hammerhead.gl/materials";
+import { Material, MetallicRoughnessMaterial } from "hammerhead.gl/materials";
 import { Transform } from "hammerhead.gl/core";
 import Texture from "hammerhead.gl/textures/Texture";
 import ImageSource from "hammerhead.gl/textures/ImageSource";
@@ -14,7 +14,7 @@ function processGeometry(
     let vertices = mesh.attributes['POSITION'].value as Float32Array;
 
     const indices = mesh.indices.value;
-    const result = new Mesh();
+    const result = new Mesh({ frontFace: 'ccw' });
 
     result.setIndices(indices);
     result.setAttribute('position', vertices);
@@ -54,12 +54,7 @@ function processMaterial(material: gltf.GLTFMaterialPostprocessed): Material {
     const metalRoughness = processTexture(material.pbrMetallicRoughness.metallicRoughnessTexture.texture);
     // emissive.format = 'rgba8unorm-srgb'; // TODO
 
-    // TODO
-    // When a mesh primitive uses any triangle-based topology (i.e., triangles, triangle strip, or triangle fan),
-    // the determinant of the node’s global transform defines the winding order of that primitive.
-    // If the determinant is a positive value, the winding order triangle faces is counterclockwise;
-    // in the opposite case, the winding order is clockwise.
-    return new MetallicRoughnessMaterial({ frontFace: FrontFace.CCW })
+    return new MetallicRoughnessMaterial()
         .setAlbedoTexture(albedo)
         .setAmbientOcclusionTexture(ao)
         .setNormalTexture(normal)

@@ -10,6 +10,18 @@ describe('constructor', () => {
         expect(m0.id).not.toEqual(m1.id);
         expect(m0.id).not.toEqual(m2.id);
     });
+
+    it('should set default values for optional parameters', () => {
+        const m = new Mesh();
+        expect(m.frontFace).toEqual('cw');
+        expect(m.topology).toEqual('triangle-list');
+    });
+
+    it('should assign the topology and frontFace', () => {
+        const m = new Mesh({ topology: 'line-strip', frontFace: 'ccw' });
+        expect(m.topology).toEqual('line-strip');
+        expect(m.frontFace).toEqual('ccw');
+    });
 });
 
 describe('destroy', () => {

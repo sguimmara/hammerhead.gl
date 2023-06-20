@@ -71,7 +71,7 @@ class TextureStore implements Service {
         return this.samplers.get(key);
     }
 
-    getTextureCount(): number {
+    get textureCount(): number {
         return this.textures.size;
     }
 

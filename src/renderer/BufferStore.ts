@@ -2,6 +2,7 @@ import { Destroy, Service } from '@/core';
 import { Attribute, Mesh } from '@/geometries';
 import { BufferUniform } from '@/materials/uniforms';
 import BufferWriter from './BufferWriter';
+import MemoryManager from './MemoryManager';
 
 class GeometryStorage implements Destroy {
     currentVersion: number;
@@ -9,10 +10,8 @@ class GeometryStorage implements Destroy {
     source: Mesh;
     indexBuffer: { version: number, buffer: GPUBuffer };
     attributeBuffers: Map<Attribute, { version: number, buffer: GPUBuffer }>;
-    private readonly device: GPUDevice;
 
-    constructor(source: Mesh, device: GPUDevice) {
-        this.device = device;
+    constructor(source: Mesh) {
         this.source = source;
         this.attributeBuffers = new Map();
     }
@@ -22,16 +21,16 @@ class GeometryStorage implements Destroy {
         this.attributeBuffers?.forEach(item => item.buffer.destroy());
     }
 
-    update() {
+    update(memoryManager: MemoryManager) {
         if (this.indexBuffer.version != this.source.getVersion()) {
-            this.device.queue.writeBuffer(this.indexBuffer.buffer, 0, this.source.getIndices());
+            memoryManager.sync(this.source.getIndices(), this.indexBuffer.buffer)
             this.indexBuffer.version = this.source.getVersion();
         }
 
         this.attributeBuffers.forEach((value, k) => {
             const attribute = this.source.getAttribute(k);
             if (this.source.getVersion() != value.version) {
-                this.device.queue.writeBuffer(value.buffer, 0, attribute);
+                memoryManager.sync(attribute, value.buffer);
                 value.version = this.source.getVersion();
             }
         });
@@ -50,18 +49,44 @@ class GeometryStorage implements Destroy {
     }
 }
 
+interface Stats {
+    get bufferCount(): number;
+    get bufferMemoryBytes(): number;
+}
+
 /**
  * Manages WebGPU buffers.
  */
-class BufferStore implements Service {
+class BufferStore implements Service, Stats {
     private readonly device: GPUDevice;
     private readonly geometryStorages: Map<number, GeometryStorage>;
     private readonly uniformBuffers: Map<BufferUniform, BufferWriter>;
+    private readonly memoryManager: MemoryManager;
 
-    constructor(device: GPUDevice) {
+    constructor(device: GPUDevice, memoryManager: MemoryManager) {
         this.geometryStorages = new Map();
         this.uniformBuffers = new Map();
         this.device = device;
+        this.memoryManager = memoryManager;
+    }
+
+    get bufferCount(): number {
+        return this.getBufferCount();
+    }
+
+    get bufferMemoryBytes(): number {
+        let result = 0;
+        this.uniformBuffers.forEach(v => result += v.buffer.size);
+        this.geometryStorages.forEach(v => {
+            if (v.indexBuffer?.buffer) {
+                result += v.indexBuffer.buffer.size;
+            }
+            v.attributeBuffers.forEach(v => {
+                result += v.buffer.size;
+            })
+        });
+
+        return result;
     }
 
     getType(): string {
@@ -71,6 +96,10 @@ class BufferStore implements Service {
     private onGeometryDestroyed(mesh: Mesh): void {
         const vertexBuffers = this.geometryStorages.get(mesh.id);
         vertexBuffers?.destroy();
+    }
+
+    getStats() {
+        return this;
     }
 
     getBufferCount() {
@@ -128,11 +157,11 @@ class BufferStore implements Service {
     getOrCreateVertexBuffer(mesh: Mesh, slot: Attribute): GPUBuffer {
         let storage = this.geometryStorages.get(mesh.id);
         if (!storage) {
-            storage = new GeometryStorage(mesh, this.device);
+            storage = new GeometryStorage(mesh);
             mesh.on('destroy', evt => this.onGeometryDestroyed(evt.emitter as Mesh));
             this.geometryStorages.set(mesh.id, storage);
         } else if (storage.attributeBuffers.has(slot)) {
-            storage.update();
+            storage.update(this.memoryManager);
             return storage.attributeBuffers.get(slot).buffer;
         }
 
@@ -142,15 +171,14 @@ class BufferStore implements Service {
             throw new Error(`mesh ${mesh.id} has no attribute '${slot}'`);
         }
 
-        const gpuBuffer = this.device.createBuffer({
-            label: `Mesh ${mesh.id} @${slot}`,
-            size: buf.byteLength,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.STORAGE | GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
-        });
+        const gpuBuffer = this.memoryManager.createBuffer(buf,
+            GPUBufferUsage.UNIFORM | GPUBufferUsage.STORAGE | GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+            `Mesh ${mesh.id} @${slot}`,
+        );
 
         storage.attributeBuffers.set(slot, { version: mesh.getVersion(), buffer: gpuBuffer });
 
-        this.device.queue.writeBuffer(gpuBuffer, 0, buf);
+        this.memoryManager.sync(buf, gpuBuffer);
 
         return gpuBuffer;
     }
@@ -159,20 +187,21 @@ class BufferStore implements Service {
         let storage = this.geometryStorages.get(mesh.id);
         if (!storage) {
             mesh.on('destroy', evt => this.onGeometryDestroyed(evt.emitter as Mesh));
-            this.geometryStorages.set(mesh.id, new GeometryStorage(mesh, this.device));
+            this.geometryStorages.set(mesh.id, new GeometryStorage(mesh));
         } else if (storage.indexBuffer) {
-            storage.update();
+            storage.update(this.memoryManager);
             return storage.indexBuffer.buffer;
         }
 
-        const gpuBuffer = this.device.createBuffer({
-            label: `Mesh ${mesh.id} @index`,
-            size: mesh.getIndices().byteLength,
-            usage: GPUBufferUsage.INDEX | GPUBufferUsage.STORAGE | GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
-        });
+        const indices = mesh.getIndices();
+        const gpuBuffer = this.memoryManager.createBuffer(
+            indices,
+            GPUBufferUsage.INDEX | GPUBufferUsage.STORAGE | GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+            `Mesh ${mesh.id} @index`,
+        );
 
         storage.indexBuffer = { buffer: gpuBuffer, version: -1 };
-        storage.update();
+        storage.update(this.memoryManager);
         return gpuBuffer;
     }
 }

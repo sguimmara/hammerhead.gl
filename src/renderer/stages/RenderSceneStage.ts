@@ -29,7 +29,7 @@ class RenderSceneStage extends Stage {
         const material = meshObject.material;
         const mesh = meshObject.mesh;
 
-        const pipeline = this.pipelineManager.getPipeline(material);
+        const pipeline = this.pipelineManager.getPipeline(material, mesh);
         if (this.currentPipeline == null || pipeline != this.currentPipeline) {
             pass.setPipeline(pipeline);
             this.currentPipeline = pipeline;

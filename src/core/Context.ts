@@ -5,11 +5,7 @@ import {
     Renderer,
     TextureStore,
 } from "@/renderer";
-
-class ContextInfo {
-    buffers: number;
-    textures: number;
-}
+import MemoryManager from "@/renderer/MemoryManager";
 
 export type ContextEvents = 'resized';
 
@@ -19,13 +15,14 @@ export type ContextEvents = 'resized';
  */
 export default class Context implements Observable<ContextEvents> {
     private readonly context: GPUCanvasContext;
-    private readonly container: Container;
     private readonly bufferStore: BufferStore;
     private readonly textureStore: TextureStore;
     private readonly dispatcher: EventDispatcher<Context, ContextEvents>;
 
+    readonly container: Container;
     readonly device: GPUDevice;
     readonly renderer: Renderer;
+    readonly memoryManager: MemoryManager;
 
     private constructor(
         context: GPUCanvasContext,
@@ -37,12 +34,14 @@ export default class Context implements Observable<ContextEvents> {
         this.dispatcher = new EventDispatcher<Context, ContextEvents>(this);
 
         this.container = new Container();
-        this.bufferStore = new BufferStore(device);
+        this.memoryManager = new MemoryManager(device);
+        this.bufferStore = new BufferStore(device, this.memoryManager);
         this.textureStore = new TextureStore(device);
 
         this.container.register(this.bufferStore);
         this.container.register(this.textureStore);
         this.container.register(new PipelineManager(device, this.container));
+        this.container.register(this.memoryManager);
 
         this.renderer = new Renderer(this.device, this.context, this.container);
 
@@ -68,15 +67,6 @@ export default class Context implements Observable<ContextEvents> {
 
     on(type: ContextEvents, handler: EventHandler): void {
         this.dispatcher.on(type, handler);
-    }
-
-    getInfo(): ContextInfo {
-        const info = new ContextInfo();
-
-        info.buffers = this.bufferStore.getBufferCount();
-        info.textures = this.textureStore.getTextureCount();
-
-        return info;
     }
 
     destroy() {
