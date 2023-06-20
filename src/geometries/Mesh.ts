@@ -18,8 +18,6 @@ export type Attribute =
     | "tangent"
     | "color";
 
-export type IndexSize = "uint16" | "uint32";
-
 export type MeshEvents = "destroy";
 
 function initializeArray(vertexCount: number, elementSize: number, fillValue: number) {
@@ -38,7 +36,7 @@ export default class Mesh implements Version, Destroy, Observable<MeshEvents> {
     readonly topology: GPUPrimitiveTopology;
     readonly frontFace: GPUFrontFace;
 
-    get indexSize(): IndexSize {
+    get indexFormat(): GPUIndexFormat {
         return this.indices instanceof Uint16Array ? "uint16" : "uint32";
     }
 

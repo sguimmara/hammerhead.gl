@@ -1,20 +1,9 @@
-import {
-    Service,
-    Container,
-    BindGroups,
-    Versioned,
-} from "@/core";
-import { Mesh } from "@/geometries";
-import { Material, RenderingMode } from "@/materials";
-import {
-    UniformType,
-    UniformInfo,
-    AttributeInfo,
-    AttributeType,
-} from "@/materials";
-import { ObjectUniform } from "@/materials/uniforms";
-import { MeshObject } from "@/scene";
-import { BufferStore, TextureStore } from "@/renderer";
+import { BindGroups, Container, Service, Versioned } from '@/core';
+import { Mesh } from '@/geometries';
+import { AttributeInfo, AttributeType, Material, RenderingMode, UniformInfo, UniformType } from '@/materials';
+import { ObjectUniform } from '@/materials/uniforms';
+import { BufferStore, TextureStore } from '@/renderer';
+import { MeshObject } from '@/scene';
 
 class PerObject {
     transformUniform: ObjectUniform;
@@ -378,15 +367,19 @@ class PipelineManager implements Service {
         const attributes = material.layout.attributes;
         for (let i = 0; i < attributes.length; i++) {
             const attribute = attributes[i];
+            const array = mesh.getAttribute(attribute.name);
             const gpuBuffer = this.bufferStore.getOrCreateVertexBuffer(
                 mesh,
                 attribute.name
             );
-            pass.setVertexBuffer(attribute.location, gpuBuffer);
+            pass.setVertexBuffer(attribute.location, gpuBuffer, array.byteOffset, array.byteLength);
         }
+        const indexBuffer = mesh.getIndices();
         pass.setIndexBuffer(
             this.bufferStore.getIndexBuffer(mesh),
-            mesh.indexSize
+            mesh.indexFormat,
+            indexBuffer.byteOffset,
+            indexBuffer.byteLength
         );
     }
 

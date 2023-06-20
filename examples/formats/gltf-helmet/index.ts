@@ -1,6 +1,6 @@
 import { Context, MathUtils } from "hammerhead.gl/core";
 import { Camera } from "hammerhead.gl/scene";
-import { loadGltfScene } from "./gltf";
+import GLTFLoader from "./gltf";
 import { frameBounds } from "../../lib";
 import Inspector from "../../Inspector";
 
@@ -9,7 +9,8 @@ let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 async function main() {
     const uri = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF/DamagedHelmet.gltf';
     const baseUri = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF/';
-    const gltf = await loadGltfScene(uri, baseUri);
+    const loader = new GLTFLoader();
+    const gltf = await loader.loadGltfScene(uri, baseUri);
     const context = await Context.create(canvas);
     const renderer = context.renderer;
 

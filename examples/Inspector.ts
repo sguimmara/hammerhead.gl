@@ -32,9 +32,8 @@ export default class Inspector {
                 format: n => n.toFixed(0),
             });
         }
-
-        num('maxBufferSize');
-        num('maxTextureDimension2D');
+        num('maxVertexBuffers');
+        num('maxUniformBufferBindingSize');
     }
 
     addTextureFolder(pane: Pane) {
@@ -56,14 +55,7 @@ export default class Inspector {
         const bufferParams = this.bufferStore.getStats();
         bufferFolder.addMonitor(bufferParams, 'bufferCount', {
             format: n => n.toFixed(0),
-            label: 'count',
-        });
-        bufferFolder.addMonitor(bufferParams, 'bufferMemoryBytes', {
-            format: n => {
-                const kb = (n / 1024).toFixed(1);
-                return `${n.toFixed(0)} B (${kb} KB)`;
-            } ,
-            label: 'memory'
+            label: 'GPUBuffers',
         });
         bufferFolder.addMonitor(bufferParams, 'bufferMemoryBytes', {
             format: n => {
@@ -73,7 +65,7 @@ export default class Inspector {
             view: 'graph',
             min: 0,
             max: 10 * 1024 * 1024,
-            label: 'usage'
+            label: 'memory'
         });
     }
 }

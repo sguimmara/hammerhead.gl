@@ -1,26 +1,7 @@
 import fragmentShader from "./MetallicRoughness.frag.wgsl";
-import triangleVertexShader from "./default.vert.wgsl";
-import lineListVertexShader from "./line-list.vert.wgsl";
-import pointsVertexShader from "./points.vert.wgsl";
-import wireframeVertexShader from "./wireframe.vert.wgsl";
+import vertexShader from "./MetallicRoughness.vert.wgsl";
 import { Texture } from "@/textures";
-import Material, { RenderingMode, CullingMode, FrontFace } from "./Material";
-
-function selectVertexShader(params: { renderingMode?: RenderingMode }): string {
-    const { renderingMode } = params;
-    if (renderingMode) {
-        switch (renderingMode) {
-            case RenderingMode.TriangleLines:
-                return wireframeVertexShader;
-            case RenderingMode.LineList:
-                return lineListVertexShader;
-            case RenderingMode.Points:
-                return pointsVertexShader;
-        }
-    }
-
-    return triangleVertexShader;
-}
+import Material, { RenderingMode } from "./Material";
 
 /**
  * A physically based material that follows the metallic/roughness model.
@@ -36,14 +17,13 @@ class MetallicRoughnessMaterial extends Material {
 
     constructor(
         params: {
-            renderingMode?: RenderingMode;
-            cullingMode?: CullingMode;
-            frontFace?: FrontFace;
+            cullingMode?: GPUCullMode;
+            frontFace?: GPUFrontFace;
         } = {}
     ) {
         super({
             fragmentShader,
-            vertexShader: selectVertexShader(params),
+            vertexShader,
             ...params,
         });
 

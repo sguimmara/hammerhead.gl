@@ -1,6 +1,6 @@
 #include ./chunks/constants.wgsl;
 #include ./chunks/GlobalValues.wgsl;
-#include ./chunks/VSOutput.wgsl;
+#include ./MetallicRoughnessVertex.wgsl;
 
 @group(material) @binding(auto) var albedoTexture: texture_2d<f32>;
 @group(material) @binding(auto) var albedoSampler: sampler;

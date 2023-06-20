@@ -99,14 +99,14 @@ describe('setAttribute', () => {
             const m = new Mesh();
             m.setIndices(new Uint16Array());
 
-            expect(m.indexSize).toEqual('uint16');
+            expect(m.indexFormat).toEqual('uint16');
         });
 
         it('should return uint32 if index buffer is Uint32Array', () => {
             const m = new Mesh();
             m.setIndices(new Uint32Array());
 
-            expect(m.indexSize).toEqual('uint32');
+            expect(m.indexFormat).toEqual('uint32');
         });
     });
 

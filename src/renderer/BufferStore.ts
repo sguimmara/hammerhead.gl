@@ -103,11 +103,7 @@ class BufferStore implements Service, Stats {
     }
 
     getBufferCount() {
-        let count = this.uniformBuffers.size;
-
-        this.geometryStorages.forEach(o => count += o.getBufferCount());
-
-        return count;
+        return this.memoryManager.bufferCount;
     }
 
     destroy() {
@@ -172,7 +168,7 @@ class BufferStore implements Service, Stats {
         }
 
         const gpuBuffer = this.memoryManager.createBuffer(buf,
-            GPUBufferUsage.UNIFORM | GPUBufferUsage.STORAGE | GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+            GPUBufferUsage.UNIFORM | GPUBufferUsage.INDEX | GPUBufferUsage.STORAGE | GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
             `Mesh ${mesh.id} @${slot}`,
         );
 
@@ -187,7 +183,8 @@ class BufferStore implements Service, Stats {
         let storage = this.geometryStorages.get(mesh.id);
         if (!storage) {
             mesh.on('destroy', evt => this.onGeometryDestroyed(evt.emitter as Mesh));
-            this.geometryStorages.set(mesh.id, new GeometryStorage(mesh));
+            storage = new GeometryStorage(mesh);
+            this.geometryStorages.set(mesh.id, storage);
         } else if (storage.indexBuffer) {
             storage.update(this.memoryManager);
             return storage.indexBuffer.buffer;
@@ -196,7 +193,7 @@ class BufferStore implements Service, Stats {
         const indices = mesh.getIndices();
         const gpuBuffer = this.memoryManager.createBuffer(
             indices,
-            GPUBufferUsage.INDEX | GPUBufferUsage.STORAGE | GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+            GPUBufferUsage.INDEX | GPUBufferUsage.VERTEX | GPUBufferUsage.STORAGE | GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
             `Mesh ${mesh.id} @index`,
         );
 
