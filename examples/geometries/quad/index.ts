@@ -1,10 +1,11 @@
 import chroma from "chroma-js";
 import { Context, MathUtils } from "hammerhead.gl/core";
 import { Quad, WireQuad } from "hammerhead.gl/geometries";
-import { BasicMaterial, RenderingMode } from "hammerhead.gl/materials";
+import { BasicMaterial, LineMaterial } from "hammerhead.gl/materials";
 import { Camera, MeshObject } from "hammerhead.gl/scene";
 
 import { frameObject, load8bitImage } from "../../lib";
+import { Primitive } from "hammerhead.gl/materials/Material";
 
 let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
@@ -21,9 +22,8 @@ async function main() {
     });
 
     const wirecube = new MeshObject({
-        material: new BasicMaterial({
-            renderingMode: RenderingMode.LineList,
-        }).withDiffuseColor(chroma("black")),
+        material: new LineMaterial({ primitive: Primitive.Lines})
+            .setColor(chroma("black")),
         mesh: new WireQuad(),
     });
 

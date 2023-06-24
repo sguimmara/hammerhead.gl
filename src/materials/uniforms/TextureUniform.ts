@@ -7,7 +7,7 @@ import { Version } from "@/core";
  */
 export default class TextureUniform implements Uniform, Version {
     value: Texture;
-    private version: number = 0;
+    private version: number = -1;
 
     constructor(texture?: Texture) {
         this.value = texture;

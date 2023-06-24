@@ -29,11 +29,11 @@ class BasicMaterial extends Material {
         this.colorTextureBinding =
             this.layout.getUniformBinding("colorTexture");
 
-        this.withDiffuseColor(WHITE);
+        this.setDiffuseColor(WHITE);
     }
 
-    withDiffuseColor(color: Color) {
-        this.setColor(this.colorBinding, color);
+    setDiffuseColor(color: Color) {
+        this.setColorUniform(this.colorBinding, color);
         return this;
     }
 

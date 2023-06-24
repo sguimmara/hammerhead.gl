@@ -1,7 +1,7 @@
 import chroma from 'chroma-js';
 import { Context, MathUtils } from 'hammerhead.gl/core';
-import { BasicMaterial, CullingMode, FrontFace, RenderingMode } from 'hammerhead.gl/materials';
-import { Camera, MeshObject, Object3D } from 'hammerhead.gl/scene';
+import { BasicMaterial, LineMaterial } from 'hammerhead.gl/materials';
+import { Camera, MeshObject, Node } from 'hammerhead.gl/scene';
 
 import { loadPLYModel } from '../../lib';
 
@@ -13,14 +13,10 @@ async function main() {
     renderer.clearColor = chroma('gray');
 
     const mesh = await loadPLYModel('/files/hammerhead.ply');
-    const wireframe = new BasicMaterial({ renderingMode: RenderingMode.TriangleLines }).withDiffuseColor(chroma('black'));
+    const wireframe = new LineMaterial().setColor(chroma('black'));
 
     function createShark() {
-        const solid = new BasicMaterial({
-            renderingMode: RenderingMode.Triangles,
-            frontFace: FrontFace.CW,
-            cullingMode: CullingMode.Front,
-        }).withDiffuseColor(chroma.random());
+        const solid = new BasicMaterial().setDiffuseColor(chroma.random());
 
         const solidMesh = new MeshObject({ mesh, material: solid});
         const wireframeMesh = new MeshObject({ mesh, material: wireframe});
@@ -36,8 +32,8 @@ async function main() {
         return solidMesh;
     }
 
-    const root = new Object3D();
-    const sharks: Object3D[] = [];
+    const root = new Node();
+    const sharks: Node[] = [];
 
     for (let i = 0; i < 100; i++) {
         const shark = createShark();
@@ -53,7 +49,7 @@ async function main() {
         renderer.render(root, camera);
     }
 
-    function animate(object: Object3D, dt: number) {
+    function animate(object: Node, dt: number) {
         const offset = -200 * dt;
         object.transform.translateX(offset);
     }

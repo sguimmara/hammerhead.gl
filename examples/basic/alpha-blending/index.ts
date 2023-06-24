@@ -4,9 +4,8 @@ import { Quad, ScreenQuad, WireQuad } from "hammerhead.gl/geometries";
 import {
     BasicMaterial,
     Material,
-    RenderingMode,
 } from "hammerhead.gl/materials";
-import { Camera, MeshObject, Object3D } from "hammerhead.gl/scene";
+import { Camera, MeshObject, Node } from "hammerhead.gl/scene";
 
 import { load8bitImage } from "../../lib";
 import { Pane } from "tweakpane";
@@ -25,7 +24,7 @@ async function main() {
     const background = new MeshObject({
         material: new BasicMaterial()
             .withColorTexture(checkerboard)
-            .withDiffuseColor(chroma([255, 255, 255, 0.4], 'rgb')),
+            .setDiffuseColor(chroma([255, 255, 255, 0.4], 'rgb')),
         mesh: new ScreenQuad(),
     });
 
@@ -37,15 +36,13 @@ async function main() {
     });
 
     const wireframe = new MeshObject({
-        material: new BasicMaterial({
-            renderingMode: RenderingMode.LineList,
-        }).withDiffuseColor(chroma("yellow")),
+        material: new BasicMaterial().setDiffuseColor(chroma("yellow")),
         mesh: new WireQuad(),
     });
 
     tile.add(wireframe);
 
-    const root = new Object3D();
+    const root = new Node();
 
     root.add(background);
     root.add(tile);

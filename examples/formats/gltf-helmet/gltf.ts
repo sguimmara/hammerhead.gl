@@ -1,4 +1,4 @@
-import { MeshObject, Object3D, Scene } from "hammerhead.gl/scene";
+import { MeshObject, Node, Scene } from "hammerhead.gl/scene";
 import { parse } from "@loaders.gl/core";
 import * as gltf from "@loaders.gl/gltf";
 import { Scene as GltfScene } from "@loaders.gl/gltf/dist/lib/types/gltf-postprocessed-schema";
@@ -130,8 +130,8 @@ class GLTFLoader {
         return result;
     }
 
-    processNode(node: gltf.GLTFNodePostprocessed): Object3D {
-        const result = new Object3D();
+    processNode(node: gltf.GLTFNodePostprocessed): Node {
+        const result = new Node();
         if (node.mesh) {
             const meshes = this.processMesh(node.mesh);
             result.addMany(meshes);

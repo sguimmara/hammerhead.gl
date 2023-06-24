@@ -5,7 +5,7 @@ import RenderCommand from "./RenderCommand";
 import RenderPipeline from "./RenderPipeline";
 import { Container } from "@/core";
 import { PostProcessingMaterial } from "@/materials/postprocessing";
-import { Object3D, MeshObject, Camera } from "@/scene";
+import { Node, MeshObject, Camera } from "@/scene";
 
 const DEFAULT_CLEAR_COLOR = chroma("black");
 
@@ -34,7 +34,7 @@ class Renderer {
         this.renderPipeline = new RenderPipeline(this.device, container);
     }
 
-    private getRenderBuckets(graph: Object3D): Bucket[] {
+    private getRenderBuckets(graph: Node): Bucket[] {
         if (graph) {
             tmpBuckets.forEach((b) => (b.meshes.length = 0));
             graph.traverse((obj) => {
@@ -82,7 +82,7 @@ class Renderer {
      * simply the clear color and optional post-processing effects.
      * @param camera The camera to render.
      */
-    render(root: Object3D | null, camera: Camera) {
+    render(root: Node | null, camera: Camera) {
         if (!camera) {
             throw new Error("no camera specified");
         }

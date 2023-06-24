@@ -3,10 +3,10 @@ import { Mesh } from "@/geometries";
 import { Material } from "@/materials";
 import { vec3 } from "wgpu-matrix";
 
-import Object3D from "./Object3D";
+import Node from "./Node";
 
 /**
- * A renderable {@link Object3D} that combines a {@link Material}
+ * A renderable {@link Node} that combines a {@link Material}
  * and a {@link Mesh} to display meshes.
  * @example
  * const mesh = new MeshObject({
@@ -15,7 +15,7 @@ import Object3D from "./Object3D";
  * });
  */
 // TODO remove
-export default class MeshObject extends Object3D {
+export default class MeshObject extends Node {
     material: Material;
     mesh: Mesh;
     readonly isMesh: boolean = true;

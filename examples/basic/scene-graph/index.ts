@@ -1,9 +1,9 @@
 import chroma from "chroma-js";
 import { Box3, Context, MathUtils } from "hammerhead.gl/core";
 import {
-    BasicMaterial,
+    BasicMaterial, LineMaterial,
 } from "hammerhead.gl/materials";
-import { Camera, MeshObject, Object3D } from "hammerhead.gl/scene";
+import { Camera, MeshObject, Node } from "hammerhead.gl/scene";
 import { vec3 } from "wgpu-matrix";
 
 import { frameBounds, loadPLYModel, wait } from "../../lib";
@@ -19,16 +19,14 @@ async function main() {
 
     function makeMesh(x: number, y: number, z: number, color: string) {
         const object = new MeshObject({
-            material: new BasicMaterial({
-            }).withDiffuseColor(chroma(color)),
+            material: new BasicMaterial().setDiffuseColor(chroma(color)),
             mesh,
         });
 
         object.label = color;
 
         const wireframeMesh = new MeshObject({
-            material: new BasicMaterial({
-            }).withDiffuseColor(chroma.mix(chroma("black"), color, 0.2)),
+            material: new LineMaterial().setColor(chroma.mix(chroma("black"), color, 0.2)),
             mesh,
         });
 
@@ -40,11 +38,11 @@ async function main() {
         return object;
     }
 
-    const root = new Object3D();
+    const root = new Node();
     root.label = "root";
-    const left = new Object3D();
+    const left = new Node();
     left.label = "left";
-    const right = new Object3D();
+    const right = new Node();
     right.label = "right";
     root.transform.setPosition(0, 100, 0);
     left.transform.setPosition(0, -100, -100);
@@ -73,7 +71,7 @@ async function main() {
         renderer.render(root, camera);
     }
 
-    async function animateRotation(object: Object3D) {
+    async function animateRotation(object: Node) {
         let now = performance.now();
         let rotation = 0;
         const speed = 500;

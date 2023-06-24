@@ -1,6 +1,8 @@
 import { BindGroup, Container, Service, Versioned } from '@/core';
+import Configuration from '@/core/Configuration';
 import { Attribute, Mesh } from '@/geometries';
 import { AttributeInfo, AttributeType, Material, UniformInfo, UniformType } from '@/materials';
+import { Primitive } from '@/materials/Material';
 import ShaderError from '@/materials/ShaderError';
 import { ObjectUniform } from '@/materials/uniforms';
 import { BufferStore, TextureStore } from '@/renderer';
@@ -38,6 +40,7 @@ class PipelineManager implements Service {
     private readonly globalUniformLayout: GPUBindGroupLayout;
     private readonly textureStore: TextureStore;
     private readonly bufferStore: BufferStore;
+    private readonly configuration: Configuration;
 
     constructor(device: GPUDevice, container: Container) {
         this.device = device;
@@ -46,6 +49,7 @@ class PipelineManager implements Service {
         this.perMaterialMap = new Map();
         this.perGeometryMap = new Map();
         this.shaderModules = new Map();
+        this.configuration = container.get<Configuration>("Configuration");
         this.textureStore = container.get<TextureStore>("TextureStore");
         this.bufferStore = container.get<BufferStore>("BufferStore");
 
@@ -158,6 +162,14 @@ class PipelineManager implements Service {
                     visibility,
                     sampler: {},
                 };
+            case UniformType.U32Array:
+            case UniformType.F32Array:
+                return {
+                    // TODO parse the storage type from the shader
+                    binding: uniform.binding,
+                    visibility,
+                    buffer: { type: "read-only-storage" },
+                };
             case UniformType.Float32:
             case UniformType.Vec2:
             case UniformType.Vec3:
@@ -220,7 +232,6 @@ class PipelineManager implements Service {
                 layout,
                 entries: [
                     {
-                        // TODO optimize binding access
                         binding: material.layout.getUniformBinding('modelMatrix'),
                         resource: { buffer: perObject.worldMatrixBuffer },
                     },
@@ -410,6 +421,8 @@ class PipelineManager implements Service {
         for (const uniform of uniforms) {
             let entry;
             if (uniform.name === 'indices') {
+                // TODO uniform buffers do not support u16 arrays, which
+                // forces us to expand u16 index buffers into u32 buffers.
                 const buffer = this.bufferStore.getIndexBuffer(mesh);
                 entry = {
                     binding: uniform.binding,
@@ -428,13 +441,26 @@ class PipelineManager implements Service {
 
         return result;
 
-        // TODO vertex pulling does not support uint16 indices
-        // We need to convert the Uint16Array into an Uint32Array
+
     }
 
     getPrimitiveState(material: Material, mesh: Mesh): GPUPrimitiveState {
+        let topology : GPUPrimitiveTopology;
+        switch (material.primitive) {
+            case Primitive.Triangles:
+                topology = mesh.topology;
+                break;
+            case Primitive.Quads:
+                topology = 'triangle-list';
+                break;
+            case Primitive.WireTriangles:
+            case Primitive.Lines:
+                topology = 'line-list';
+                break;
+        }
+
         return {
-            topology: mesh.topology,
+            topology: topology,
             frontFace: mesh.frontFace,
             cullMode: material.cullingMode,
         };
@@ -503,7 +529,7 @@ class PipelineManager implements Service {
             label: `Material ${material.id}`,
             layout,
             depthStencil: {
-                format: "depth32float", // TODO expose as global config
+                format: this.configuration.depthBufferFormat,
                 depthWriteEnabled: material.depthWriteEnabled,
                 depthCompare: material.depthCompare,
             },

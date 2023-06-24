@@ -3,7 +3,13 @@ import { Vec2, Vec4, vec4 } from "wgpu-matrix";
 
 import { ShaderLayout, UniformInfo } from "./ShaderLayout";
 import ShaderPreprocessor from "./ShaderPreprocessor";
-import { Observable, Destroy, EventDispatcher, EventHandler, Version } from "@/core";
+import {
+    Observable,
+    Destroy,
+    EventDispatcher,
+    EventHandler,
+    Version,
+} from "@/core";
 import { Sampler, Texture } from "@/textures";
 import {
     TextureUniform,
@@ -27,6 +33,13 @@ export enum BlendOp {
     ReverseSubtract = "reverse-subtract",
     Min = "min",
     Max = "max",
+}
+
+export enum Primitive {
+    Triangles = "triangles",
+    WireTriangles = "wire-triangles",
+    Quads = "quads",
+    Lines = "lines",
 }
 
 export enum BlendFactor {
@@ -119,7 +132,7 @@ function allocateUniforms(layout: UniformInfo[]): Uniform[] {
     return uniforms;
 }
 
-export type MaterialEvents = 'destroy';
+export type MaterialEvents = "destroy";
 
 class Material implements Observable<MaterialEvents>, Destroy, Version {
     private readonly dispatcher: EventDispatcher<Material, MaterialEvents>;
@@ -133,6 +146,7 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
     readonly cullingMode: GPUCullMode;
     readonly frontFace: GPUFrontFace;
     private version: number = 0;
+    readonly primitive: Primitive;
     depthCompare: DepthCompare = DepthCompare.Less;
     colorBlending: Blending = Blending.defaultColor();
     alphaBlending: Blending = Blending.defaultAlpha();
@@ -147,15 +161,20 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
         vertexShader: string;
         requiresObjectUniforms?: boolean;
         cullingMode?: GPUCullMode;
-        renderOrder?: number,
+        renderOrder?: number;
+        primitive?: Primitive;
     }) {
         this.id = MATERIAL_ID++;
         this.requiresObjectUniforms = options.requiresObjectUniforms ?? true;
-        const shaderInfo = ShaderPreprocessor.process(options.vertexShader, options.fragmentShader);
+        const shaderInfo = ShaderPreprocessor.process(
+            options.vertexShader,
+            options.fragmentShader
+        );
         this.fragmentShader = shaderInfo.fragment;
         this.vertexShader = shaderInfo.vertex;
         this.layout = shaderInfo.layout;
-        this.cullingMode = options.cullingMode ?? 'back';
+        this.cullingMode = options.cullingMode ?? "back";
+        this.primitive = options.primitive ?? Primitive.Triangles;
         this.dispatcher = new EventDispatcher<Material, MaterialEvents>(this);
         this.uniforms = allocateUniforms(this.layout.uniforms);
         this.renderOrder = options.renderOrder ?? 0;
@@ -209,7 +228,7 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
      * @param binding The binding number of the uniform.
      * @param value The value.
      */
-    protected setColor(binding: number, color: Color) {
+    protected setColorUniform(binding: number, color: Color) {
         const [r, g, b, a] = color.gl();
         const uniform = this.uniforms[binding] as BufferUniform;
         uniform.value = vec4.create(r, g, b, a);

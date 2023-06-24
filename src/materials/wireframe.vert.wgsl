@@ -6,13 +6,13 @@
 @group(object) @binding(auto) var<uniform> modelMatrix: mat4x4f;
 @group(material) @binding(auto) var<uniform> offset: f32;
 
-@vertex fn vs(vertex : Vertex) -> VSOutput {
-    var localToElement = array<u32, 6>(0u, 1u, 1u, 2u, 2u, 0u);
+const LOCAL_TO_ELEMENT = array<u32, 6>(0u, 1u, 1u, 2u, 2u, 0u);
 
+@vertex fn vs(vertex : Vertex) -> VSOutput {
     var triangleIndex = vertex.vertexID / 6u;
     var localVertexIndex = vertex.vertexID % 6u;
 
-    var elementIndexIndex = 3u * triangleIndex + localToElement[localVertexIndex];
+    var elementIndexIndex = 3u * triangleIndex + LOCAL_TO_ELEMENT[localVertexIndex];
     var elementIndex = indices[elementIndexIndex];
 
     var position = vec4<f32>(

@@ -1,19 +1,21 @@
 import { Box3, Update } from "@/core";
 import { WireCube } from "@/geometries";
-import { BasicMaterial } from "@/materials";
-import { MeshObject, Object3D } from "@/scene";
+import { LineMaterial } from "@/materials";
+import { Primitive } from "@/materials/Material";
+import { MeshObject, Node } from "@/scene";
 import chroma, { Color } from "chroma-js";
 
 /**
  * Displays the bounds of an object.
  */
 export default class BoundsHelper extends MeshObject implements Update {
-    readonly source: Object3D;
+    readonly source: Node;
 
-    constructor(params: { source: Object3D; color?: Color }) {
+    constructor(params: { source: Node; color?: Color }) {
         super({
-            material: new BasicMaterial({
-            }).withDiffuseColor(params.color ?? chroma("yellow")),
+            material: new LineMaterial({ primitive: Primitive.Lines }).setColor(
+                params.color ?? chroma("yellow")
+            ),
             mesh: new WireCube(),
         });
         this.source = params.source;
