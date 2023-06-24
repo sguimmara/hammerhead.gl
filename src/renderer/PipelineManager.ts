@@ -451,7 +451,7 @@ class PipelineManager implements Service {
                 topology = mesh.topology;
                 break;
             case Primitive.Quads:
-                topology = 'triangle-strip';
+                topology = 'triangle-list';
                 break;
             case Primitive.WireTriangles:
             case Primitive.Lines:

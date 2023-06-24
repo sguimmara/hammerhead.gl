@@ -51,6 +51,7 @@ class RenderSceneStage extends Stage {
                     break;
                 case Primitive.Quads:
                     pass.draw(6 * mesh.vertexCount);
+                    break;
                 case Primitive.Lines:
                     const lineCount = mesh.indexCount / 2;
                     pass.draw(6 * lineCount);
