@@ -14,8 +14,8 @@ export default class Camera extends Node {
 
     projectionMatrix: Mat4;
     fieldOfView: number = DEFAULT_FOV;
-    nearPlane: number = 0.1 ;
-    farPlane: number = 1000;
+    nearPlane: number = 0.001;
+    farPlane: number = 1000000;
 
     constructor(mode : CameraMode) {
         super();
