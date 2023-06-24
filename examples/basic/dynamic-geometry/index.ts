@@ -1,7 +1,7 @@
 import chroma from 'chroma-js';
-import { Context, VertexBufferSlot } from 'hammerhead.gl/core';
+import { Context } from 'hammerhead.gl/core';
 import { BoundsHelper } from 'hammerhead.gl/helpers';
-import { BasicMaterial, CullingMode, FrontFace, RenderingMode } from 'hammerhead.gl/materials';
+import { BasicMaterial, RenderingMode } from 'hammerhead.gl/materials';
 import { Camera, MeshObject, Object3D } from 'hammerhead.gl/scene';
 
 import { loadPLYModel } from '../../lib';
@@ -15,8 +15,7 @@ async function main() {
 
     const solid = new BasicMaterial({
         renderingMode: RenderingMode.Triangles,
-        frontFace: FrontFace.CW,
-        cullingMode: CullingMode.Front,
+        cullingMode: 'back',
     }).withDiffuseColor(chroma('cyan'));
 
     const wireframe = new BasicMaterial({ renderingMode: RenderingMode.TriangleLines }).withDiffuseColor(chroma('black'));
@@ -42,7 +41,7 @@ async function main() {
 
     const vertices = mesh.getAttribute('position');
 
-    const originalVertices = new Float32Array(vertices);
+    const originalVertices = new Float32Array(vertices.value);
 
     const box = mesh.getBounds();
     const left = box.min[0];
@@ -51,7 +50,7 @@ async function main() {
 
     const speed = 0.005;
     function updateVertices(t: number) {
-        const array = vertices;
+        const array = vertices.value;
         for (let i = 0; i < array.length; i += 3) {
             const x = array[i + 0];
             const distanceToLeft = Math.abs(x - left) / width;

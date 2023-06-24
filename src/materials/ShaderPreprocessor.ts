@@ -1,4 +1,4 @@
-import { BindGroups } from "@/core";
+import { BindGroup } from "@/core";
 import AttributeType from "./AttributeType";
 import ShaderError from "./ShaderError";
 import ShaderInfo from "./ShaderInfo";
@@ -46,10 +46,10 @@ export class UniformDeclaration {
     presentInVertexShader: boolean = false;
     presentInFragmentShader: boolean = false;
     binding: number = undefined;
-    readonly group: BindGroups;
+    readonly group: BindGroup;
     readonly qualifier: string;
 
-    constructor(params: { text: string, group: BindGroups, qualifier: string, name: string, type: UniformType }) {
+    constructor(params: { text: string, group: BindGroup, qualifier: string, name: string, type: UniformType }) {
         this.text = params.text;
         this.name = params.name;
         this.type = params.type;
@@ -108,6 +108,12 @@ function toUniformType(type: UniformType): string {
             return "f32";
         case UniformType.GlobalValues:
             return "GlobalValues";
+        case UniformType.U32Array:
+            return "array<u32>";
+        case UniformType.F32Array:
+            return "array<f32>";
+        default:
+            throw new ShaderError(`unimplemented uniform type: ${type}`);
     }
 }
 
@@ -128,6 +134,10 @@ function parseUniformType(text: string): UniformType {
     switch (text) {
         case "sampler":
             return UniformType.Sampler;
+        case "array<f32>":
+            return UniformType.F32Array;
+        case "array<u32>":
+            return UniformType.U32Array;
         case "f32":
             return UniformType.Float32;
         case "vec4f":
@@ -177,12 +187,12 @@ function getAttributeDeclarations(shaderCode: string): AttributeDeclaration[] {
     return result;
 }
 
-function parseGroup(text: string): BindGroups {
+function parseGroup(text: string): BindGroup {
     switch (text) {
-        case 'object': return BindGroups.ObjectUniforms;
-        case 'material': return BindGroups.MaterialUniforms;
-        case 'global': return BindGroups.GlobalValues;
-        case 'vertex': return BindGroups.VertexBufferUniforms;
+        case 'object': return BindGroup.ObjectUniforms;
+        case 'material': return BindGroup.MaterialUniforms;
+        case 'global': return BindGroup.GlobalValues;
+        case 'vertex': return BindGroup.VertexBufferUniforms;
         default:
             throw new ShaderError(`unrecognized group: ${text}`);
     }
@@ -247,11 +257,11 @@ function assignUniformBindings(
     vertexUniforms: UniformDeclaration[],
     fragmentUniforms: UniformDeclaration[]
 ) {
-    let bindings = new Map<BindGroups, number>();
-    bindings.set(BindGroups.GlobalValues, 0);
-    bindings.set(BindGroups.MaterialUniforms, 0);
-    bindings.set(BindGroups.VertexBufferUniforms, 0);
-    bindings.set(BindGroups.ObjectUniforms, 0);
+    let bindings = new Map<BindGroup, number>();
+    bindings.set(BindGroup.GlobalValues, 0);
+    bindings.set(BindGroup.MaterialUniforms, 0);
+    bindings.set(BindGroup.VertexBufferUniforms, 0);
+    bindings.set(BindGroup.ObjectUniforms, 0);
     for (const vUniform of vertexUniforms) {
         for (const fUniform of fragmentUniforms) {
             if (fUniform.name === vUniform.name) {

@@ -1,19 +1,20 @@
-import { BindGroups } from "@/core";
+import { BindGroup } from "@/core";
 import ShaderError from "./ShaderError";
 import UniformType from "./UniformType";
 import AttributeType from "./AttributeType";
 import { Attribute } from "@/geometries";
+import { Uniform } from "./uniforms";
 
 export class UniformInfo {
     readonly binding: number;
     readonly type: UniformType;
-    readonly group: BindGroups;
+    readonly group: BindGroup;
     readonly name: string;
     readonly presentInVertexShader: boolean;
     readonly presentInFragmentShader: boolean;
 
     constructor(
-        group: BindGroups,
+        group: BindGroup,
         binding: number,
         type: UniformType,
         name: string,
@@ -61,6 +62,30 @@ export class ShaderLayout {
         }
 
         throw new ShaderError(`no such attribute: ${name}`);
+    }
+
+    getBindGroup(group: BindGroup): UniformInfo[] {
+        const result = [];
+        const array = this.uniforms;
+        for (let i = 0; i < array.length; i++) {
+            const element = array[i];
+            if (element.group === group) {
+                result.push(element);
+            }
+        }
+        return result;
+    }
+
+    hasBindGroup(group: BindGroup): boolean {
+        const array = this.uniforms;
+        for (let i = 0; i < array.length; i++) {
+            const element = array[i];
+            if (element.group === group) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     getUniformBinding(name: string): number {

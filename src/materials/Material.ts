@@ -137,7 +137,6 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
     readonly layout: ShaderLayout;
     readonly requiresObjectUniforms: boolean;
     readonly depthWriteEnabled: boolean = true;
-    readonly renderingMode: RenderingMode;
     readonly cullingMode: GPUCullMode;
     readonly frontFace: GPUFrontFace;
     private version: number = 0;
@@ -154,7 +153,6 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
         fragmentShader: string;
         vertexShader: string;
         requiresObjectUniforms?: boolean;
-        renderingMode?: RenderingMode;
         cullingMode?: GPUCullMode;
         renderOrder?: number,
     }) {
@@ -165,7 +163,6 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
         this.vertexShader = shaderInfo.vertex;
         this.layout = shaderInfo.layout;
         this.cullingMode = options.cullingMode ?? 'back';
-        this.renderingMode = options.renderingMode ?? RenderingMode.Triangles; // TODO this should be in the geometry itself
         this.dispatcher = new EventDispatcher<Material, MaterialEvents>(this);
         this.uniforms = allocateUniforms(this.layout.uniforms);
         this.renderOrder = options.renderOrder ?? 0;

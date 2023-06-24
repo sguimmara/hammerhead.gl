@@ -12,12 +12,12 @@ import { type Update } from './Update';
 import { type Version, Versioned } from './Version';
 import { type Visitable, type Visitor } from './Visitable';
 import { type Clone } from './Clone';
-import { VertexBufferSlot, BindGroups } from './constants';
+import { VertexBufferSlot, BindGroup } from './constants';
 
 export {
     Box3,
     VertexBufferSlot,
-    BindGroups,
+    BindGroup,
     Container,
     Destroy,
     Context,

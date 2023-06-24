@@ -1,4 +1,4 @@
-import { BindGroups } from '@/core';
+import { BindGroup } from '@/core';
 import { PostProcessingMaterial } from '@/materials/postprocessing';
 import { ObjectUniform } from '@/materials/uniforms';
 
@@ -55,11 +55,11 @@ class PostProcessingStage extends Stage {
         this.bindGroup = this.device.createBindGroup({
             label: "stage texture bind group",
             layout: this.pipeline.getBindGroupLayout(
-                BindGroups.MaterialUniforms
+                BindGroup.MaterialUniforms
             ),
             entries,
         });
-        pass.setBindGroup(BindGroups.MaterialUniforms, this.bindGroup);
+        pass.setBindGroup(BindGroup.MaterialUniforms, this.bindGroup);
 
         this.pipelineManager.bindVertexBuffers(this.quad, this.material, pass);
 

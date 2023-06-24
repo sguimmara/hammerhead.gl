@@ -29,8 +29,8 @@ class GeometryStorage implements Destroy {
 
         this.attributeBuffers.forEach((value, k) => {
             const attribute = this.source.getAttribute(k);
-            if (this.source.getVersion() != value.version) {
-                memoryManager.sync(attribute, value.buffer);
+            if (attribute.getVersion() != value.version) {
+                memoryManager.sync(attribute.value, value.buffer);
                 value.version = this.source.getVersion();
             }
         });
@@ -167,14 +167,14 @@ class BufferStore implements Service, Stats {
             throw new Error(`mesh ${mesh.id} has no attribute '${slot}'`);
         }
 
-        const gpuBuffer = this.memoryManager.createBuffer(buf,
+        const gpuBuffer = this.memoryManager.createBuffer(buf.value,
             GPUBufferUsage.UNIFORM | GPUBufferUsage.INDEX | GPUBufferUsage.STORAGE | GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
             `Mesh ${mesh.id} @${slot}`,
         );
 
-        storage.attributeBuffers.set(slot, { version: mesh.getVersion(), buffer: gpuBuffer });
+        storage.attributeBuffers.set(slot, { version: buf.getVersion(), buffer: gpuBuffer });
 
-        this.memoryManager.sync(buf, gpuBuffer);
+        this.memoryManager.sync(buf.value, gpuBuffer);
 
         return gpuBuffer;
     }

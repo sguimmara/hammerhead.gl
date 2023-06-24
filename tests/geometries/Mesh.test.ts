@@ -48,12 +48,12 @@ describe('getAttribute', () => {
         const m = new Mesh();
 
         m.setAttribute('position', new Float32Array(9));
-        expect(m.getAttribute('texcoord')).toHaveLength(6);
-        expect(m.getAttribute('texcoord1')).toHaveLength(6);
-        expect(m.getAttribute('texcoord2')).toHaveLength(6);
-        expect(m.getAttribute('normal')).toHaveLength(9);
-        expect(m.getAttribute('color')).toHaveLength(12);
-        expect(m.getAttribute('tangent')).toHaveLength(9);
+        expect(m.getAttribute('texcoord').value).toHaveLength(6);
+        expect(m.getAttribute('texcoord1').value).toHaveLength(6);
+        expect(m.getAttribute('texcoord2').value).toHaveLength(6);
+        expect(m.getAttribute('normal').value).toHaveLength(9);
+        expect(m.getAttribute('color').value).toHaveLength(12);
+        expect(m.getAttribute('tangent').value).toHaveLength(9);
     });
 });
 
@@ -64,7 +64,7 @@ describe('setAttribute', () => {
 
         m.setAttribute('position', positions);
 
-        expect(m.getAttribute('position')).toBe(positions);
+        expect(m.getAttribute('position').value).toBe(positions);
         expect(m.vertexCount).toEqual(positions.length / 3);
     });
 
@@ -112,15 +112,36 @@ describe('setAttribute', () => {
 
     it('should increment the version', () => {
         const m = new Mesh();
-        let v = m.getVersion();
+
+        const posAttr = m.setAttribute('position', new Float32Array());
+        expect(posAttr.getVersion()).toEqual(0);
 
         m.setAttribute('position', new Float32Array());
-        expect(m.getVersion()).not.toEqual(v);
-        v = m.getVersion();
+        expect(posAttr.getVersion()).toEqual(1);
+    });
+});
 
-        m.setAttribute('position', new Float32Array());
-        expect(m.getVersion()).not.toEqual(v);
-        v = m.getVersion();
+describe('clone', () => {
+    it('should copy the index buffer', () => {
+        const m0 = new Mesh();
+        const indices = new Uint16Array();
+        m0.setIndices(indices);
+        const m1 = m0.clone();
+
+        expect(m0.indexFormat).toEqual('uint16');
+        expect(m1.indexFormat).toEqual('uint16');
+        expect(m1.getIndices()).toBe(indices);
+    });
+
+    it('should copy topology and frontFace', () => {
+        const m0 = new Mesh({ topology: 'point-list', frontFace: 'ccw' });
+        const m1 = m0.clone();
+        expect(m1.topology).toEqual('point-list');
+        expect(m1.frontFace).toEqual('ccw');
+    });
+
+    it('should copy attributes', () => {
+
     });
 });
 

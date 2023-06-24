@@ -1,10 +1,12 @@
 import {
     Box3,
+    Clone,
     Destroy,
     EventDispatcher,
     EventHandler,
     Observable,
     Version,
+    Versioned,
 } from "@/core";
 
 let ID = 0;
@@ -26,26 +28,36 @@ function initializeArray(vertexCount: number, elementSize: number, fillValue: nu
     return array;
 }
 
-export default class Mesh implements Version, Destroy, Observable<MeshEvents> {
+export default class Mesh implements Version, Destroy, Clone, Observable<MeshEvents> {
     readonly id: number;
-    private readonly attributes: Map<Attribute, Float32Array>;
+    private readonly attributes: Map<Attribute, Versioned<Float32Array>>;
     private indices: Uint16Array | Uint32Array;
     private version: number = 0;
     private readonly dispatcher: EventDispatcher<Mesh, MeshEvents>;
     private bounds: Box3;
-    readonly topology: GPUPrimitiveTopology;
+    private _topology: GPUPrimitiveTopology;
     readonly frontFace: GPUFrontFace;
+
 
     get indexFormat(): GPUIndexFormat {
         return this.indices instanceof Uint16Array ? "uint16" : "uint32";
     }
 
     get vertexCount() {
-        return this.attributes.get("position").length / 3;
+        return this.attributes.get("position").value.length / 3;
     }
 
     get indexCount() {
         return this.indices?.length ?? 0;
+    }
+
+    get topology() {
+        return this._topology;
+    }
+
+    setTopology(topology: GPUPrimitiveTopology) {
+        this._topology = topology;
+        this.incrementVersion();
     }
 
     constructor(
@@ -58,15 +70,37 @@ export default class Mesh implements Version, Destroy, Observable<MeshEvents> {
         }
     ) {
         this.id = ID++;
-        this.topology = params.topology;
+        this._topology = params.topology;
         this.frontFace = params.frontFace;
         this.attributes = new Map();
         this.dispatcher = new EventDispatcher(this);
     }
 
+    /**
+     * Returns a shallow clone of this mesh, i.e all buffers
+     * are not cloned.
+     * @returns The cloned mesh.
+     */
+    clone(): Mesh {
+        const result = new Mesh({
+            topology: this.topology,
+            frontFace: this.frontFace
+        });
+
+        const indices = this.getIndices();
+        if (indices) {
+            result.setIndices(indices);
+        }
+        for (const [attr, value] of this.attributes) {
+            result.setAttribute(attr, value.value);
+        }
+
+        return result;
+    }
+
     getBounds(): Box3 {
         if (!this.bounds) {
-            this.bounds = Box3.fromPoints(this.attributes.get("position"));
+            this.bounds = Box3.fromPoints(this.attributes.get("position").value);
         }
         return this.bounds;
     }
@@ -101,12 +135,18 @@ export default class Mesh implements Version, Destroy, Observable<MeshEvents> {
             this.bounds = null;
         }
         // TODO should we constrain the buffer size to match the vertex count ?
-        this.attributes.set(type, buffer);
-        this.incrementVersion();
-        return buffer;
+        let current = this.attributes.get(type);
+        if (current) {
+            current.value = buffer;
+            current.incrementVersion();
+        } else {
+            current = new Versioned(buffer);
+            this.attributes.set(type, current);
+        }
+        return current;
     }
 
-    getAttribute(type: Attribute): Float32Array | null {
+    getAttribute(type: Attribute): Versioned<Float32Array> {
         const attr = this.attributes.get(type);
         if (attr != null) {
             return attr;

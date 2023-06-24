@@ -16,9 +16,9 @@
     var elementIndex = indices[elementIndexIndex];
 
     var position = vec4<f32>(
-        positions[3u * elementIndex + 0u],
-        positions[3u * elementIndex + 1u],
-        positions[3u * elementIndex + 2u],
+        vertexPosition[3u * elementIndex + 0u],
+        vertexPosition[3u * elementIndex + 1u],
+        vertexPosition[3u * elementIndex + 2u],
         1,
     );
 
@@ -31,15 +31,15 @@
     var projected = p * viewPosition;
 
     var color = vec4<f32>(
-        colors[4u * elementIndex + 0u],
-        colors[4u * elementIndex + 1u],
-        colors[4u * elementIndex + 2u],
-        colors[4u * elementIndex + 3u],
+        vertexColor[4u * elementIndex + 0u],
+        vertexColor[4u * elementIndex + 1u],
+        vertexColor[4u * elementIndex + 2u],
+        vertexColor[4u * elementIndex + 3u],
     );
 
     var uv = vec2<f32>(
-        texcoords[3u * elementIndex + 0u],
-        texcoords[3u * elementIndex + 1u],
+        vertexTexcoord[3u * elementIndex + 0u],
+        vertexTexcoord[3u * elementIndex + 1u],
     );
 
     var output: VSOutput;

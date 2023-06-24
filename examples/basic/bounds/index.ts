@@ -2,7 +2,7 @@ import chroma from 'chroma-js';
 import { Context, MathUtils } from 'hammerhead.gl/core';
 import { Object3D, MeshObject, Camera } from 'hammerhead.gl/scene';
 import { BoundsHelper } from 'hammerhead.gl/helpers';
-import { BasicMaterial, RenderingMode, FrontFace } from 'hammerhead.gl/materials';
+import { BasicMaterial, RenderingMode } from 'hammerhead.gl/materials';
 import { frameBounds, loadPLYModel } from '../../lib';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -14,10 +14,10 @@ async function main() {
 
     const mesh = await loadPLYModel('/files/hammerhead.ply');
     const cyan = new BasicMaterial({
-        frontFace: FrontFace.CCW,
+        frontFace: 'ccw',
     }).withDiffuseColor(chroma('cyan'));
     const purple = new BasicMaterial({
-        frontFace: FrontFace.CCW,
+        frontFace: 'ccw',
     }).withDiffuseColor(chroma('purple'));
     const wireframe = new BasicMaterial({ renderingMode: RenderingMode.TriangleLines }).withDiffuseColor(chroma('black'));
 

@@ -3,7 +3,7 @@
  */
 export interface Clone {
     /**
-     * Clones this object.
+     * Performs a shallow clone of this object.
      */
     clone(): unknown;
 }

@@ -1,10 +1,10 @@
-import { Mesh } from '@/geometries';
-import { RenderingMode } from '@/materials';
-import { ObjectUniform } from '@/materials/uniforms';
-import { MeshObject } from '@/scene';
-import { Bucket, BufferStore, PipelineManager, TextureStore } from '@/renderer';
+import { Mesh } from "@/geometries";
+import { RenderingMode } from "@/materials";
+import { ObjectUniform } from "@/materials/uniforms";
+import { MeshObject } from "@/scene";
+import { Bucket, BufferStore, PipelineManager, TextureStore } from "@/renderer";
 
-import Stage from './Stage';
+import Stage from "./Stage";
 
 /**
  * A render pipeline stage that render the scene into a color attachment.
@@ -13,7 +13,7 @@ class RenderSceneStage extends Stage {
     private renderList: Bucket[];
     private pass: GPURenderPassEncoder;
     private currentPipeline: GPURenderPipeline = null;
-    private currentGeometry: Mesh;
+    private currentMesh: Mesh;
 
     constructor(
         device: GPUDevice,
@@ -36,52 +36,63 @@ class RenderSceneStage extends Stage {
         }
 
         this.pipelineManager.bindPerMaterialUniforms(material, pass);
-        this.pipelineManager.bindPerObjectUniforms(pass, meshObject);
+        this.pipelineManager.bindPerObjectUniforms(pass, material, meshObject);
 
-        switch (material.renderingMode) {
-            case RenderingMode.Triangles:
-                {
-                    if (
-                        this.currentGeometry == null ||
-                        this.currentGeometry != mesh
-                    ) {
-                        this.currentGeometry = mesh;
-                        this.pipelineManager.bindVertexBuffers(mesh, material, pass);
-                    }
-
-                    pass.drawIndexed(mesh.indexCount);
-                }
-                break;
-            case RenderingMode.TriangleLines: {
-                this.pipelineManager.bindVertexBufferUniforms(
-                    this.currentPipeline,
-                    mesh,
-                    pass
-                );
-                const triangleCount = mesh.indexCount / 3;
-                pass.draw(6 * triangleCount, 1, 0, 0);
-            }
-            case RenderingMode.LineList:
-                {
-                    this.pipelineManager.bindVertexBufferUniforms(
-                        this.currentPipeline,
-                        mesh,
-                        pass
-                    );
-                    const lineCount = mesh.indexCount / 2;
-                    pass.draw(6 * lineCount, 1, 0, 0);
-                }
-                break;
-            case RenderingMode.Points: {
-                this.pipelineManager.bindVertexBufferUniforms(
-                    this.currentPipeline,
-                    mesh,
-                    pass
-                );
-                const vertexCount = mesh.vertexCount;
-                pass.draw(6 * vertexCount);
-            }
+        if (this.currentMesh == null || this.currentMesh != mesh) {
+            this.currentMesh = mesh;
+            this.pipelineManager.bindVertexBuffers(mesh, material, pass);
         }
+
+        pass.drawIndexed(mesh.indexCount);
+
+        // TODO
+        // switch (material.renderingMode) {
+        //     case RenderingMode.Triangles:
+        //         {
+        //             if (
+        //                 this.currentGeometry == null ||
+        //                 this.currentGeometry != mesh
+        //             ) {
+        //                 this.currentGeometry = mesh;
+        //                 this.pipelineManager.bindVertexBuffers(mesh, material, pass);
+        //             }
+
+        //             pass.drawIndexed(mesh.indexCount);
+        //         }
+        //         break;
+        //     case RenderingMode.TriangleLines: {
+        //         this.pipelineManager.bindVertexBufferUniforms(
+        //             this.currentPipeline,
+        //             mesh,
+        //             material,
+        //             pass
+        //         );
+        //         const triangleCount = mesh.indexCount / 3;
+        //         pass.draw(6 * triangleCount, 1, 0, 0);
+        //     }
+        //     case RenderingMode.LineList:
+        //         {
+        //             this.pipelineManager.bindVertexBufferUniforms(
+        //                 this.currentPipeline,
+        //                 mesh,
+        //                 material,
+        //                 pass
+        //             );
+        //             const lineCount = mesh.indexCount / 2;
+        //             pass.draw(6 * lineCount, 1, 0, 0);
+        //         }
+        //         break;
+        //     case RenderingMode.Points: {
+        //         this.pipelineManager.bindVertexBufferUniforms(
+        //             this.currentPipeline,
+        //             mesh,
+        //             material,
+        //             pass
+        //         );
+        //         const vertexCount = mesh.vertexCount;
+        //         pass.draw(6 * vertexCount);
+        //     }
+        // }
     }
 
     withRenderBuckets(buckets: Bucket[]) {
@@ -99,7 +110,7 @@ class RenderSceneStage extends Stage {
             throw new Error("no output texture to render into");
         }
         this.currentPipeline = null;
-        this.currentGeometry = null;
+        this.currentMesh = null;
         this.pass = encoder.beginRenderPass(this.renderPassDescriptor);
         this.pipelineManager.bindGlobalUniforms(this.pass, this.GlobalValues);
 

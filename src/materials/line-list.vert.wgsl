@@ -15,37 +15,37 @@
     var elementIndexIndex = 2 * lineIndex + localToElement[localVertexIndex];
     var elementIndex = indices[elementIndexIndex];
 
-    var position = vec4<f32>(
-        positions[3u * elementIndex + 0u],
-        positions[3u * elementIndex + 1u],
-        positions[3u * elementIndex + 2u],
+    var pos = vec4<f32>(
+        position[3u * elementIndex + 0u],
+        position[3u * elementIndex + 1u],
+        position[3u * elementIndex + 2u],
         1.0,
     );
 
     var m = modelMatrix;
     var v = globals.viewMatrix;
     var p = globals.projectionMatrix;
-    var viewPosition = v * m * position;
+    var viewPosition = v * m * pos;
     // To avoid z-fighting with solid meshes
     viewPosition.w += offset;
     var projected = p * viewPosition;
 
-    var color = vec4<f32>(
-        colors[4u * elementIndex + 0u],
-        colors[4u * elementIndex + 1u],
-        colors[4u * elementIndex + 2u],
-        colors[4u * elementIndex + 3u],
+    var col = vec4<f32>(
+        color[4u * elementIndex + 0u],
+        color[4u * elementIndex + 1u],
+        color[4u * elementIndex + 2u],
+        color[4u * elementIndex + 3u],
     );
 
     var uv = vec2<f32>(
-        texcoords[3u * elementIndex + 0u],
-        texcoords[3u * elementIndex + 1u],
+        texcoord[3u * elementIndex + 0u],
+        texcoord[3u * elementIndex + 1u],
     );
 
     var output: VSOutput;
 
     output.position = projected;
-    output.color = color;
+    output.color = col;
     output.texcoord = uv;
 
     return output;

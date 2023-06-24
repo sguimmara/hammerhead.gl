@@ -2,8 +2,6 @@ import chroma from "chroma-js";
 import { Box3, Context, MathUtils } from "hammerhead.gl/core";
 import {
     BasicMaterial,
-    CullingMode,
-    FrontFace,
     RenderingMode,
 } from "hammerhead.gl/materials";
 import { Camera, MeshObject, Object3D } from "hammerhead.gl/scene";
@@ -24,8 +22,6 @@ async function main() {
         const object = new MeshObject({
             material: new BasicMaterial({
                 renderingMode: RenderingMode.Triangles,
-                frontFace: FrontFace.CW,
-                cullingMode: CullingMode.Front,
             }).withDiffuseColor(chroma(color)),
             mesh,
         });
