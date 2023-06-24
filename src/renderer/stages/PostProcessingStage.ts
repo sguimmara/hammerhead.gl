@@ -37,13 +37,28 @@ class PostProcessingStage extends Stage {
         pass.setPipeline(this.pipeline);
         const entries: GPUBindGroupEntry[] = [];
 
+        // Hardcoded inputs to the post-processing material.
+        entries.push({
+            binding: this.material.layout.getUniformBinding('colorTexture'),
+            resource: this.inputView,
+        });
+        entries.push({
+            binding: this.material.layout.getUniformBinding('colorSampler'),
+            resource: this.inputSampler,
+        });
+
         const uniforms = this.material.layout.uniforms;
         for (let i = 0; i < uniforms.length; i++) {
-            this.pipelineManager.getBindGroupEntries(
-                this.material,
-                i,
-                entries
-            );
+            const uniform = uniforms[i];
+            // TODO find a better way to distinguish between "hardcoded" input
+            // and regular uniforms. Maybe a dedicated group ?
+            if (uniform.name !== 'colorTexture' && uniform.name !== 'colorSampler') {
+                this.pipelineManager.getBindGroupEntries(
+                    this.material,
+                    i,
+                    entries
+                    );
+                }
         }
 
         this.pipelineManager.bindGlobalUniforms(pass, this.GlobalValues);
