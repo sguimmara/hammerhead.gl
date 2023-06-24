@@ -1,7 +1,7 @@
 import chroma from "chroma-js";
 import { Box3, Context, MathUtils } from "hammerhead.gl/core";
 import {
-    BasicMaterial,
+    BasicMaterial, LineMaterial,
 } from "hammerhead.gl/materials";
 import { Camera, MeshObject, Object3D } from "hammerhead.gl/scene";
 import { vec3 } from "wgpu-matrix";
@@ -19,16 +19,14 @@ async function main() {
 
     function makeMesh(x: number, y: number, z: number, color: string) {
         const object = new MeshObject({
-            material: new BasicMaterial({
-            }).setDiffuseColor(chroma(color)),
+            material: new BasicMaterial().setDiffuseColor(chroma(color)),
             mesh,
         });
 
         object.label = color;
 
         const wireframeMesh = new MeshObject({
-            material: new BasicMaterial({
-            }).setDiffuseColor(chroma.mix(chroma("black"), color, 0.2)),
+            material: new LineMaterial().setColor(chroma.mix(chroma("black"), color, 0.2)),
             mesh,
         });
 

@@ -26,7 +26,7 @@ export default class Tetrahedron extends Mesh {
         const b2 = 2;
         const s = 3;
 
-        this.setIndices(new Uint16Array([
+        this.setIndices(new Uint32Array([
             b1, b0, b2,
             b1, b2, s,
             b2, b0, s,

@@ -5,7 +5,7 @@ import Material, { Primitive } from "./Material";
 
 const WHITE = chroma("white");
 /**
- * A simple material with no support for lighting.
+ * Renders points as quads.
  */
 class PointMaterial extends Material {
     private readonly colorBinding: number;
@@ -15,7 +15,7 @@ class PointMaterial extends Material {
         params: {
             cullingMode?: GPUCullMode;
         } = {
-            cullingMode: 'back',
+            cullingMode: 'none',
         }
     ) {
         super({
