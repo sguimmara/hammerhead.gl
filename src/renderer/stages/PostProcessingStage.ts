@@ -35,20 +35,15 @@ class PostProcessingStage extends Stage {
         const pass = encoder.beginRenderPass(this.renderPassDescriptor);
 
         pass.setPipeline(this.pipeline);
-        const entries: GPUBindGroupEntry[] = [
-            { binding: 0, resource: this.inputView },
-            { binding: 1, resource: this.inputSampler },
-        ];
+        const entries: GPUBindGroupEntry[] = [];
 
         const uniforms = this.material.layout.uniforms;
-        if (uniforms.length > 2) {
-            for (let i = 2; i < uniforms.length; i++) {
-                this.pipelineManager.getBindGroupEntries(
-                    this.material,
-                    i,
-                    entries
-                );
-            }
+        for (let i = 0; i < uniforms.length; i++) {
+            this.pipelineManager.getBindGroupEntries(
+                this.material,
+                i,
+                entries
+            );
         }
 
         this.pipelineManager.bindGlobalUniforms(pass, this.GlobalValues);
