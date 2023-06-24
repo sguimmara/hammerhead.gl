@@ -58,7 +58,7 @@ const vertices = new Float32Array([
  */
 export default class WireCube extends Mesh {
     constructor() {
-        super();
+        super({ topology: 'line-list' });
         this.setAttribute('position', vertices);
         this.setIndices(indices);
     }

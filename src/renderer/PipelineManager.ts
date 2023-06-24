@@ -2,6 +2,7 @@ import { BindGroup, Container, Service, Versioned } from '@/core';
 import Configuration from '@/core/Configuration';
 import { Attribute, Mesh } from '@/geometries';
 import { AttributeInfo, AttributeType, Material, UniformInfo, UniformType } from '@/materials';
+import { Primitive } from '@/materials/Material';
 import ShaderError from '@/materials/ShaderError';
 import { ObjectUniform } from '@/materials/uniforms';
 import { BufferStore, TextureStore } from '@/renderer';
@@ -160,6 +161,14 @@ class PipelineManager implements Service {
                     binding: uniform.binding,
                     visibility,
                     sampler: {},
+                };
+            case UniformType.U32Array:
+            case UniformType.F32Array:
+                return {
+                    // TODO parse the storage type from the shader
+                    binding: uniform.binding,
+                    visibility,
+                    buffer: { type: "read-only-storage" },
                 };
             case UniformType.Float32:
             case UniformType.Vec2:
@@ -436,8 +445,22 @@ class PipelineManager implements Service {
     }
 
     getPrimitiveState(material: Material, mesh: Mesh): GPUPrimitiveState {
+        let topology : GPUPrimitiveTopology;
+        switch (material.primitive) {
+            case Primitive.Triangles:
+                topology = mesh.topology;
+                break;
+            case Primitive.Quads:
+                topology = 'triangle-strip';
+                break;
+            case Primitive.WireTriangles:
+            case Primitive.Lines:
+                topology = 'line-list';
+                break;
+        }
+
         return {
-            topology: mesh.topology,
+            topology: topology,
             frontFace: mesh.frontFace,
             cullMode: material.cullingMode,
         };

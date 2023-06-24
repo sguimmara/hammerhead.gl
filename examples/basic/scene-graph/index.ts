@@ -20,7 +20,7 @@ async function main() {
     function makeMesh(x: number, y: number, z: number, color: string) {
         const object = new MeshObject({
             material: new BasicMaterial({
-            }).withDiffuseColor(chroma(color)),
+            }).setDiffuseColor(chroma(color)),
             mesh,
         });
 
@@ -28,7 +28,7 @@ async function main() {
 
         const wireframeMesh = new MeshObject({
             material: new BasicMaterial({
-            }).withDiffuseColor(chroma.mix(chroma("black"), color, 0.2)),
+            }).setDiffuseColor(chroma.mix(chroma("black"), color, 0.2)),
             mesh,
         });
 

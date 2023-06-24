@@ -6,19 +6,19 @@
 @group(object) @binding(auto) var<uniform> modelMatrix: mat4x4f;
 @group(material) @binding(auto) var<uniform> offset: f32;
 
-@vertex fn vs(vertex : Vertex) -> VSOutput {
-    var localToElement = array<u32, 6>(0u, 1u, 1u, 1u, 1u, 0u);
+const LOCAL_TO_ELEMENT = array<u32, 6>(0u, 1u, 1u, 1u, 1u, 0u);
 
+@vertex fn vs(vertex : Vertex) -> VSOutput {
     var lineIndex = vertex.vertexID / 6u;
     var localVertexIndex = vertex.vertexID % 6u;
 
-    var elementIndexIndex = 2 * lineIndex + localToElement[localVertexIndex];
+    var elementIndexIndex = 2 * lineIndex + LOCAL_TO_ELEMENT[localVertexIndex];
     var elementIndex = indices[elementIndexIndex];
 
     var pos = vec4<f32>(
-        position[3u * elementIndex + 0u],
-        position[3u * elementIndex + 1u],
-        position[3u * elementIndex + 2u],
+        vertexPosition[3u * elementIndex + 0u],
+        vertexPosition[3u * elementIndex + 1u],
+        vertexPosition[3u * elementIndex + 2u],
         1.0,
     );
 
@@ -31,15 +31,15 @@
     var projected = p * viewPosition;
 
     var col = vec4<f32>(
-        color[4u * elementIndex + 0u],
-        color[4u * elementIndex + 1u],
-        color[4u * elementIndex + 2u],
-        color[4u * elementIndex + 3u],
+        vertexColor[4u * elementIndex + 0u],
+        vertexColor[4u * elementIndex + 1u],
+        vertexColor[4u * elementIndex + 2u],
+        vertexColor[4u * elementIndex + 3u],
     );
 
     var uv = vec2<f32>(
-        texcoord[3u * elementIndex + 0u],
-        texcoord[3u * elementIndex + 1u],
+        vertexTexcoord[3u * elementIndex + 0u],
+        vertexTexcoord[3u * elementIndex + 1u],
     );
 
     var output: VSOutput;

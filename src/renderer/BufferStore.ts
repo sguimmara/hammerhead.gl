@@ -142,7 +142,7 @@ class BufferStore implements Service, Stats {
         const gpuBuffer = this.device.createBuffer({
             label,
             size: uniform.getByteSize(),
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+            usage: GPUBufferUsage.STORAGE | GPUBufferUsage.INDEX | GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
         });
         const bw = new BufferWriter(uniform, gpuBuffer, this.device);
         bw.update();

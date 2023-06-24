@@ -24,7 +24,7 @@ async function main() {
     const background = new MeshObject({
         material: new BasicMaterial()
             .withColorTexture(checkerboard)
-            .withDiffuseColor(chroma([255, 255, 255, 0.4], 'rgb')),
+            .setDiffuseColor(chroma([255, 255, 255, 0.4], 'rgb')),
         mesh: new ScreenQuad(),
     });
 
@@ -36,7 +36,7 @@ async function main() {
     });
 
     const wireframe = new MeshObject({
-        material: new BasicMaterial().withDiffuseColor(chroma("yellow")),
+        material: new BasicMaterial().setDiffuseColor(chroma("yellow")),
         mesh: new WireQuad(),
     });
 

@@ -13,7 +13,7 @@ async function main() {
 
     const mesh = await loadPLYModel("/files/hammerhead.ply");
 
-    const material = new BasicMaterial().withDiffuseColor(chroma("cyan"));
+    const material = new BasicMaterial().setDiffuseColor(chroma("cyan"));
 
     const shark = new MeshObject({ mesh, material });
 

@@ -12,12 +12,12 @@ let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 async function main() {
     const context = await Context.create(canvas);
     const renderer = context.renderer;
-    renderer.clearCoxlor = chroma("gray");
+    renderer.clearColor = chroma("gray");
 
     const mesh = await loadPLYModel("/files/hammerhead.ply");
-    const solid = new BasicMaterial().withDiffuseColor(chroma("cyan"));
+    const solid = new BasicMaterial().setDiffuseColor(chroma("cyan"));
 
-    const wireframe = new LineMaterial().withDiffuseColor(chroma("black"));
+    const wireframe = new LineMaterial().setColor(chroma("black"));
 
     const solidMesh = new MeshObject({ mesh, material: solid });
     const wireframeMesh = new MeshObject({ mesh, material: wireframe });
@@ -38,7 +38,7 @@ async function main() {
         const degrees = 40 * dt;
         now = current;
         solidMesh.transform.rotateY(MathUtils.deg2rad(degrees));
-        // requestAnimationFrame(renderLoop);
+        requestAnimationFrame(renderLoop);
     }
 
     requestAnimationFrame(renderLoop);

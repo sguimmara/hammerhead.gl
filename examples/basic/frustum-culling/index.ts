@@ -13,10 +13,10 @@ async function main() {
     renderer.clearColor = chroma('gray');
 
     const mesh = await loadPLYModel('/files/hammerhead.ply');
-    const wireframe = new BasicMaterial().withDiffuseColor(chroma('black'));
+    const wireframe = new BasicMaterial().setDiffuseColor(chroma('black'));
 
     function createShark() {
-        const solid = new BasicMaterial().withDiffuseColor(chroma.random());
+        const solid = new BasicMaterial().setDiffuseColor(chroma.random());
 
         const solidMesh = new MeshObject({ mesh, material: solid});
         const wireframeMesh = new MeshObject({ mesh, material: wireframe});

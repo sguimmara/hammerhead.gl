@@ -1,6 +1,6 @@
 import chroma from "chroma-js";
 import { Context, MathUtils } from "hammerhead.gl/core";
-import { BasicMaterial } from "hammerhead.gl/materials";
+import { BasicMaterial, PointMaterial } from "hammerhead.gl/materials";
 import { Camera, MeshObject } from "hammerhead.gl/scene";
 
 import { frameObject, loadPLYModel } from "../../lib";
@@ -14,7 +14,7 @@ async function main() {
 
     const mesh = await loadPLYModel("/files/hammerhead.ply");
 
-    const material = new BasicMaterial().withDiffuseColor(chroma("cyan"));
+    const material = new PointMaterial().setColor(chroma("cyan"));
 
     const shark = new MeshObject({ mesh, material });
     const camera = new Camera("perspective");
@@ -46,10 +46,9 @@ async function main() {
         pointSize: 2,
     };
 
-    // TODO
     pane.addInput(params, 'pointSize', { min: 0, max: 20 })
         .on('change', ev => {
-            // material.withPointSize(ev.value);
+            material.setPointSize(ev.value);
             render();
         });
 }

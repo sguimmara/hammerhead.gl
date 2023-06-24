@@ -35,7 +35,7 @@ export async function loadPLYModel(uri: string): Promise<Mesh> {
     const vertices = data.attributes.POSITION.value as Float32Array;
     const indices = data.indices.value as Uint32Array;
 
-    const mesh = new Mesh();
+    const mesh = new Mesh({ frontFace: 'ccw' });
     mesh.setIndices(indices);
     mesh.setAttribute('position', vertices);
 

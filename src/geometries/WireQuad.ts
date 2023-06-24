@@ -31,7 +31,7 @@ const positions = [
  */
 export default class WireQuad extends Mesh {
     constructor() {
-        super();
+        super({ topology: 'line-list'});
 
         this.setAttribute('position', new Float32Array(positions));
         this.setIndices(indexBuffer);

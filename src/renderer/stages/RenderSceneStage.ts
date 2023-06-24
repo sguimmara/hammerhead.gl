@@ -4,6 +4,9 @@ import { MeshObject } from "@/scene";
 import { Bucket, BufferStore, PipelineManager, TextureStore } from "@/renderer";
 
 import Stage from "./Stage";
+import { Material } from "@/materials";
+import { BindGroup } from "@/core";
+import { Primitive } from "@/materials/Material";
 
 /**
  * A render pipeline stage that render the scene into a color attachment.
@@ -24,6 +27,38 @@ class RenderSceneStage extends Stage {
         super(device, bufferStore, pipelineManager, textureStore, globalValues);
     }
 
+    drawIndexedTriangles(
+        mesh: Mesh,
+        material: Material,
+        pass: GPURenderPassEncoder
+    ) {
+        if (this.currentMesh == null || this.currentMesh != mesh) {
+            this.currentMesh = mesh;
+            this.pipelineManager.bindVertexBuffers(mesh, material, pass);
+        }
+
+        pass.drawIndexed(mesh.indexCount);
+    }
+
+    draw(mesh: Mesh, material: Material, pass: GPURenderPassEncoder) {
+        if (material.primitive === Primitive.Triangles) {
+            this.drawIndexedTriangles(mesh, material, pass);
+        } else {
+            switch (material.primitive) {
+                case Primitive.WireTriangles:
+                    const triangleCount = mesh.indexCount / 3;
+                    pass.draw(6 * triangleCount);
+                    break;
+                case Primitive.Quads:
+                    pass.draw(6 * mesh.vertexCount);
+                case Primitive.Lines:
+                    const lineCount = mesh.indexCount / 2;
+                    pass.draw(6 * lineCount);
+                    break;
+            }
+        }
+    }
+
     renderMesh(meshObject: MeshObject, pass: GPURenderPassEncoder) {
         const material = meshObject.material;
         const mesh = meshObject.mesh;
@@ -34,64 +69,23 @@ class RenderSceneStage extends Stage {
             this.currentPipeline = pipeline;
         }
 
-        this.pipelineManager.bindPerMaterialUniforms(material, pass);
-        this.pipelineManager.bindPerObjectUniforms(pass, material, meshObject);
-
-        if (this.currentMesh == null || this.currentMesh != mesh) {
-            this.currentMesh = mesh;
-            this.pipelineManager.bindVertexBuffers(mesh, material, pass);
+        const layout = material.layout;
+        if (layout.hasBindGroup(BindGroup.MaterialUniforms)) {
+            this.pipelineManager.bindPerMaterialUniforms(material, pass);
+        }
+        if (layout.hasBindGroup(BindGroup.ObjectUniforms)) {
+            this.pipelineManager.bindPerObjectUniforms(pass, material, meshObject);
+        }
+        if (layout.hasBindGroup(BindGroup.VertexBufferUniforms)) {
+            this.pipelineManager.bindVertexBufferUniforms(
+                this.currentPipeline,
+                mesh,
+                material,
+                pass
+            );
         }
 
-        pass.drawIndexed(mesh.indexCount);
-
-        // TODO
-        // switch (material.renderingMode) {
-        //     case RenderingMode.Triangles:
-        //         {
-        //             if (
-        //                 this.currentGeometry == null ||
-        //                 this.currentGeometry != mesh
-        //             ) {
-        //                 this.currentGeometry = mesh;
-        //                 this.pipelineManager.bindVertexBuffers(mesh, material, pass);
-        //             }
-
-        //             pass.drawIndexed(mesh.indexCount);
-        //         }
-        //         break;
-        //     case RenderingMode.TriangleLines: {
-        //         this.pipelineManager.bindVertexBufferUniforms(
-        //             this.currentPipeline,
-        //             mesh,
-        //             material,
-        //             pass
-        //         );
-        //         const triangleCount = mesh.indexCount / 3;
-        //         pass.draw(6 * triangleCount, 1, 0, 0);
-        //     }
-        //     case RenderingMode.LineList:
-        //         {
-        //             this.pipelineManager.bindVertexBufferUniforms(
-        //                 this.currentPipeline,
-        //                 mesh,
-        //                 material,
-        //                 pass
-        //             );
-        //             const lineCount = mesh.indexCount / 2;
-        //             pass.draw(6 * lineCount, 1, 0, 0);
-        //         }
-        //         break;
-        //     case RenderingMode.Points: {
-        //         this.pipelineManager.bindVertexBufferUniforms(
-        //             this.currentPipeline,
-        //             mesh,
-        //             material,
-        //             pass
-        //         );
-        //         const vertexCount = mesh.vertexCount;
-        //         pass.draw(6 * vertexCount);
-        //     }
-        // }
+        this.draw(mesh, material, pass);
     }
 
     withRenderBuckets(buckets: Bucket[]) {

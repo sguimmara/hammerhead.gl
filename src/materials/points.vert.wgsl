@@ -12,9 +12,9 @@
     var localIndex = vertex.vertexID % 6u;
 
     var position = vec4<f32>(
-        positions[3 * vertexIndex + 0],
-        positions[3 * vertexIndex + 1],
-        positions[3 * vertexIndex + 2],
+        vertexPosition[3 * vertexIndex + 0],
+        vertexPosition[3 * vertexIndex + 1],
+        vertexPosition[3 * vertexIndex + 2],
         1.0
     );
 
@@ -47,15 +47,15 @@
     }
 
     var color = vec4<f32>(
-        colors[4 * vertexIndex + 0],
-        colors[4 * vertexIndex + 1],
-        colors[4 * vertexIndex + 2],
-        colors[4 * vertexIndex + 3],
+        vertexColor[4 * vertexIndex + 0],
+        vertexColor[4 * vertexIndex + 1],
+        vertexColor[4 * vertexIndex + 2],
+        vertexColor[4 * vertexIndex + 3],
     );
 
     var uv = vec2<f32>(
-        texcoords[3 * vertexIndex + 0],
-        texcoords[3 * vertexIndex + 1],
+        vertexTexcoord[3 * vertexIndex + 0],
+        vertexTexcoord[3 * vertexIndex + 1],
     );
 
     var output: VSOutput;

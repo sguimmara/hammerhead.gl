@@ -42,13 +42,25 @@ export class AttributeInfo {
     }
 }
 
+function getBindGroupBitmask(uniforms: UniformInfo[]) {
+    let result = 0;
+    for (let i = 0; i < uniforms.length; i++) {
+        const uniform = uniforms[i];
+        const mask = 1 << uniform.group;
+        result |= mask;
+    }
+    return result;
+}
+
 export class ShaderLayout {
     readonly uniforms: UniformInfo[];
     readonly attributes: AttributeInfo[];
+    readonly bindGroupBitmask: number;
 
     constructor(attributes: AttributeInfo[], uniforms: UniformInfo[]) {
         this.attributes = attributes;
         this.uniforms = uniforms;
+        this.bindGroupBitmask = getBindGroupBitmask(uniforms);
     }
 
     getAttributeLocation(name: Attribute): number {
@@ -77,15 +89,8 @@ export class ShaderLayout {
     }
 
     hasBindGroup(group: BindGroup): boolean {
-        const array = this.uniforms;
-        for (let i = 0; i < array.length; i++) {
-            const element = array[i];
-            if (element.group === group) {
-                return true;
-            }
-        }
-
-        return false;
+        const mask = 1 << group;
+        return (this.bindGroupBitmask & mask) != 0;
     }
 
     getUniformBinding(name: string): number {

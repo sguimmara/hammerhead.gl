@@ -1,6 +1,7 @@
 import { Box3, Update } from "@/core";
 import { WireCube } from "@/geometries";
-import { BasicMaterial } from "@/materials";
+import { LineMaterial } from "@/materials";
+import { Primitive } from "@/materials/Material";
 import { MeshObject, Object3D } from "@/scene";
 import chroma, { Color } from "chroma-js";
 
@@ -12,8 +13,9 @@ export default class BoundsHelper extends MeshObject implements Update {
 
     constructor(params: { source: Object3D; color?: Color }) {
         super({
-            material: new BasicMaterial({
-            }).withDiffuseColor(params.color ?? chroma("yellow")),
+            material: new LineMaterial({ primitive: Primitive.Lines }).setColor(
+                params.color ?? chroma("yellow")
+            ),
             mesh: new WireCube(),
         });
         this.source = params.source;
