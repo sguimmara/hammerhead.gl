@@ -1,4 +1,5 @@
 import { BindGroup, Container, Service, Versioned } from '@/core';
+import Configuration from '@/core/Configuration';
 import { Attribute, Mesh } from '@/geometries';
 import { AttributeInfo, AttributeType, Material, UniformInfo, UniformType } from '@/materials';
 import ShaderError from '@/materials/ShaderError';
@@ -38,6 +39,7 @@ class PipelineManager implements Service {
     private readonly globalUniformLayout: GPUBindGroupLayout;
     private readonly textureStore: TextureStore;
     private readonly bufferStore: BufferStore;
+    private readonly configuration: Configuration;
 
     constructor(device: GPUDevice, container: Container) {
         this.device = device;
@@ -46,6 +48,7 @@ class PipelineManager implements Service {
         this.perMaterialMap = new Map();
         this.perGeometryMap = new Map();
         this.shaderModules = new Map();
+        this.configuration = container.get<Configuration>("Configuration");
         this.textureStore = container.get<TextureStore>("TextureStore");
         this.bufferStore = container.get<BufferStore>("BufferStore");
 
@@ -220,7 +223,6 @@ class PipelineManager implements Service {
                 layout,
                 entries: [
                     {
-                        // TODO optimize binding access
                         binding: material.layout.getUniformBinding('modelMatrix'),
                         resource: { buffer: perObject.worldMatrixBuffer },
                     },
@@ -410,6 +412,8 @@ class PipelineManager implements Service {
         for (const uniform of uniforms) {
             let entry;
             if (uniform.name === 'indices') {
+                // TODO uniform buffers do not support u16 arrays, which
+                // forces us to expand u16 index buffers into u32 buffers.
                 const buffer = this.bufferStore.getIndexBuffer(mesh);
                 entry = {
                     binding: uniform.binding,
@@ -428,8 +432,7 @@ class PipelineManager implements Service {
 
         return result;
 
-        // TODO vertex pulling does not support uint16 indices
-        // We need to convert the Uint16Array into an Uint32Array
+
     }
 
     getPrimitiveState(material: Material, mesh: Mesh): GPUPrimitiveState {
@@ -503,7 +506,7 @@ class PipelineManager implements Service {
             label: `Material ${material.id}`,
             layout,
             depthStencil: {
-                format: "depth32float", // TODO expose as global config
+                format: this.configuration.depthBufferFormat,
                 depthWriteEnabled: material.depthWriteEnabled,
                 depthCompare: material.depthCompare,
             },

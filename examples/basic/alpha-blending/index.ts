@@ -4,7 +4,6 @@ import { Quad, ScreenQuad, WireQuad } from "hammerhead.gl/geometries";
 import {
     BasicMaterial,
     Material,
-    RenderingMode,
 } from "hammerhead.gl/materials";
 import { Camera, MeshObject, Object3D } from "hammerhead.gl/scene";
 
@@ -37,9 +36,7 @@ async function main() {
     });
 
     const wireframe = new MeshObject({
-        material: new BasicMaterial({
-            renderingMode: RenderingMode.LineList,
-        }).withDiffuseColor(chroma("yellow")),
+        material: new BasicMaterial().withDiffuseColor(chroma("yellow")),
         mesh: new WireQuad(),
     });
 

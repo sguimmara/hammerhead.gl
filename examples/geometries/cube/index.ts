@@ -1,7 +1,7 @@
 import chroma from "chroma-js";
 import { Context, MathUtils } from "hammerhead.gl/core";
 import { Cube, WireCube } from "hammerhead.gl/geometries";
-import { BasicMaterial, RenderingMode } from "hammerhead.gl/materials";
+import { BasicMaterial } from "hammerhead.gl/materials";
 import { Camera, MeshObject } from "hammerhead.gl/scene";
 
 import { frameObject, load8bitImage } from "../../lib";
@@ -22,9 +22,7 @@ async function main() {
     });
 
     const wirecube = new MeshObject({
-        material: new BasicMaterial({
-            renderingMode: RenderingMode.LineList,
-        }).withDiffuseColor(chroma("black")),
+        material: new BasicMaterial().withDiffuseColor(chroma("black")),
         mesh: new WireCube(),
     });
 

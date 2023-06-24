@@ -12,7 +12,7 @@ let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 async function main() {
     const context = await Context.create(canvas);
     const renderer = context.renderer;
-    renderer.clearColor = chroma("gray");
+    renderer.clearCoxlor = chroma("gray");
 
     const mesh = await loadPLYModel("/files/hammerhead.ply");
     const solid = new BasicMaterial().withDiffuseColor(chroma("cyan"));

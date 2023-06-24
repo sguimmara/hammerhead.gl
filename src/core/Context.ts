@@ -6,6 +6,7 @@ import {
     TextureStore,
 } from "@/renderer";
 import MemoryManager from "@/renderer/MemoryManager";
+import Configuration from "./Configuration";
 
 export type ContextEvents = 'resized';
 
@@ -23,14 +24,17 @@ export default class Context implements Observable<ContextEvents> {
     readonly device: GPUDevice;
     readonly renderer: Renderer;
     readonly memoryManager: MemoryManager;
+    readonly configuration: Configuration;
 
     private constructor(
         context: GPUCanvasContext,
         device: GPUDevice,
-        canvas: HTMLCanvasElement
+        canvas: HTMLCanvasElement,
+        configuration: Configuration,
     ) {
         this.context = context;
         this.device = device;
+        this.configuration = configuration;
         this.dispatcher = new EventDispatcher<Context, ContextEvents>(this);
 
         this.container = new Container();
@@ -38,6 +42,7 @@ export default class Context implements Observable<ContextEvents> {
         this.bufferStore = new BufferStore(device, this.memoryManager);
         this.textureStore = new TextureStore(device);
 
+        this.container.register(this.configuration);
         this.container.register(this.bufferStore);
         this.container.register(this.textureStore);
         this.container.register(new PipelineManager(device, this.container));
@@ -78,7 +83,7 @@ export default class Context implements Observable<ContextEvents> {
      * Creates a context on the specified canvas.
      * @param canvas The canvas.
      */
-    static async create(canvas: HTMLCanvasElement): Promise<Context> {
+    static async create(canvas: HTMLCanvasElement, configuration?: Configuration): Promise<Context> {
         const context = canvas.getContext("webgpu");
         const adapter = await navigator.gpu?.requestAdapter();
         const device = await adapter?.requestDevice();
@@ -91,6 +96,6 @@ export default class Context implements Observable<ContextEvents> {
             throw new Error("WebGPU is not supported on this browser.");
         }
 
-        return new Context(context, device, canvas);
+        return new Context(context, device, canvas, configuration ?? Configuration.default);
     }
 }

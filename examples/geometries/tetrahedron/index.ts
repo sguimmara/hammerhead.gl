@@ -1,7 +1,7 @@
 import chroma from "chroma-js";
 import { Context, MathUtils } from "hammerhead.gl/core";
 import { Tetrahedron } from "hammerhead.gl/geometries";
-import { BasicMaterial, RenderingMode } from "hammerhead.gl/materials";
+import { BasicMaterial } from "hammerhead.gl/materials";
 import { Camera, MeshObject } from "hammerhead.gl/scene";
 
 import { frameObject } from "../../lib";
@@ -12,9 +12,7 @@ async function main() {
     const context = await Context.create(canvas);
     const renderer = context.renderer;
 
-    const material = new BasicMaterial({
-        renderingMode: RenderingMode.Triangles,
-    });
+    const material = new BasicMaterial();
 
     const mesh = new MeshObject({
         material,
