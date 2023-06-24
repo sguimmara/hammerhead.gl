@@ -17,6 +17,10 @@
 @group(material) @binding(auto) var metalRoughnessTexture: texture_2d<f32>;
 @group(material) @binding(auto) var metalRoughnessSampler: sampler;
 
+@group(material) @binding(auto) var<uniform> baseColorFactor: vec4f;
+@group(material) @binding(auto) var<uniform> metallicFactor: f32;
+@group(material) @binding(auto) var<uniform> roughnessFactor: f32;
+
 @fragment fn fs(vertex: VSOutput) -> @location(0) vec4f {
     var uv = vertex.texcoord;
 

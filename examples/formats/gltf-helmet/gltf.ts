@@ -95,26 +95,46 @@ class GLTFLoader {
         return tex;
     }
 
-    processMaterial(material: gltf.GLTFMaterialPostprocessed): Material {
-        const albedo = this.processTexture(
-            material.pbrMetallicRoughness.baseColorTexture.texture
-        );
-        albedo.format = "rgba8unorm-srgb";
+    processMetallicRoughnessMaterial(material: gltf.GLTFMaterialPostprocessed): Material {
+        const result = new MetallicRoughnessMaterial();
+        const pbr = material.pbrMetallicRoughness;
 
-        const emissive = this.processTexture(material.emissiveTexture.texture);
-        const ao = this.processTexture(material.occlusionTexture.texture);
-        const normal = this.processTexture(material.normalTexture.texture);
-        const metalRoughness = this.processTexture(
-            material.pbrMetallicRoughness.metallicRoughnessTexture.texture
-        );
-        // emissive.format = 'rgba8unorm-srgb'; // TODO
+        if (pbr) {
+            if (pbr.baseColorTexture) {
+                const albedo = this.processTexture(pbr.baseColorTexture.texture);
+                albedo.format = "rgba8unorm-srgb";
+                result.setAlbedoTexture(albedo);
+            }
+            if (pbr.metallicRoughnessTexture) {
+                const metalRoughness = this.processTexture(
+                    pbr.metallicRoughnessTexture.texture
+                );
+                result.setMetalRoughnessTexture(metalRoughness);
+            }
+            if (pbr.baseColorFactor) {
+                result.setBaseColorFactor(pbr.baseColorFactor);
+            }
+            if (pbr.metallicFactor) {
+                result.setMetallicFactor(pbr.metallicFactor);
+            }
+            if (pbr.roughnessFactor) {
+                result.setRoughnessFactor(pbr.roughnessFactor);
+            }
+        }
+        if (material.emissiveTexture) {
+            const emissive = this.processTexture(material.emissiveTexture.texture);
+            result.setEmissiveTexture(emissive);
+        }
+        if (material.occlusionTexture) {
+            const ao = this.processTexture(material.occlusionTexture.texture);
+            result.setAmbientOcclusionTexture(ao);
+        }
+        if (material.normalTexture) {
+            const normal = this.processTexture(material.normalTexture.texture);
+            result.setNormalTexture(normal);
+        }
 
-        return new MetallicRoughnessMaterial()
-            .setAlbedoTexture(albedo)
-            .setAmbientOcclusionTexture(ao)
-            .setNormalTexture(normal)
-            .setMetalRoughnessTexture(metalRoughness)
-            .setEmissiveTexture(emissive);
+        return result;
     }
 
     processMesh(mesh: gltf.GLTFMeshPostprocessed): MeshObject[] {
@@ -122,7 +142,7 @@ class GLTFLoader {
 
         for (const prim of mesh.primitives) {
             const mesh = this.processGeometry(prim);
-            const material = this.processMaterial(prim.material);
+            const material = this.processMetallicRoughnessMaterial(prim.material);
 
             result.push(new MeshObject({ material, mesh }));
         }
