@@ -69,6 +69,12 @@ export default class Object3D implements Observable<Object3DEvents>, Destroy {
         child.dispatch('added');
     }
 
+    addMany(children: Iterable<Object3D>) {
+        for (const child of children) {
+            this.add(child);
+        }
+    }
+
     /**
      * Traverse the hierarchy of this object, calling the callback for each visited object.
      * @param callback The callback called for each visited object in the hierarchy.

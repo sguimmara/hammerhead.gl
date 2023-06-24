@@ -1,5 +1,5 @@
 import { Box3 } from "@/core";
-import { BufferGeometry } from "@/geometries";
+import { Mesh } from "@/geometries";
 import { Material } from "@/materials";
 import { vec3 } from "wgpu-matrix";
 
@@ -7,16 +7,17 @@ import Object3D from "./Object3D";
 
 /**
  * A renderable {@link Object3D} that combines a {@link Material}
- * and a {@link BufferGeometry} to display meshes.
+ * and a {@link Mesh} to display meshes.
  * @example
- * const mesh = new Mesh({
+ * const mesh = new MeshObject({
  *      material: new BasicMaterial(),
- *      geometry: new Cube(),
+ *      mesh: new Cube(),
  * });
  */
-export default class Mesh extends Object3D {
+// TODO remove
+export default class MeshObject extends Object3D {
     material: Material;
-    geometry: BufferGeometry;
+    mesh: Mesh;
     readonly isMesh: boolean = true;
 
     /**
@@ -25,15 +26,15 @@ export default class Mesh extends Object3D {
      */
     constructor(params: {
         material: Material,
-        geometry: BufferGeometry,
+        mesh: Mesh,
     }) {
         super();
         this.material = params.material;
-        this.geometry = params.geometry;
+        this.mesh = params.mesh;
     }
 
     getWorldBounds(): Box3 {
-        const localBounds = this.geometry.getLocalBounds();
+        const localBounds = this.mesh.getBounds();
 
         this.transform.updateWorldMatrix(this.parent?.transform);
 

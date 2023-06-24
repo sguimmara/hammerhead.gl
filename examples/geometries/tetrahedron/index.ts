@@ -2,7 +2,7 @@ import chroma from "chroma-js";
 import { Context, MathUtils } from "hammerhead.gl/core";
 import { Tetrahedron } from "hammerhead.gl/geometries";
 import { BasicMaterial, RenderingMode } from "hammerhead.gl/materials";
-import { Camera, Mesh } from "hammerhead.gl/objects";
+import { Camera, MeshObject } from "hammerhead.gl/scene";
 
 import { frameObject } from "../../lib";
 
@@ -16,17 +16,19 @@ async function main() {
         renderingMode: RenderingMode.Triangles,
     });
 
-    const mesh = new Mesh({
+    const mesh = new MeshObject({
         material,
-        geometry: new Tetrahedron(),
+        mesh: new Tetrahedron(),
     });
 
-    mesh.geometry.setColors([
+    const colors = [
         chroma("red"),
         chroma("green"),
         chroma("blue"),
-        chroma("yellow"),
-    ]);
+        chroma("yellow")
+    ];
+
+    mesh.mesh.setAttribute('color', new Float32Array(colors.flatMap(c => c.gl())));
 
     const camera = new Camera("perspective");
     frameObject(mesh, camera);

@@ -1,5 +1,11 @@
 import { Service } from "@/core";
-import { AddressMode, FilterMode, Sampler, Texture } from "@/textures";
+import { AddressMode, FilterMode, Sampler, Source, Texture } from "@/textures";
+
+type GPUImage =
+    | ImageBitmap
+    | HTMLVideoElement
+    | HTMLCanvasElement
+    | OffscreenCanvas;
 
 /**
  * Manages WebGPU textures.
@@ -11,7 +17,7 @@ class TextureStore implements Service {
     >;
     private readonly device: GPUDevice;
     private readonly emptyTexture: GPUTexture;
-    private readonly samplers = new Map<number, GPUSampler>();
+    private readonly samplers = new Map<string, GPUSampler>();
     private readonly emptyTextureView: GPUTextureView;
 
     constructor(device: GPUDevice) {
@@ -31,11 +37,11 @@ class TextureStore implements Service {
         this.emptyTextureView = this.emptyTexture.createView();
         const white = new Uint8ClampedArray(4);
         white.set([255, 255, 255, 255]);
-        this.updateTexture(white, this.emptyTexture);
+        this.updateTextureFromBufferSource(white, this.emptyTexture);
     }
 
     getType(): string {
-        return 'TextureStore';
+        return "TextureStore";
     }
 
     destroy() {
@@ -46,65 +52,63 @@ class TextureStore implements Service {
     }
 
     private createSampler(sampler: Sampler): GPUSampler {
-        function toFilter(mode: FilterMode): GPUFilterMode {
-            switch (mode) {
-                case FilterMode.Linear:
-                    return "linear";
-                case FilterMode.Nearest:
-                    return "nearest";
-                default:
-                    throw new Error("invalid filter mode");
-            }
-        }
-
-        function toAddressMode(mode: AddressMode): GPUAddressMode {
-            switch (mode) {
-                case AddressMode.ClampToEdge:
-                    return "clamp-to-edge";
-                case AddressMode.Repeat:
-                    return "repeat";
-                case AddressMode.Mirror:
-                    return "mirror-repeat";
-                default:
-                    throw new Error("invalid address mod");
-            }
-        }
-
         return this.device.createSampler({
-            magFilter: toFilter(sampler.magFilter),
-            minFilter: toFilter(sampler.minFilter),
-            addressModeU: toAddressMode(sampler.addressModeU),
-            addressModeV: toAddressMode(sampler.addressModeV),
+            magFilter: sampler.magFilter,
+            minFilter: sampler.minFilter,
+            addressModeU: sampler.addressModeU,
+            addressModeV: sampler.addressModeV,
         });
     }
 
     getOrCreateSampler(value: Sampler): GPUSampler {
-        const code =
-            (value.magFilter << 2) |
-            (value.addressModeU << 1) |
-            value.addressModeV;
-        if (!this.samplers.has(code)) {
+        const key = value.magFilter + value.minFilter + value.addressModeU + value.addressModeV;
+
+        if (!this.samplers.has(key)) {
             const sampler = this.createSampler(value);
-            this.samplers.set(code, sampler);
+            this.samplers.set(key, sampler);
             return sampler;
         }
-        return this.samplers.get(code);
+        return this.samplers.get(key);
     }
 
-    getTextureCount(): number {
+    get textureCount(): number {
         return this.textures.size;
     }
 
-    private updateTexture(
-        data: BufferSource | SharedArrayBuffer,
-        dst: GPUTexture
-    ) {
+    /**
+     * Updates a GPUTexture from a CPU buffer.
+     * @param buf The CPU buffer.
+     * @param dst The GPUTexture.
+     */
+    private updateTextureFromBufferSource(buf: BufferSource, dst: GPUTexture) {
         this.device.queue.writeTexture(
             { texture: dst },
-            data,
+            buf,
             { bytesPerRow: dst.width * 4 },
             { width: dst.width, height: dst.height }
         );
+    }
+
+    /**
+     * Updates a GPUTexture from a GPU image.
+     * @param source The image source.
+     * @param dst The GPUTexture.
+     */
+    private updateTextureFromGPUImage(source: Source, dst: GPUTexture) {
+        this.device.queue.copyExternalImageToTexture(
+            { source: source.getImage() as GPUImage, flipY: source.flipY },
+            { texture: dst },
+            [source.width, source.height]
+        );
+    }
+
+    private writeTexture(source: Source, texture: GPUTexture) {
+        if (source.isGPUImage) {
+            this.updateTextureFromGPUImage(source, texture);
+        } else {
+            const data = source.getImage();
+            this.updateTextureFromBufferSource(data as BufferSource, texture);
+        }
     }
 
     getOrCreateTexture(texture: Texture): {
@@ -124,11 +128,17 @@ class TextureStore implements Service {
 
         texture.on("destroy", () => this.onTextureDestroyed(texture));
 
+        let usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST;
+        if (texture.source.isGPUImage) {
+            usage |= GPUTextureUsage.RENDER_ATTACHMENT;
+        }
+
         const source = texture.source;
         const gpuTexture = this.device.createTexture({
             size: [source.width, source.height],
-            format: "rgba8unorm",
-            usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST,
+            format: texture.format,
+            label: texture.label,
+            usage,
         });
 
         const result = {
@@ -137,8 +147,8 @@ class TextureStore implements Service {
         };
         this.textures.set(texture.id, result);
 
-        // Support versioned textures
-        this.updateTexture(source.getData(), gpuTexture);
+        // TODO Support versioned textures
+        this.writeTexture(source, gpuTexture);
 
         return result;
     }

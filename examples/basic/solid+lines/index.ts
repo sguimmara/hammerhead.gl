@@ -1,15 +1,11 @@
 import chroma from "chroma-js";
 import { Context, MathUtils } from "hammerhead.gl/core";
-import {
-    BasicMaterial,
-    CullingMode,
-    FrontFace,
-    RenderingMode,
-} from "hammerhead.gl/materials";
-import { Camera, Mesh } from "hammerhead.gl/objects";
+import { BasicMaterial } from "hammerhead.gl/materials";
+import { Camera, MeshObject } from "hammerhead.gl/scene";
 
 import { frameObject, loadPLYModel } from "../../lib";
 import { Pane } from "tweakpane";
+import LineMaterial from "../../../src/materials/LineMaterial";
 
 let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
@@ -18,18 +14,13 @@ async function main() {
     const renderer = context.renderer;
     renderer.clearColor = chroma("gray");
 
-    const geometry = await loadPLYModel("/files/hammerhead.ply");
-    const solid = new BasicMaterial({
-        renderingMode: RenderingMode.Triangles,
-        frontFace: FrontFace.CW,
-        cullingMode: CullingMode.Front,
-    }).withDiffuseColor(chroma("cyan"));
-    const wireframe = new BasicMaterial({
-        renderingMode: RenderingMode.TriangleLines,
-    }).withDiffuseColor(chroma("black"));
+    const mesh = await loadPLYModel("/files/hammerhead.ply");
+    const solid = new BasicMaterial().withDiffuseColor(chroma("cyan"));
 
-    const solidMesh = new Mesh({ geometry, material: solid });
-    const wireframeMesh = new Mesh({ geometry, material: wireframe });
+    const wireframe = new LineMaterial().withDiffuseColor(chroma("black"));
+
+    const solidMesh = new MeshObject({ mesh, material: solid });
+    const wireframeMesh = new MeshObject({ mesh, material: wireframe });
     solidMesh.add(wireframeMesh);
     const camera = new Camera("perspective");
     frameObject(solidMesh, camera);
@@ -47,7 +38,7 @@ async function main() {
         const degrees = 40 * dt;
         now = current;
         solidMesh.transform.rotateY(MathUtils.deg2rad(degrees));
-        requestAnimationFrame(renderLoop);
+        // requestAnimationFrame(renderLoop);
     }
 
     requestAnimationFrame(renderLoop);
@@ -59,7 +50,7 @@ async function main() {
         offset: 0.002,
     };
     pane.addInput(params, "offset", {
-        label: 'wireframe offset',
+        label: "wireframe offset",
         min: -1,
         max: 1,
     }).on("change", (ev) => wireframe.withLineOffset(ev.value));

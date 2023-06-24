@@ -1,38 +1,37 @@
-import { Destroy, Service, VertexBufferSlot } from '@/core';
-import { BufferGeometry } from '@/geometries';
+import { Destroy, Service } from '@/core';
+import { Attribute, Mesh } from '@/geometries';
 import { BufferUniform } from '@/materials/uniforms';
 import BufferWriter from './BufferWriter';
+import MemoryManager from './MemoryManager';
 
 class GeometryStorage implements Destroy {
     currentVersion: number;
     currentVertexCount: number;
-    source: BufferGeometry;
+    source: Mesh;
     indexBuffer: { version: number, buffer: GPUBuffer };
-    vertexBuffers: Map<number, { version: number, buffer: GPUBuffer }>;
-    private readonly device: GPUDevice;
+    attributeBuffers: Map<Attribute, { version: number, buffer: GPUBuffer }>;
 
-    constructor(source: BufferGeometry, device: GPUDevice) {
-        this.device = device;
+    constructor(source: Mesh) {
         this.source = source;
-        this.vertexBuffers = new Map();
+        this.attributeBuffers = new Map();
     }
 
     destroy(): void {
         this.indexBuffer?.buffer.destroy();
-        this.vertexBuffers?.forEach(item => item.buffer.destroy());
+        this.attributeBuffers?.forEach(item => item.buffer.destroy());
     }
 
-    update() {
-        if (this.indexBuffer.version != this.source.indexBuffer.getVersion()) {
-            this.device.queue.writeBuffer(this.indexBuffer.buffer, 0, this.source.indexBuffer.value);
-            this.indexBuffer.version = this.source.indexBuffer.getVersion();
+    update(memoryManager: MemoryManager) {
+        if (this.indexBuffer.version != this.source.getVersion()) {
+            memoryManager.sync(this.source.getIndices(), this.indexBuffer.buffer)
+            this.indexBuffer.version = this.source.getVersion();
         }
 
-        this.vertexBuffers.forEach((value, k) => {
-            const source = this.source.getVertexBuffer(k);
-            if (source.getVersion() != value.version) {
-                this.device.queue.writeBuffer(value.buffer, 0, source.value);
-                value.version = source.getVersion();
+        this.attributeBuffers.forEach((value, k) => {
+            const attribute = this.source.getAttribute(k);
+            if (attribute.getVersion() != value.version) {
+                memoryManager.sync(attribute.value, value.buffer);
+                value.version = this.source.getVersion();
             }
         });
     }
@@ -42,43 +41,69 @@ class GeometryStorage implements Destroy {
         if (this.indexBuffer) {
             result++;
         }
-        if (this.vertexBuffers) {
-            result += this.vertexBuffers.size;
+        if (this.attributeBuffers) {
+            result += this.attributeBuffers.size;
         }
 
         return result;
     }
 }
 
+interface Stats {
+    get bufferCount(): number;
+    get bufferMemoryBytes(): number;
+}
+
 /**
  * Manages WebGPU buffers.
  */
-class BufferStore implements Service {
+class BufferStore implements Service, Stats {
     private readonly device: GPUDevice;
     private readonly geometryStorages: Map<number, GeometryStorage>;
     private readonly uniformBuffers: Map<BufferUniform, BufferWriter>;
+    private readonly memoryManager: MemoryManager;
 
-    constructor(device: GPUDevice) {
+    constructor(device: GPUDevice, memoryManager: MemoryManager) {
         this.geometryStorages = new Map();
         this.uniformBuffers = new Map();
         this.device = device;
+        this.memoryManager = memoryManager;
+    }
+
+    get bufferCount(): number {
+        return this.getBufferCount();
+    }
+
+    get bufferMemoryBytes(): number {
+        let result = 0;
+        this.uniformBuffers.forEach(v => result += v.buffer.size);
+        this.geometryStorages.forEach(v => {
+            if (v.indexBuffer?.buffer) {
+                result += v.indexBuffer.buffer.size;
+            }
+            v.attributeBuffers.forEach(v => {
+                result += v.buffer.size;
+            })
+        });
+
+        return result;
     }
 
     getType(): string {
         return 'BufferStore';
     }
 
-    private onGeometryDestroyed(geometry: BufferGeometry): void {
-        const vertexBuffers = this.geometryStorages.get(geometry.id);
+    private onGeometryDestroyed(mesh: Mesh): void {
+        const vertexBuffers = this.geometryStorages.get(mesh.id);
         vertexBuffers?.destroy();
     }
 
+    getStats() {
+        return this;
+    }
+
     getBufferCount() {
-        let count = this.uniformBuffers.size;
-
-        this.geometryStorages.forEach(o => count += o.getBufferCount());
-
-        return count;
+        return this.memoryManager.bufferCount;
     }
 
     destroy() {
@@ -86,11 +111,11 @@ class BufferStore implements Service {
         this.geometryStorages.clear();
     }
 
-    destroyBuffers(quad: BufferGeometry) {
-        if (this.geometryStorages.has(quad.id)) {
-            const storage = this.geometryStorages.get(quad.id);
+    destroyBuffers(mesh: Mesh) {
+        if (this.geometryStorages.has(mesh.id)) {
+            const storage = this.geometryStorages.get(mesh.id);
             storage.destroy();
-            this.geometryStorages.delete(quad.id);
+            this.geometryStorages.delete(mesh.id);
         }
     }
 
@@ -125,50 +150,55 @@ class BufferStore implements Service {
         return bw.buffer;
     }
 
-    getOrCreateVertexBuffer(geometry: BufferGeometry, slot: number): GPUBuffer {
-        let storage = this.geometryStorages.get(geometry.id);
+    getOrCreateVertexBuffer(mesh: Mesh, slot: Attribute): GPUBuffer {
+        let storage = this.geometryStorages.get(mesh.id);
         if (!storage) {
-            storage = new GeometryStorage(geometry, this.device);
-            geometry.on('destroy', evt => this.onGeometryDestroyed(evt.emitter as BufferGeometry));
-            this.geometryStorages.set(geometry.id, storage);
-        } else if (storage.vertexBuffers.has(slot)) {
-            storage.update();
-            return storage.vertexBuffers.get(slot).buffer;
+            storage = new GeometryStorage(mesh);
+            mesh.on('destroy', evt => this.onGeometryDestroyed(evt.emitter as Mesh));
+            this.geometryStorages.set(mesh.id, storage);
+        } else if (storage.attributeBuffers.has(slot)) {
+            storage.update(this.memoryManager);
+            return storage.attributeBuffers.get(slot).buffer;
         }
 
-        const buf = geometry.getVertexBuffer(slot);
+        const buf = mesh.getAttribute(slot);
 
-        const gpuBuffer = this.device.createBuffer({
-            label: `BufferGeometry ${geometry.id} @${VertexBufferSlot[slot]}`,
-            size: buf.value.byteLength,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.STORAGE | GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
-        });
+        if (!buf) {
+            throw new Error(`mesh ${mesh.id} has no attribute '${slot}'`);
+        }
 
-        storage.vertexBuffers.set(slot, { version: buf.getVersion(), buffer: gpuBuffer });
+        const gpuBuffer = this.memoryManager.createBuffer(buf.value,
+            GPUBufferUsage.UNIFORM | GPUBufferUsage.INDEX | GPUBufferUsage.STORAGE | GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+            `Mesh ${mesh.id} @${slot}`,
+        );
 
-        this.device.queue.writeBuffer(gpuBuffer, 0, buf.value);
+        storage.attributeBuffers.set(slot, { version: buf.getVersion(), buffer: gpuBuffer });
+
+        this.memoryManager.sync(buf.value, gpuBuffer);
 
         return gpuBuffer;
     }
 
-    getIndexBuffer(geometry: BufferGeometry): GPUBuffer {
-        let storage = this.geometryStorages.get(geometry.id);
+    getIndexBuffer(mesh: Mesh): GPUBuffer {
+        let storage = this.geometryStorages.get(mesh.id);
         if (!storage) {
-            geometry.on('destroy', evt => this.onGeometryDestroyed(evt.emitter as BufferGeometry));
-            this.geometryStorages.set(geometry.id, new GeometryStorage(geometry, this.device));
+            mesh.on('destroy', evt => this.onGeometryDestroyed(evt.emitter as Mesh));
+            storage = new GeometryStorage(mesh);
+            this.geometryStorages.set(mesh.id, storage);
         } else if (storage.indexBuffer) {
-            storage.update();
+            storage.update(this.memoryManager);
             return storage.indexBuffer.buffer;
         }
 
-        const gpuBuffer = this.device.createBuffer({
-            label: `BufferGeometry ${geometry.id} @Index`,
-            size: geometry.indexBuffer.value.byteLength,
-            usage: GPUBufferUsage.INDEX | GPUBufferUsage.STORAGE | GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
-        });
+        const indices = mesh.getIndices();
+        const gpuBuffer = this.memoryManager.createBuffer(
+            indices,
+            GPUBufferUsage.INDEX | GPUBufferUsage.VERTEX | GPUBufferUsage.STORAGE | GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+            `Mesh ${mesh.id} @index`,
+        );
 
         storage.indexBuffer = { buffer: gpuBuffer, version: -1 };
-        storage.update();
+        storage.update(this.memoryManager);
         return gpuBuffer;
     }
 }

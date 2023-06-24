@@ -1,12 +1,12 @@
 export enum FilterMode {
-    Nearest,
-    Linear,
+    Nearest = "nearest",
+    Linear = "linear",
 }
 
 export enum AddressMode {
-    ClampToEdge,
-    Repeat,
-    Mirror,
+    ClampToEdge = "clamp-to-edge",
+    Repeat = "repeat",
+    Mirror = "mirror-repeat",
 }
 
 /**
@@ -15,6 +15,6 @@ export enum AddressMode {
 export default class Sampler {
     magFilter: FilterMode = FilterMode.Linear;
     minFilter: FilterMode = FilterMode.Linear;
-    addressModeU: AddressMode = AddressMode.ClampToEdge;
-    addressModeV: AddressMode = AddressMode.ClampToEdge;
+    addressModeU: AddressMode = AddressMode.Repeat;
+    addressModeV: AddressMode = AddressMode.Repeat;
 }

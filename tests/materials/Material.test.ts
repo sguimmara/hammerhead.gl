@@ -1,4 +1,4 @@
-import { CullingMode, FrontFace, Material, RenderingMode } from "@/materials";
+import { Material } from "@/materials";
 import { describe, expect, it } from "vitest";
 
 describe('Version', () => {
@@ -26,35 +26,29 @@ describe("constructor", () => {
     });
 
     it("should honor rendering parameters", () => {
-        const renderingMode = RenderingMode.TriangleLines;
-        const cullingMode = CullingMode.Front;
-        const frontFace = FrontFace.CCW;
+        const cullingMode = 'front' as GPUCullMode;
         const renderOrder = 5;
 
         const mat = new Material({
             fragmentShader: "",
             vertexShader: "",
-            renderingMode,
             cullingMode,
-            frontFace,
             renderOrder,
         });
 
-        expect(mat.frontFace).toEqual(frontFace);
         expect(mat.cullingMode).toEqual(cullingMode);
-        expect(mat.renderingMode).toEqual(renderingMode);
         expect(mat.renderOrder).toEqual(renderOrder);
     });
 
     it('should allocate default values for uniforms', () => {
         const fragmentShader = `
-        UNIFORM(foo, vec4f)
-        UNIFORM(bar, vec2f)
+        @group(material) @binding(auto) var<uniform> foo : vec4f;
+        @group(material) @binding(auto) var<uniform> bar : vec2f;
         `;
 
         const vertexShader = `
-        UNIFORM(baz, vec3f)
-        UNIFORM(bar, vec2f)
+        @group(material) @binding(auto) var<uniform> baz : vec3f;
+        @group(material) @binding(auto) var<uniform> bar : vec2f;
         `;
 
         const mat = new Material({ fragmentShader, vertexShader });

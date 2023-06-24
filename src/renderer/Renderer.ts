@@ -5,7 +5,7 @@ import RenderCommand from "./RenderCommand";
 import RenderPipeline from "./RenderPipeline";
 import { Container } from "@/core";
 import { PostProcessingMaterial } from "@/materials/postprocessing";
-import { Object3D, Mesh, Camera } from "@/objects";
+import { Object3D, MeshObject, Camera } from "@/scene";
 
 const DEFAULT_CLEAR_COLOR = chroma("black");
 
@@ -14,7 +14,7 @@ const tmpBuckets: Map<number, Bucket> = new Map();
 /**
  * The WebGPU renderer.
  */
-class WebGPURenderer {
+class Renderer {
     private readonly device: GPUDevice;
     private readonly context: GPUCanvasContext;
 
@@ -39,7 +39,7 @@ class WebGPURenderer {
             tmpBuckets.forEach((b) => (b.meshes.length = 0));
             graph.traverse((obj) => {
                 obj.transform.updateWorldMatrix(obj.parent?.transform);
-                const mesh = obj as Mesh;
+                const mesh = obj as MeshObject;
                 if (mesh.isMesh) {
                     const material = mesh.material;
                     if (material && material.active) {
@@ -62,7 +62,7 @@ class WebGPURenderer {
                     // Sort by material to reduce pipeline switches
                     b.meshes.sort((a, b) => {
                         if (a.material.id === b.material.id) {
-                            return a.geometry.id - b.geometry.id;
+                            return a.mesh.id - b.mesh.id;
                         }
                         return a.material.id - b.material.id;
                     });
@@ -86,6 +86,8 @@ class WebGPURenderer {
         if (!camera) {
             throw new Error("no camera specified");
         }
+
+        camera.transform.updateWorldMatrix(camera.parent?.transform);
 
         this.renderPipeline.setClearColor(this.clearColor);
         const buckets = this.getRenderBuckets(root);
@@ -116,4 +118,4 @@ class WebGPURenderer {
     }
 }
 
-export default WebGPURenderer;
+export default Renderer;

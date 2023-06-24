@@ -1,6 +1,6 @@
 #include ../chunks/effect.header.wgsl;
 
-UNIFORM(flip, vec2f)
+@group(material) @binding(auto) var<uniform> flip : vec2f;
 
 @fragment fn fs(input: VSOutput) -> @location(0) vec4f {
     var u = input.texcoord.x;

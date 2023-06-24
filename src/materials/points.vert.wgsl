@@ -3,9 +3,9 @@
 #include ./chunks/VSOutput.wgsl
 #include ./chunks/GlobalValues.wgsl
 
-@group(OBJECT_UNIFORMS) @binding(0) var<uniform> modelMatrix: mat4x4f;
+@group(object) @binding(auto) var<uniform> modelMatrix: mat4x4f;
 
-UNIFORM(pointSize, f32)
+@group(material) @binding(auto) var<uniform> pointSize: f32;
 
 @vertex fn vs(vertex : Vertex) -> VSOutput {
     var vertexIndex = vertex.vertexID / 6u;

@@ -1,4 +1,4 @@
-import Source from "./Source";
+import Source, { TextureData } from "./Source";
 
 /**
  * A {@link Source} that comes from a raw buffer.
@@ -7,6 +7,8 @@ export default class RawSource implements Source {
     private readonly buffer: BufferSource;
     private readonly _width: number;
     private readonly _height: number;
+    readonly isGPUImage: boolean = false;
+    flipY: boolean = false;
 
     constructor(buffer: BufferSource, width: number, height: number) {
         this.buffer = buffer;
@@ -22,7 +24,7 @@ export default class RawSource implements Source {
         return this._height;
     }
 
-    getData(): BufferSource {
+    getImage(): TextureData {
         return this.buffer;
     }
 }

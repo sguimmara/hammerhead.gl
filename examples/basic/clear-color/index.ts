@@ -1,7 +1,7 @@
 import { Color } from '@tweakpane/core';
 import chroma from 'chroma-js';
 import { Context } from 'hammerhead.gl/core';
-import { Camera } from 'hammerhead.gl/objects';
+import { Camera } from 'hammerhead.gl/scene';
 import { Pane } from 'tweakpane';
 
 let canvas = document.getElementById('canvas') as HTMLCanvasElement;

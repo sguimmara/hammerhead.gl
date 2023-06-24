@@ -3,7 +3,7 @@
 #include ./chunks/VSOutput.wgsl;
 #include ./chunks/GlobalValues.wgsl;
 
-@group(OBJECT_UNIFORMS) @binding(0) var<uniform> modelMatrix: mat4x4f;
+@group(object) @binding(auto) var<uniform> modelMatrix: mat4x4f;
 
 @vertex fn vs(
    vertex: Vertex,

@@ -1,7 +1,7 @@
 import chroma from 'chroma-js';
 import { Context, MathUtils } from 'hammerhead.gl/core';
 import { BasicMaterial, CullingMode, FrontFace, RenderingMode } from 'hammerhead.gl/materials';
-import { Camera, Mesh, Object3D } from 'hammerhead.gl/objects';
+import { Camera, MeshObject, Object3D } from 'hammerhead.gl/scene';
 
 import { loadPLYModel } from '../../lib';
 
@@ -12,7 +12,7 @@ async function main() {
     const renderer = context.renderer;
     renderer.clearColor = chroma('gray');
 
-    const geometry = await loadPLYModel('/files/hammerhead.ply');
+    const mesh = await loadPLYModel('/files/hammerhead.ply');
     const wireframe = new BasicMaterial({ renderingMode: RenderingMode.TriangleLines }).withDiffuseColor(chroma('black'));
 
     function createShark() {
@@ -22,8 +22,8 @@ async function main() {
             cullingMode: CullingMode.Front,
         }).withDiffuseColor(chroma.random());
 
-        const solidMesh = new Mesh({ geometry, material: solid});
-        const wireframeMesh = new Mesh({ geometry, material: wireframe});
+        const solidMesh = new MeshObject({ mesh, material: solid});
+        const wireframeMesh = new MeshObject({ mesh, material: wireframe});
 
         solidMesh.add(wireframeMesh);
 

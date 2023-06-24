@@ -1,4 +1,4 @@
-import { BufferGeometry, ScreenQuad } from '@/geometries';
+import { Mesh, ScreenQuad } from '@/geometries';
 import { ObjectUniform } from '@/materials/uniforms';
 import { BufferStore, PipelineManager, TextureStore } from '@/renderer';
 import chroma, { Color } from 'chroma-js';
@@ -9,7 +9,7 @@ abstract class Stage {
     protected readonly device: GPUDevice;
     protected readonly pipelineManager: PipelineManager;
     protected readonly bufferStore: BufferStore;
-    protected readonly quad: BufferGeometry;
+    protected readonly quad: Mesh;
     protected readonly textureStore: TextureStore;
 
     protected clearColor: chroma.Color;

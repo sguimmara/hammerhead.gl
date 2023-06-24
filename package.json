@@ -7,16 +7,19 @@
   "description": "A 3D renderer written in TypeScript and WebGPU.",
   "main": "index.js",
   "scripts": {
-    "test": "vitest",
+    "precommit": "npm run lint && npm test",
+    "test": "vitest run",
     "coverage": "vitest run --coverage",
     "lint": "ttsc --noEmit",
     "build": "ttsc",
     "doc": "typedoc src/index.ts",
     "start": "vite",
-    "prepack": "shx rm -fr dist/ && shx mkdir dist && npx copyfiles -u 1 './src/**/*.wgsl' dist && node scripts/prepare-package.mjs && npm run build"
+    "prepack": "shx rm -fr dist/ && shx mkdir dist && npx copyfiles -u 1 './src/**/*.wgsl' dist && node scripts/prepare-package.mjs && npm run build",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@loaders.gl/core": "^3.4.4",
+    "@loaders.gl/gltf": "^3.4.4",
     "@loaders.gl/ply": "^3.4.4",
     "@tweakpane/core": "^1.1.9",
     "@types/chroma-js": "^2.4.0",
@@ -26,12 +29,15 @@
     "apache-arrow": "^12.0.0",
     "es-main": "^1.2.0",
     "fs-extra": "^11.1.1",
+    "husky": "^8.0.3",
     "path": "^0.12.7",
     "shx": "^0.3.4",
     "ts-node": "^10.9.1",
+    "ttypescript": "^1.5.15",
     "tweakpane": "^3.1.10",
     "typedoc": "^0.24.8",
     "typescript": "^4.9.5",
+    "typescript-transform-paths": "^3.4.6",
     "url": "^0.11.0",
     "vite": "^4.3.9",
     "vite-plugin-glsl": "^1.1.2",
@@ -41,8 +47,6 @@
   },
   "dependencies": {
     "chroma-js": "^2.4.2",
-    "ttypescript": "^1.5.15",
-    "typescript-transform-paths": "^3.4.6",
     "wgpu-matrix": "^2.4.0"
   }
 }

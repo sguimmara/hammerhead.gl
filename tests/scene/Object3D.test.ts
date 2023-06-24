@@ -1,4 +1,4 @@
-import { Object3D } from "@/objects";
+import { Object3D } from "@/scene";
 import { describe, expect, it, vi } from "vitest";
 
 describe('constructor', () => {

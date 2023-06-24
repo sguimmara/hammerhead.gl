@@ -1,16 +1,27 @@
-import Source from "./Source";
+import Source, { TextureData } from "./Source";
+
+type Input =
+    | HTMLImageElement
+    | ImageBitmap
+    | OffscreenCanvas
+    | HTMLCanvasElement;
 
 /**
  * A {@link Source} that comes from a DOM image.
  */
 export default class ImageSource implements Source {
-    image: HTMLImageElement;
+    image: Input;
+    flipY: boolean = false;
+    readonly isGPUImage: boolean = true;
 
-    constructor(image: HTMLImageElement) {
+    constructor(image: Input) {
         this.image = image;
     }
 
-    getData(): BufferSource {
+    getImage(): TextureData {
+        if (this.image instanceof ImageBitmap) {
+            return this.image;
+        }
         const canvas = document.createElement("canvas");
         canvas.width = this.width;
         canvas.height = this.height;
@@ -19,8 +30,8 @@ export default class ImageSource implements Source {
             throw new Error("could not acquire 2d context");
         }
         ctx.drawImage(this.image, 0, 0);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        return imageData.data;
+
+        return canvas;
     }
 
     get width(): number {

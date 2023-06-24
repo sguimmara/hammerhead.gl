@@ -17,26 +17,9 @@ import {
     BufferUniform,
 } from "./uniforms";
 import UniformType from "./UniformType";
+import GlobalValues from "@/renderer/GlobalValues";
 
 let MATERIAL_ID = 0;
-
-export enum RenderingMode {
-    Triangles,
-    TriangleLines,
-    Points,
-    LineList,
-}
-
-export enum CullingMode {
-    Front,
-    Back,
-    None,
-}
-
-export enum FrontFace {
-    CW,
-    CCW,
-}
 
 export enum BlendOp {
     Add = "add",
@@ -123,7 +106,7 @@ function allocateUniform(type: UniformType) {
         case UniformType.Mat4:
             return new Mat4Uniform();
         case UniformType.GlobalValues:
-            throw new Error("not implemented");
+            return new GlobalValues();
     }
 }
 
@@ -147,9 +130,8 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
     readonly layout: ShaderLayout;
     readonly requiresObjectUniforms: boolean;
     readonly depthWriteEnabled: boolean = true;
-    readonly renderingMode: RenderingMode;
-    readonly cullingMode: CullingMode;
-    readonly frontFace: FrontFace;
+    readonly cullingMode: GPUCullMode;
+    readonly frontFace: GPUFrontFace;
     private version: number = 0;
     depthCompare: DepthCompare = DepthCompare.Less;
     colorBlending: Blending = Blending.defaultColor();
@@ -164,9 +146,7 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
         fragmentShader: string;
         vertexShader: string;
         requiresObjectUniforms?: boolean;
-        renderingMode?: RenderingMode;
-        cullingMode?: CullingMode;
-        frontFace?: FrontFace;
+        cullingMode?: GPUCullMode;
         renderOrder?: number,
     }) {
         this.id = MATERIAL_ID++;
@@ -175,9 +155,7 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
         this.fragmentShader = shaderInfo.fragment;
         this.vertexShader = shaderInfo.vertex;
         this.layout = shaderInfo.layout;
-        this.cullingMode = options.cullingMode ?? CullingMode.Back;
-        this.frontFace = options.frontFace ?? FrontFace.CW;
-        this.renderingMode = options.renderingMode ?? RenderingMode.Triangles;
+        this.cullingMode = options.cullingMode ?? 'back';
         this.dispatcher = new EventDispatcher<Material, MaterialEvents>(this);
         this.uniforms = allocateUniforms(this.layout.uniforms);
         this.renderOrder = options.renderOrder ?? 0;

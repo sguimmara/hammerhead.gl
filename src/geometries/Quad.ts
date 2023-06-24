@@ -1,13 +1,11 @@
-import chroma from 'chroma-js';
-
-import BufferGeometry from './BufferGeometry';
+import Mesh from './Mesh';
 
 /**
  * A quad.
  */
-export default class Quad extends BufferGeometry {
+export default class Quad extends Mesh {
     constructor() {
-        super({ vertexCount: 4, indexCount: 6 });
+        super();
 
         const x = 0.5;
         const y = 0.5;
@@ -36,10 +34,8 @@ export default class Quad extends BufferGeometry {
             A, D, C,
         ];
 
-        this.setPositions(positions);
-        this.setColors(chroma('white'));
-        this.setTexCoords(uv);
-        this.setIndices(indices);
-        this.getLocalBounds();
+        this.setAttribute('position', new Float32Array(positions));
+        this.setAttribute('texcoord', new Float32Array(uv));
+        this.setIndices(new Uint16Array(indices));
     }
 }

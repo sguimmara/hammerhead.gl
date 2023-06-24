@@ -1,4 +1,4 @@
-import { BindGroups } from "@/core";
+import { BindGroup } from "@/core";
 import AttributeType from "./AttributeType";
 import ShaderError from "./ShaderError";
 import ShaderInfo from "./ShaderInfo";
@@ -6,8 +6,9 @@ import UniformType from "./UniformType";
 import constants from "./chunks/constants.wgsl";
 import effectHeader from "./chunks/effect.header.wgsl";
 import { AttributeInfo, ShaderLayout, UniformInfo } from "./ShaderLayout";
+import { Attribute } from "@/geometries";
 
-const UNIFORM_DECLARATION = /UNIFORM\((\w+)\s*,\s*(\w+|texture_2d<f32>)\)/g;
+const UNIFORM_DECLARATION = /@group\((global|object|material|vertex)\)\s*@binding\(auto\)\s*(var|var<uniform>|var<storage,\s*read>)\s*(\w+)\s*:\s*(mat4x4f|vec2f|vec3f|vec4f|f32|u32|array<(u32|f32)>|sampler|texture_2d<f32>|GlobalValues)\s*;/g;
 const ATTRIBUTE_DECLARATION = /ATTRIBUTE\((\w+)\s*,\s*(\w+)\)/g;
 
 const chunks = new Map<string, string>();
@@ -16,11 +17,11 @@ const cachedShaderInfos = new Map<string, Map<string, ShaderInfo>>();
 
 export class AttributeDeclaration {
     readonly text: string;
-    readonly name: string;
+    readonly name: Attribute;
     readonly type: AttributeType;
     location: number = undefined;
 
-    constructor(declarationString: string, name: string, type: AttributeType) {
+    constructor(declarationString: string, name: Attribute, type: AttributeType) {
         this.text = declarationString;
         this.name = name;
         this.type = type;
@@ -45,11 +46,15 @@ export class UniformDeclaration {
     presentInVertexShader: boolean = false;
     presentInFragmentShader: boolean = false;
     binding: number = undefined;
+    readonly group: BindGroup;
+    readonly qualifier: string;
 
-    constructor(declarationString: string, name: string, type: UniformType) {
-        this.text = declarationString;
-        this.name = name;
-        this.type = type;
+    constructor(params: { text: string, group: BindGroup, qualifier: string, name: string, type: UniformType }) {
+        this.text = params.text;
+        this.name = params.name;
+        this.type = params.type;
+        this.group = params.group;
+        this.qualifier = params.qualifier;
     }
 
     toString(): string {
@@ -57,15 +62,8 @@ export class UniformDeclaration {
             throw new ShaderError(`missing binding for uniform "${this.name}"`);
         }
 
-        const group = BindGroups.MaterialUniforms;
         const type = toUniformType(this.type);
-        switch (this.type) {
-            case UniformType.Texture2D:
-            case UniformType.Sampler:
-                return `@group(${group}) @binding(${this.binding}) var ${this.name} : ${type};`;
-            default:
-                return `@group(${group}) @binding(${this.binding}) var<uniform> ${this.name} : ${type};`;
-        }
+        return `@group(${this.group}) @binding(${this.binding}) ${this.qualifier} ${this.name} : ${type};`;
     }
 }
 
@@ -110,6 +108,12 @@ function toUniformType(type: UniformType): string {
             return "f32";
         case UniformType.GlobalValues:
             return "GlobalValues";
+        case UniformType.U32Array:
+            return "array<u32>";
+        case UniformType.F32Array:
+            return "array<f32>";
+        default:
+            throw new ShaderError(`unimplemented uniform type: ${type}`);
     }
 }
 
@@ -130,6 +134,10 @@ function parseUniformType(text: string): UniformType {
     switch (text) {
         case "sampler":
             return UniformType.Sampler;
+        case "array<f32>":
+            return UniformType.F32Array;
+        case "array<u32>":
+            return UniformType.U32Array;
         case "f32":
             return UniformType.Float32;
         case "vec4f":
@@ -149,13 +157,28 @@ function parseUniformType(text: string): UniformType {
     }
 }
 
+function validateAttribute(name: string): Attribute {
+    switch (name as Attribute) {
+        case "position":
+        case "normal":
+        case "texcoord":
+        case "texcoord1":
+        case "texcoord2":
+        case "tangent":
+        case "color":
+            return name as Attribute;
+        default:
+            throw new ShaderError(`unrecognized attribute name: ${name}`);
+    }
+}
+
 function getAttributeDeclarations(shaderCode: string): AttributeDeclaration[] {
     const declarations = shaderCode.matchAll(ATTRIBUTE_DECLARATION);
 
     const result: AttributeDeclaration[] = [];
 
     for (const decl of declarations) {
-        const name = decl[1];
+        const name = validateAttribute(decl[1]);
         const type = parseAttributeType(decl[2]);
         const text = decl[0];
         result.push(new AttributeDeclaration(text, name, type));
@@ -164,16 +187,29 @@ function getAttributeDeclarations(shaderCode: string): AttributeDeclaration[] {
     return result;
 }
 
+function parseGroup(text: string): BindGroup {
+    switch (text) {
+        case 'object': return BindGroup.ObjectUniforms;
+        case 'material': return BindGroup.MaterialUniforms;
+        case 'global': return BindGroup.GlobalValues;
+        case 'vertex': return BindGroup.VertexBufferUniforms;
+        default:
+            throw new ShaderError(`unrecognized group: ${text}`);
+    }
+}
+
 function getUniformDeclarations(shaderCode: string): UniformDeclaration[] {
     const declarations = shaderCode.matchAll(UNIFORM_DECLARATION);
 
     const result: UniformDeclaration[] = [];
 
     for (const decl of declarations) {
-        const name = decl[1];
-        const type = parseUniformType(decl[2]);
         const text = decl[0];
-        result.push(new UniformDeclaration(text, name, type));
+        const group = parseGroup(decl[1]);
+        const qualifier = decl[2];
+        const name = decl[3];
+        const type = parseUniformType(decl[4]);
+        result.push(new UniformDeclaration({ text: text, group, qualifier, name, type }));
     }
 
     return result;
@@ -221,7 +257,11 @@ function assignUniformBindings(
     vertexUniforms: UniformDeclaration[],
     fragmentUniforms: UniformDeclaration[]
 ) {
-    let currentBinding = 0;
+    let bindings = new Map<BindGroup, number>();
+    bindings.set(BindGroup.GlobalValues, 0);
+    bindings.set(BindGroup.MaterialUniforms, 0);
+    bindings.set(BindGroup.VertexBufferUniforms, 0);
+    bindings.set(BindGroup.ObjectUniforms, 0);
     for (const vUniform of vertexUniforms) {
         for (const fUniform of fragmentUniforms) {
             if (fUniform.name === vUniform.name) {
@@ -231,10 +271,11 @@ function assignUniformBindings(
                     );
                 }
 
-                fUniform.binding = vUniform.binding = currentBinding;
+                const currentBinding = bindings.get(vUniform.group);
+                fUniform.binding = vUniform.binding =  currentBinding;
                 fUniform.presentInVertexShader = true;
                 vUniform.presentInFragmentShader = true;
-                currentBinding++;
+                bindings.set(vUniform.group, currentBinding + 1);
             }
         }
     }
@@ -242,14 +283,16 @@ function assignUniformBindings(
     for (const uniform of vertexUniforms) {
         uniform.presentInVertexShader = true;
         if (uniform.binding == null) {
-            uniform.binding = currentBinding++;
+            uniform.binding = bindings.get(uniform.group);
+            bindings.set(uniform.group, uniform.binding + 1);
         }
     }
 
     for (const uniform of fragmentUniforms) {
         uniform.presentInFragmentShader = true;
         if (uniform.binding == null) {
-            uniform.binding = currentBinding++;
+            uniform.binding = bindings.get(uniform.group);
+            bindings.set(uniform.group, uniform.binding + 1);
         }
     }
 }
@@ -344,7 +387,7 @@ function doProcess(vertexShader: string, fragmentShader: string): ShaderInfo {
     const uniforms = uniformDeclarations.map(
         (decl) =>
             new UniformInfo(
-                BindGroups.MaterialUniforms,
+                decl.group,
                 decl.binding,
                 decl.type,
                 decl.name,

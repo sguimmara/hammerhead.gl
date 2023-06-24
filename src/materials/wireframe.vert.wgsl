@@ -3,9 +3,8 @@
 #include ./chunks/VSOutput.wgsl
 #include ./chunks/GlobalValues.wgsl
 
-@group(OBJECT_UNIFORMS) @binding(0) var<uniform> modelMatrix: mat4x4f;
-
-UNIFORM(offset, f32);
+@group(object) @binding(auto) var<uniform> modelMatrix: mat4x4f;
+@group(material) @binding(auto) var<uniform> offset: f32;
 
 @vertex fn vs(vertex : Vertex) -> VSOutput {
     var localToElement = array<u32, 6>(0u, 1u, 1u, 2u, 2u, 0u);
@@ -17,9 +16,9 @@ UNIFORM(offset, f32);
     var elementIndex = indices[elementIndexIndex];
 
     var position = vec4<f32>(
-        positions[3u * elementIndex + 0u],
-        positions[3u * elementIndex + 1u],
-        positions[3u * elementIndex + 2u],
+        vertexPosition[3u * elementIndex + 0u],
+        vertexPosition[3u * elementIndex + 1u],
+        vertexPosition[3u * elementIndex + 2u],
         1,
     );
 
@@ -32,15 +31,15 @@ UNIFORM(offset, f32);
     var projected = p * viewPosition;
 
     var color = vec4<f32>(
-        colors[4u * elementIndex + 0u],
-        colors[4u * elementIndex + 1u],
-        colors[4u * elementIndex + 2u],
-        colors[4u * elementIndex + 3u],
+        vertexColor[4u * elementIndex + 0u],
+        vertexColor[4u * elementIndex + 1u],
+        vertexColor[4u * elementIndex + 2u],
+        vertexColor[4u * elementIndex + 3u],
     );
 
     var uv = vec2<f32>(
-        texcoords[3u * elementIndex + 0u],
-        texcoords[3u * elementIndex + 1u],
+        vertexTexcoord[3u * elementIndex + 0u],
+        vertexTexcoord[3u * elementIndex + 1u],
     );
 
     var output: VSOutput;
