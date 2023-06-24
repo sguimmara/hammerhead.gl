@@ -3,7 +3,7 @@ import { Box3, Context, MathUtils } from "hammerhead.gl/core";
 import {
     BasicMaterial, LineMaterial,
 } from "hammerhead.gl/materials";
-import { Camera, MeshObject, Object3D } from "hammerhead.gl/scene";
+import { Camera, MeshObject, Node } from "hammerhead.gl/scene";
 import { vec3 } from "wgpu-matrix";
 
 import { frameBounds, loadPLYModel, wait } from "../../lib";
@@ -38,11 +38,11 @@ async function main() {
         return object;
     }
 
-    const root = new Object3D();
+    const root = new Node();
     root.label = "root";
-    const left = new Object3D();
+    const left = new Node();
     left.label = "left";
-    const right = new Object3D();
+    const right = new Node();
     right.label = "right";
     root.transform.setPosition(0, 100, 0);
     left.transform.setPosition(0, -100, -100);
@@ -71,7 +71,7 @@ async function main() {
         renderer.render(root, camera);
     }
 
-    async function animateRotation(object: Object3D) {
+    async function animateRotation(object: Node) {
         let now = performance.now();
         let rotation = 0;
         const speed = 500;

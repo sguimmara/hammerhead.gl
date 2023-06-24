@@ -5,7 +5,7 @@ import {
     BasicMaterial,
     Material,
 } from "hammerhead.gl/materials";
-import { Camera, MeshObject, Object3D } from "hammerhead.gl/scene";
+import { Camera, MeshObject, Node } from "hammerhead.gl/scene";
 
 import { load8bitImage } from "../../lib";
 import { Pane } from "tweakpane";
@@ -42,7 +42,7 @@ async function main() {
 
     tile.add(wireframe);
 
-    const root = new Object3D();
+    const root = new Node();
 
     root.add(background);
     root.add(tile);

@@ -1,7 +1,7 @@
 import chroma from 'chroma-js';
 import { Context, MathUtils } from 'hammerhead.gl/core';
 import { BasicMaterial, LineMaterial } from 'hammerhead.gl/materials';
-import { Camera, MeshObject, Object3D } from 'hammerhead.gl/scene';
+import { Camera, MeshObject, Node } from 'hammerhead.gl/scene';
 
 import { loadPLYModel } from '../../lib';
 
@@ -32,8 +32,8 @@ async function main() {
         return solidMesh;
     }
 
-    const root = new Object3D();
-    const sharks: Object3D[] = [];
+    const root = new Node();
+    const sharks: Node[] = [];
 
     for (let i = 0; i < 100; i++) {
         const shark = createShark();
@@ -49,7 +49,7 @@ async function main() {
         renderer.render(root, camera);
     }
 
-    function animate(object: Object3D, dt: number) {
+    function animate(object: Node, dt: number) {
         const offset = -200 * dt;
         object.transform.translateX(offset);
     }

@@ -1,9 +1,9 @@
-import Object3D from "./Object3D";
+import Node from "./Node";
 
 /**
  * The root of the scene graph.
  */
-export default class Scene extends Object3D {
+export default class Scene extends Node {
     constructor() {
         super();
     }

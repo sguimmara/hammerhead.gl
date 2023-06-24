@@ -1,6 +1,6 @@
 import { MathUtils } from '@/core';
 import { Mat4, mat4 } from 'wgpu-matrix';
-import Object3D from './Object3D';
+import Node from './Node';
 
 export type CameraMode = 'orthographic' | 'perspective';
 
@@ -9,7 +9,7 @@ const DEFAULT_FOV = MathUtils.deg2rad(45);
 /**
  * A camera.
  */
-export default class Camera extends Object3D {
+export default class Camera extends Node {
     mode: CameraMode;
 
     projectionMatrix: Mat4;

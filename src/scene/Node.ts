@@ -9,15 +9,15 @@ import {
 
 let ID = 0;
 
-export type Object3DEvents = 'destroy' | 'added';
+export type NodeEvents = 'destroy' | 'added';
 
 /**
  * Base class for all objects in the scene graph.
  * @fires added When this object is added as a child of another object.
  */
-export default class Object3D implements Observable<Object3DEvents>, Destroy {
+export default class Node implements Observable<NodeEvents>, Destroy {
     readonly id: number;
-    readonly dispatcher: EventDispatcher<Object3D, Object3DEvents>;
+    readonly dispatcher: EventDispatcher<Node, NodeEvents>;
     readonly transform: Transform = new Transform();
     label: string;
 
@@ -26,15 +26,15 @@ export default class Object3D implements Observable<Object3DEvents>, Destroy {
      */
     active: boolean = true;
 
-    parent: Object3D;
-    children: Object3D[];
+    parent: Node;
+    children: Node[];
 
     constructor() {
         this.id = ID++;
-        this.dispatcher = new EventDispatcher<Object3D, Object3DEvents>(this);
+        this.dispatcher = new EventDispatcher<Node, NodeEvents>(this);
     }
 
-    on(type: Object3DEvents, handler: EventHandler): void {
+    on(type: NodeEvents, handler: EventHandler): void {
         this.dispatcher.on(type, handler);
     }
 
@@ -50,7 +50,7 @@ export default class Object3D implements Observable<Object3DEvents>, Destroy {
         this.dispatch('destroy');
     }
 
-    protected dispatch(type: Object3DEvents) {
+    protected dispatch(type: NodeEvents) {
         this.dispatcher.dispatch(type);
     }
 
@@ -58,7 +58,7 @@ export default class Object3D implements Observable<Object3DEvents>, Destroy {
      * Adds an object as a child of this object.
      * @param child The child to add.
      */
-    add(child: Object3D) {
+    add(child: Node) {
         child.parent = this;
         if (!this.children) {
             this.children = [child];
@@ -69,7 +69,7 @@ export default class Object3D implements Observable<Object3DEvents>, Destroy {
         child.dispatch('added');
     }
 
-    addMany(children: Iterable<Object3D>) {
+    addMany(children: Iterable<Node>) {
         for (const child of children) {
             this.add(child);
         }
@@ -79,7 +79,7 @@ export default class Object3D implements Observable<Object3DEvents>, Destroy {
      * Traverse the hierarchy of this object, calling the callback for each visited object.
      * @param callback The callback called for each visited object in the hierarchy.
      */
-    traverse(callback: (obj: Object3D) => void) {
+    traverse(callback: (obj: Node) => void) {
         if (this.active) {
             callback(this);
             if (this.children) {

@@ -1,11 +1,11 @@
-import { Object3D } from "@/scene";
+import { Node } from "@/scene";
 import { describe, expect, it, vi } from "vitest";
 
 describe('constructor', () => {
     it('should assign a unique id', () => {
-        const obj1 = new Object3D();
-        const obj2 = new Object3D();
-        const obj3 = new Object3D();
+        const obj1 = new Node();
+        const obj2 = new Node();
+        const obj3 = new Node();
 
         expect(obj1.id).not.toEqual(obj2.id);
         expect(obj2.id).not.toEqual(obj3.id);
@@ -14,7 +14,7 @@ describe('constructor', () => {
 
 describe('destroy', () => {
     it('should dispatch a "destroy" event', () => {
-        const obj = new Object3D();
+        const obj = new Node();
 
         const handler = vi.fn();
         obj.on('destroy', handler);
@@ -27,8 +27,8 @@ describe('destroy', () => {
 
 describe('add', () => {
     it("should set the child's parent", () => {
-        const parent = new Object3D();
-        const child = new Object3D();
+        const parent = new Node();
+        const child = new Node();
 
         expect(parent.children).toBeUndefined();
         expect(child.parent).toBeUndefined();
@@ -40,8 +40,8 @@ describe('add', () => {
     });
 
     it('should dispatch the "added" event on the child', () => {
-        const parent = new Object3D();
-        const child = new Object3D();
+        const parent = new Node();
+        const child = new Node();
 
         const handler = vi.fn();
         child.on('added', handler);
@@ -56,11 +56,11 @@ describe('add', () => {
 
 describe('traverse', () => {
     it('should call itself once, then each child once', () => {
-        const parent = new Object3D();
-        const child1 = new Object3D();
-        const child2 = new Object3D();
-        const grandChild1 = new Object3D();
-        const grandChild2 = new Object3D();
+        const parent = new Node();
+        const child1 = new Node();
+        const child2 = new Node();
+        const grandChild1 = new Node();
+        const grandChild2 = new Node();
 
         parent.add(child1);
         parent.add(child2);
@@ -68,7 +68,7 @@ describe('traverse', () => {
         child1.add(grandChild1);
         child2.add(grandChild2);
 
-        const traversed: Object3D[] = [];
+        const traversed: Node[] = [];
 
         parent.traverse(c => traversed.push(c));
 

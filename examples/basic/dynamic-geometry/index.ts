@@ -2,7 +2,7 @@ import chroma from 'chroma-js';
 import { Context } from 'hammerhead.gl/core';
 import { BoundsHelper } from 'hammerhead.gl/helpers';
 import { BasicMaterial } from 'hammerhead.gl/materials';
-import { Camera, MeshObject, Object3D } from 'hammerhead.gl/scene';
+import { Camera, MeshObject, Node } from 'hammerhead.gl/scene';
 
 import { loadPLYModel } from '../../lib';
 import LineMaterial from 'hammerhead.gl/materials/LineMaterial';
@@ -31,7 +31,7 @@ async function main() {
 
     const helper = new BoundsHelper({ source: solidMesh });
 
-    const root = new Object3D();
+    const root = new Node();
     root.add(helper);
     root.add(solidMesh);
 

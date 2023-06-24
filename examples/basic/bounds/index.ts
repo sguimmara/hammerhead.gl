@@ -1,6 +1,6 @@
 import chroma from 'chroma-js';
 import { Context, MathUtils } from 'hammerhead.gl/core';
-import { Object3D, MeshObject, Camera } from 'hammerhead.gl/scene';
+import { Node, MeshObject, Camera } from 'hammerhead.gl/scene';
 import { BoundsHelper } from 'hammerhead.gl/helpers';
 import { BasicMaterial, LineMaterial } from 'hammerhead.gl/materials';
 import { frameBounds, loadPLYModel } from '../../lib';
@@ -27,7 +27,7 @@ async function main() {
 
     const camera = new Camera('perspective');
 
-    const root = new Object3D();
+    const root = new Node();
     root.label = 'root';
 
     root.add(shark1);
