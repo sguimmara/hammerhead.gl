@@ -1,7 +1,7 @@
 import chroma from 'chroma-js';
 import { Context } from 'hammerhead.gl/core';
 import { BoundsHelper } from 'hammerhead.gl/helpers';
-import { BasicMaterial, RenderingMode } from 'hammerhead.gl/materials';
+import { BasicMaterial } from 'hammerhead.gl/materials';
 import { Camera, MeshObject, Object3D } from 'hammerhead.gl/scene';
 
 import { loadPLYModel } from '../../lib';
@@ -14,11 +14,10 @@ async function main() {
     renderer.clearColor = chroma('gray');
 
     const solid = new BasicMaterial({
-        renderingMode: RenderingMode.Triangles,
         cullingMode: 'back',
     }).withDiffuseColor(chroma('cyan'));
 
-    const wireframe = new BasicMaterial({ renderingMode: RenderingMode.TriangleLines }).withDiffuseColor(chroma('black'));
+    const wireframe = new BasicMaterial().withDiffuseColor(chroma('black'));
 
     const mesh = await loadPLYModel('/files/hammerhead.ply');
     const solidMesh = new MeshObject({ mesh, material: solid});

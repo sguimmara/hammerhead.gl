@@ -2,7 +2,6 @@ import chroma from "chroma-js";
 import { Box3, Context, MathUtils } from "hammerhead.gl/core";
 import {
     BasicMaterial,
-    RenderingMode,
 } from "hammerhead.gl/materials";
 import { Camera, MeshObject, Object3D } from "hammerhead.gl/scene";
 import { vec3 } from "wgpu-matrix";
@@ -21,7 +20,6 @@ async function main() {
     function makeMesh(x: number, y: number, z: number, color: string) {
         const object = new MeshObject({
             material: new BasicMaterial({
-                renderingMode: RenderingMode.Triangles,
             }).withDiffuseColor(chroma(color)),
             mesh,
         });
@@ -30,7 +28,6 @@ async function main() {
 
         const wireframeMesh = new MeshObject({
             material: new BasicMaterial({
-                renderingMode: RenderingMode.TriangleLines,
             }).withDiffuseColor(chroma.mix(chroma("black"), color, 0.2)),
             mesh,
         });

@@ -1,4 +1,4 @@
-import { BindGroups } from "@/core";
+import { BindGroup } from "@/core";
 import { Attribute } from "@/geometries";
 import {
     UniformType,
@@ -53,7 +53,7 @@ describe("UniformDeclaration", () => {
             const decl = new UniformDeclaration({
                 text: "",
                 name: "foo",
-                group: BindGroups.MaterialUniforms,
+                group: BindGroup.MaterialUniforms,
                 qualifier: "var",
                 type: UniformType.Float32,
             });
@@ -66,7 +66,7 @@ describe("UniformDeclaration", () => {
                 const decl = new UniformDeclaration({
                     text: "",
                     name: "bar",
-                    group: BindGroups.MaterialUniforms,
+                    group: BindGroup.MaterialUniforms,
                     qualifier: "var<uniform>",
                     type: UniformType.Float32,
                 });
@@ -81,7 +81,7 @@ describe("UniformDeclaration", () => {
                 const decl = new UniformDeclaration({
                     text: "",
                     name: "foo",
-                    group: BindGroups.MaterialUniforms,
+                    group: BindGroup.MaterialUniforms,
                     qualifier: "var<uniform>",
                     type: UniformType.Vec2,
                 });
@@ -96,7 +96,7 @@ describe("UniformDeclaration", () => {
                 const decl = new UniformDeclaration({
                     text: "",
                     name: "foo",
-                    group: BindGroups.MaterialUniforms,
+                    group: BindGroup.MaterialUniforms,
                     qualifier: "var<uniform>",
                     type: UniformType.Vec3,
                 });
@@ -111,7 +111,7 @@ describe("UniformDeclaration", () => {
                 const decl = new UniformDeclaration({
                     text: "",
                     name: "baz",
-                    group: BindGroups.MaterialUniforms,
+                    group: BindGroup.MaterialUniforms,
                     qualifier: "var<uniform>",
                     type: UniformType.Vec4,
                 });
@@ -126,7 +126,7 @@ describe("UniformDeclaration", () => {
                 const decl = new UniformDeclaration({
                     text: "",
                     name: "myMatrix",
-                    group: BindGroups.MaterialUniforms,
+                    group: BindGroup.MaterialUniforms,
                     qualifier: "var<uniform>",
                     type: UniformType.Mat4,
                 });
@@ -141,7 +141,7 @@ describe("UniformDeclaration", () => {
                 const decl = new UniformDeclaration({
                     text: "",
                     name: "myTexture",
-                    group: BindGroups.MaterialUniforms,
+                    group: BindGroup.MaterialUniforms,
                     qualifier: "var",
                     type: UniformType.Texture2D,
                 });
@@ -156,7 +156,7 @@ describe("UniformDeclaration", () => {
                 const decl = new UniformDeclaration({
                     text: "",
                     name: "mySampler",
-                    group: BindGroups.MaterialUniforms,
+                    group: BindGroup.MaterialUniforms,
                     qualifier: "var",
                     type: UniformType.Sampler,
                 });
@@ -375,8 +375,8 @@ describe("getUniformDeclarations", () => {
 
 describe("checkUniformDeclarations", () => {
     it("should throw if two uniforms have the same name in the same shader", () => {
-        const decl0 = new UniformDeclaration({ text: "_unused_", name: "foo", group: BindGroups.MaterialUniforms, qualifier: 'var', type: UniformType.Vec2 });
-        const decl1 = new UniformDeclaration({ text: "_unused_", name: "foo", group: BindGroups.MaterialUniforms, qualifier: 'var', type: UniformType.Float32 });
+        const decl0 = new UniformDeclaration({ text: "_unused_", name: "foo", group: BindGroup.MaterialUniforms, qualifier: 'var', type: UniformType.Vec2 });
+        const decl1 = new UniformDeclaration({ text: "_unused_", name: "foo", group: BindGroup.MaterialUniforms, qualifier: 'var', type: UniformType.Float32 });
 
         const decls = [decl0, decl1];
 
@@ -444,11 +444,11 @@ describe("assignAttributeLocations", () => {
 describe("assignUniformBindings", () => {
     it("should throw if two uniforms from both shaders have the same name but not the same type", () => {
         const vertexUniforms = [
-            new UniformDeclaration({ text: "_unused_", name: "shared", group: BindGroups.MaterialUniforms, qualifier: 'var', type: UniformType.Vec3 }),
+            new UniformDeclaration({ text: "_unused_", name: "shared", group: BindGroup.MaterialUniforms, qualifier: 'var', type: UniformType.Vec3 }),
         ];
 
         const fragmentUniforms = [
-            new UniformDeclaration({ text: "_unused_", name: "shared", group: BindGroups.MaterialUniforms, qualifier: 'var', type: UniformType.Vec2 }),
+            new UniformDeclaration({ text: "_unused_", name: "shared", group: BindGroup.MaterialUniforms, qualifier: 'var', type: UniformType.Vec2 }),
         ];
 
         expect(() =>
@@ -458,13 +458,13 @@ describe("assignUniformBindings", () => {
 
     it("should assign the same binding to shared uniforms", () => {
         const vertexUniforms = [
-            new UniformDeclaration({ text: "_unused_", name: "uniqueA", group: BindGroups.MaterialUniforms, qualifier: 'var', type: UniformType.Vec3 }),
-            new UniformDeclaration({ text: "_unused_", name: "shared", group: BindGroups.MaterialUniforms, qualifier: 'var', type: UniformType.Vec2 }),
+            new UniformDeclaration({ text: "_unused_", name: "uniqueA", group: BindGroup.MaterialUniforms, qualifier: 'var', type: UniformType.Vec3 }),
+            new UniformDeclaration({ text: "_unused_", name: "shared", group: BindGroup.MaterialUniforms, qualifier: 'var', type: UniformType.Vec2 }),
         ];
 
         const fragmentUniforms = [
-            new UniformDeclaration({ text: "_unused_", name: "uniqueB", group: BindGroups.MaterialUniforms, qualifier: 'var', type: UniformType.Mat4 }),
-            new UniformDeclaration({ text: "_unused_", name: "shared", group: BindGroups.MaterialUniforms, qualifier: 'var', type: UniformType.Vec2 }),
+            new UniformDeclaration({ text: "_unused_", name: "uniqueB", group: BindGroup.MaterialUniforms, qualifier: 'var', type: UniformType.Mat4 }),
+            new UniformDeclaration({ text: "_unused_", name: "shared", group: BindGroup.MaterialUniforms, qualifier: 'var', type: UniformType.Vec2 }),
         ];
 
         SPP.assignUniformBindings(vertexUniforms, fragmentUniforms);

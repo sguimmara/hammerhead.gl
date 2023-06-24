@@ -1,6 +1,6 @@
 import { Box3, Update } from "@/core";
 import { WireCube } from "@/geometries";
-import { BasicMaterial, RenderingMode } from "@/materials";
+import { BasicMaterial } from "@/materials";
 import { MeshObject, Object3D } from "@/scene";
 import chroma, { Color } from "chroma-js";
 
@@ -13,7 +13,6 @@ export default class BoundsHelper extends MeshObject implements Update {
     constructor(params: { source: Object3D; color?: Color }) {
         super({
             material: new BasicMaterial({
-                renderingMode: RenderingMode.LineList,
             }).withDiffuseColor(params.color ?? chroma("yellow")),
             mesh: new WireCube(),
         });

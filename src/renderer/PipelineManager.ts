@@ -1,6 +1,6 @@
 import { BindGroup, Container, Service, Versioned } from '@/core';
 import { Attribute, Mesh } from '@/geometries';
-import { AttributeInfo, AttributeType, Material, RenderingMode, UniformInfo, UniformType } from '@/materials';
+import { AttributeInfo, AttributeType, Material, UniformInfo, UniformType } from '@/materials';
 import ShaderError from '@/materials/ShaderError';
 import { ObjectUniform } from '@/materials/uniforms';
 import { BufferStore, TextureStore } from '@/renderer';

@@ -1,4 +1,4 @@
-import { BindGroups } from '@/core';
+import { BindGroup } from '@/core';
 import { ShaderLayout, AttributeType, UniformType, AttributeInfo, UniformInfo } from '@/materials';
 import { describe, expect, it } from 'vitest';
 
@@ -32,9 +32,9 @@ describe('getUniformBinding', () => {
 
     it('should return the correct location', () => {
         const uniforms = [
-            new UniformInfo(BindGroups.MaterialUniforms, 1, UniformType.Vec2, 'foo', true, false),
-            new UniformInfo(BindGroups.MaterialUniforms, 4, UniformType.Vec2, 'bar', true, false),
-            new UniformInfo(BindGroups.MaterialUniforms, 0, UniformType.Vec2, 'baz', true, false),
+            new UniformInfo(BindGroup.MaterialUniforms, 1, UniformType.Vec2, 'foo', true, false),
+            new UniformInfo(BindGroup.MaterialUniforms, 4, UniformType.Vec2, 'bar', true, false),
+            new UniformInfo(BindGroup.MaterialUniforms, 0, UniformType.Vec2, 'baz', true, false),
         ]
         const layout = new ShaderLayout([], uniforms);
 

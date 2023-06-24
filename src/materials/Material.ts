@@ -21,13 +21,6 @@ import GlobalValues from "@/renderer/GlobalValues";
 
 let MATERIAL_ID = 0;
 
-export enum RenderingMode {
-    Triangles,
-    TriangleLines,
-    Points,
-    LineList,
-}
-
 export enum BlendOp {
     Add = "add",
     Subtract = "subtract",
