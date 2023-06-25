@@ -9,11 +9,15 @@ import {
 
 let ID = 0;
 
+/**
+ * Events supported by {@link Node}
+ */
 export type NodeEvents = 'destroy' | 'added';
 
 /**
  * Base class for all objects in the scene graph.
  * @fires added When this object is added as a child of another object.
+ * @fires destroy When this object is destroyed.
  */
 export default class Node implements Observable<NodeEvents>, Destroy {
     readonly id: number;
