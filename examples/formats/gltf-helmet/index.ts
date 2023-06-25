@@ -36,6 +36,7 @@ async function main() {
     let rotation = 0;
 
     function renderLoop() {
+        boundsHelper.update();
         render();
         const current = performance.now();
         const dt = (current - now) / 1000;
