@@ -11,6 +11,9 @@ import {
 
 let ID = 0;
 
+/**
+ * The supported vertex attribute names.
+ */
 export type Attribute =
     | "position"
     | "normal"
@@ -20,6 +23,9 @@ export type Attribute =
     | "tangent"
     | "color";
 
+/**
+ * The supported event names.
+ */
 export type MeshEvents = "destroy";
 
 function initializeArray(vertexCount: number, elementSize: number, fillValue: number) {
@@ -28,6 +34,9 @@ function initializeArray(vertexCount: number, elementSize: number, fillValue: nu
     return array;
 }
 
+/**
+ * A collection of vertex attributes and an optional index buffer.
+ */
 export default class Mesh implements Version, Destroy, Clone, Observable<MeshEvents> {
     readonly id: number;
     private readonly attributes: Map<Attribute, Versioned<Float32Array>>;

@@ -35,6 +35,7 @@ async function main() {
 
     shark1.transform.setPosition(0, 0, 100);
     shark2.transform.setPosition(0, 0, -100);
+    shark2.transform.setScale(2, 2, 2);
 
     const shark1Bounds = new BoundsHelper({ source: shark1, color: chroma('cyan')});
     const shark2Bounds = new BoundsHelper({ source: shark2, color: chroma('purple')});

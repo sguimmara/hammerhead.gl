@@ -5,6 +5,7 @@ import { Camera, MeshObject } from "hammerhead.gl/scene";
 
 import { frameObject, loadPLYModel } from "../../lib";
 import { Pane } from "tweakpane";
+import { BoundsHelper } from "hammerhead.gl/helpers";
 
 let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
@@ -17,7 +18,9 @@ async function main() {
     const material = new PointMaterial().setColor(chroma("cyan"));
 
     const shark = new MeshObject({ mesh, material });
+    const bounds = new BoundsHelper({ source: shark });
     const camera = new Camera("perspective");
+    shark.add(bounds);
     frameObject(shark, camera);
 
     function render() {

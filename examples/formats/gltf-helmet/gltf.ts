@@ -19,6 +19,12 @@ function mapAttributeName(input: string): Attribute {
             return "texcoord";
         case "NORMAL":
             return "normal";
+        case "TANGENT":
+            return "tangent";
+        case "TEXCOORD_1":
+            return "texcoord1";
+        case "TEXCOORD_2":
+            return "texcoord2";
         default:
             throw new Error("glTF attribute unrecognized: " + input);
     }

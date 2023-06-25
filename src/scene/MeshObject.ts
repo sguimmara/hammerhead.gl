@@ -49,6 +49,14 @@ export default class MeshObject extends Node {
 
         const worldBounds = Box3.fromPoints(vertices);
 
+        if (this.children) {
+            const childCount = this.children.length;
+            for (let i = 0; i < childCount; i++) {
+                const child = this.children[i];
+                worldBounds.expand(child.getWorldBounds());
+            }
+        }
+
         return worldBounds;
     }
 }

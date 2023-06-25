@@ -17,7 +17,7 @@ export async function wait(ms: number) {
 export function frameBounds(bounds: Box3, camera: Camera) {
     const [x, y, z] = bounds.center;
     const [mx, my, mz] = bounds.max;
-    camera.transform.setPosition(mx * 3, my * 1, mz * 3);
+    camera.transform.setPosition(mx * 10, my * 1, mz * 3);
     camera.transform.lookAt(x, y, z);
 }
 

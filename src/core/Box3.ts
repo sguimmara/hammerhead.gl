@@ -50,14 +50,18 @@ export default class Box3 implements Clone {
     }
 
     static union(boxes: Array<Box3>) {
-        if (boxes.length === 1) {
-            return boxes[0].clone();
+        if (boxes.length === 0) {
+            return null;
         }
 
-        const result = boxes[0].clone();
-        for (let i = 1; i < boxes.length; i++) {
+        let result : Box3 = null;
+        for (let i = 0; i < boxes.length; i++) {
             if (boxes[i]) {
-                result.expand(boxes[i]);
+                if (!result) {
+                    result = boxes[i];
+                } else {
+                    result.expand(boxes[i]);
+                }
             }
         }
 
