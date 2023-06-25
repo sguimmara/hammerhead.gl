@@ -12,7 +12,7 @@
     "coverage": "vitest run --coverage",
     "lint": "ttsc --noEmit",
     "build": "ttsc",
-    "doc": "typedoc src/index.ts",
+    "doc": "typedoc --readme none --name Hammerhead.gl src/index.ts",
     "start": "vite",
     "prepack": "shx rm -fr dist/ && shx mkdir dist && npx copyfiles -u 1 './src/**/*.wgsl' dist && node scripts/prepare-package.mjs && npm run build",
     "prepare": "husky install"
