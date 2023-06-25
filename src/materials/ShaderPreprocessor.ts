@@ -9,7 +9,7 @@ import { AttributeInfo, ShaderLayout, UniformInfo } from "./ShaderLayout";
 import { Attribute } from "@/geometries";
 
 const UNIFORM_DECLARATION = /@group\((global|object|material|vertex)\)\s*@binding\(auto\)\s*(var|var<uniform>|var<storage,\s*read>)\s*(\w+)\s*:\s*(mat4x4f|vec2f|vec3f|vec4f|f32|u32|array<(u32|f32)>|sampler|texture_2d<f32>|GlobalValues)\s*;/g;
-const ATTRIBUTE_DECLARATION = /ATTRIBUTE\((\w+)\s*,\s*(\w+)\)/g;
+const ATTRIBUTE_DECLARATION = /@location\(auto\)\s*(\w+)\s*:\s*(\w+)/g;
 
 const chunks = new Map<string, string>();
 
@@ -35,7 +35,7 @@ export class AttributeDeclaration {
         }
 
         const type = getString(this.type);
-        return `@location(${this.location}) ${this.name} : ${type},`;
+        return `@location(${this.location}) ${this.name} : ${type}`;
     }
 }
 

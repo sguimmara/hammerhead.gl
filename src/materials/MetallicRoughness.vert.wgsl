@@ -2,9 +2,9 @@
 #include ./MetallicRoughnessVertex.wgsl;
 
 struct Vertex {
-    ATTRIBUTE(position, vec3f)
-    ATTRIBUTE(texcoord, vec2f)
-    ATTRIBUTE(normal, vec3f)
+    @location(auto) position: vec3f,
+    @location(auto) texcoord: vec2f,
+    @location(auto) normal: vec3f,
 };
 
 @group(object) @binding(auto) var<uniform> modelMatrix: mat4x4f;

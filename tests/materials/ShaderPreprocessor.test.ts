@@ -31,17 +31,17 @@ describe("AttributeDeclaration", () => {
         describe("should return the correct string", () => {
             it("for vec2f", () => {
                 const decl = attrDecl("foo", AttributeType.Vec2, 2);
-                expect(decl.toString()).toEqual("@location(2) foo : vec2f,");
+                expect(decl.toString()).toEqual("@location(2) foo : vec2f");
             });
 
             it("for vec3f", () => {
                 const decl = attrDecl("bar", AttributeType.Vec3, 5);
-                expect(decl.toString()).toEqual("@location(5) bar : vec3f,");
+                expect(decl.toString()).toEqual("@location(5) bar : vec3f");
             });
 
             it("for vec4f", () => {
                 const decl = attrDecl("baz", AttributeType.Vec4, 0);
-                expect(decl.toString()).toEqual("@location(0) baz : vec4f,");
+                expect(decl.toString()).toEqual("@location(0) baz : vec4f");
             });
         });
     });
@@ -174,24 +174,24 @@ describe("process", () => {
     it("should return the same object for the same shader code", () => {
         const vs = `
         struct Vertex {
-            ATTRIBUTE(position, vec3f)
-            ATTRIBUTE(texcoord, vec2f)
-            ATTRIBUTE(color, vec4f)
+            @location(auto) position: vec3f,
+            @location(auto) texcoord: vec2f,
+            @location(auto) color: vec4f,
         };
 
-        UNIFORM(foo, f32)
-        UNIFORM(bar, vec4f)
-        UNIFORM(texture1, texture_2d<f32>)
-        UNIFORM(globals, GlobalValues)
+        @group(material) @binding(auto) var<uniform> foo : f32;
+        @group(material) @binding(auto) var<uniform> bar : vec4f;
+        @group(material) @binding(auto) var texture1 : texture_2d<f32>;
+        @group(global) @binding(auto) var<uniform> globals : GlobalValues;
 
         do something with foo and bar
         `;
 
         const fs = `
-        UNIFORM(baz, f32)
-        UNIFORM(bar, vec4f)
-        UNIFORM(mySampler, sampler)
-        UNIFORM(myVec2, vec2f)
+        @group(material) @binding(auto) var<uniform> baz : f32;
+        @group(material) @binding(auto) var<uniform> bar : vec4f;
+        @group(material) @binding(auto) var mySampler : sampler;
+        @group(material) @binding(auto) var<uniform> myVec2 : vec2f;
 
         do something with baz and bar
         `;
@@ -205,9 +205,9 @@ describe("process", () => {
     it("should return the correct generated shader code", () => {
         const vs = `
         struct Vertex {
-            ATTRIBUTE(position, vec3f)
-            ATTRIBUTE(texcoord, vec2f)
-            ATTRIBUTE(color, vec4f)
+            @location(auto) position: vec3f,
+            @location(auto) texcoord: vec2f,
+            @location(auto) color: vec4f,
         };
 
         @group(material) @binding(auto) var<uniform> foo : f32;
@@ -309,15 +309,15 @@ describe("process", () => {
 describe("getAttributeDeclarations", () => {
     it("should throw if the type is invalid", () => {
         expect(() =>
-            SPP.getAttributeDeclarations("ATTRIBUTE(position, nope)")
+            SPP.getAttributeDeclarations("@location(auto) position: nope")
         ).toThrow(/invalid attribute type: nope/);
     });
 
     it("should return the correct value", () => {
         const code = `
-        ATTRIBUTE(position, vec3f)
-        ATTRIBUTE(texcoord, vec2f)
-        ATTRIBUTE(color, vec4f)
+        @location(auto) position : vec3f,
+        @location(auto) texcoord : vec2f,
+        @location(auto) color : vec4f,
         `;
 
         const result = SPP.getAttributeDeclarations(code);
