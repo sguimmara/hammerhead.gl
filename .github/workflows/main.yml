@@ -82,8 +82,6 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    env:
-      url: ${{ steps.deployment.outputs.page_url }}
 
     runs-on: ubuntu-latest
 
@@ -106,7 +104,7 @@ jobs:
       run: npm install
 
     - name: Run pages
-      run: npm run pages -- --base $url
+      run: npm run pages -- "--base https://sguimmara.github.io/hammerhead.gl"
 
     - name: Setup Pages
       uses: actions/configure-pages@v3
