@@ -104,7 +104,7 @@ jobs:
       run: npm install
 
     - name: Run pages
-      run: npm run pages -- --base ${{ environment.url }}
+      run: npm run pages -- "--base ${{ url }}"
 
     - name: Setup Pages
       uses: actions/configure-pages@v3
