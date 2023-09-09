@@ -17,7 +17,7 @@
     "prepack": "shx rm -fr dist/ && shx mkdir dist && npx copyfiles -u 1 './src/**/*.wgsl' dist && node scripts/prepare-package.mjs && npm run build",
     "prepare": "husky install",
     "dev": "cd pages && npm run dev",
-    "pages": "cd pages && npm run build"
+    "pages": "cd pages && npm install && npm run build"
   },
   "devDependencies": {
     "@loaders.gl/core": "^3.4.4",
