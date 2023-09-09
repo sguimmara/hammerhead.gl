@@ -3,3 +3,15 @@ src
 public
 examples
 scripts
+docs
+pages
+*.html
+coverage
+.vscode
+.github
+.husky
+.editorconfig
+.gitignore
+*.tgz
+tsconfig.json
+vite.config.ts
