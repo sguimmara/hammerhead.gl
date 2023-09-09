@@ -3,6 +3,7 @@ import { Attribute, Mesh } from '@/geometries';
 import { BufferUniform } from '@/materials/uniforms';
 import BufferWriter from './BufferWriter';
 import MemoryManager from './MemoryManager';
+import { UntypedBufferUniform } from '@/materials/uniforms/BufferUniform';
 
 class GeometryStorage implements Destroy {
     currentVersion: number;
@@ -60,7 +61,7 @@ interface Stats {
 class BufferStore implements Service, Stats {
     private readonly device: GPUDevice;
     private readonly geometryStorages: Map<number, GeometryStorage>;
-    private readonly uniformBuffers: Map<BufferUniform, BufferWriter>;
+    private readonly uniformBuffers: Map<UntypedBufferUniform, BufferWriter>;
     private readonly memoryManager: MemoryManager;
 
     constructor(device: GPUDevice, memoryManager: MemoryManager) {
@@ -119,7 +120,7 @@ class BufferStore implements Service, Stats {
         }
     }
 
-    destroyUniformBuffer(uniform: BufferUniform) {
+    destroyUniformBuffer(uniform: UntypedBufferUniform) {
         const bw = this.uniformBuffers.get(uniform);
         if (bw) {
             bw.buffer.destroy();
@@ -127,12 +128,12 @@ class BufferStore implements Service, Stats {
         }
     }
 
-    updateUniform(uniform: BufferUniform) {
+    updateUniform(uniform: UntypedBufferUniform) {
         const bw = this.uniformBuffers.get(uniform);
         bw.update();
     }
 
-    getOrCreateUniformBuffer(uniform: BufferUniform, label: string = 'uniform buffer') {
+    getOrCreateUniformBuffer(uniform: UntypedBufferUniform, label: string = 'uniform buffer') {
         if (this.uniformBuffers.has(uniform)) {
             const bw = this.uniformBuffers.get(uniform);
             bw.update();

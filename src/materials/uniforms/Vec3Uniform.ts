@@ -5,7 +5,7 @@ import { Visitor } from "@/core";
 /**
  * Uniform that holds a {@link Vec3}
  */
-export default class Vec3Uniform extends BufferUniform {
+export default class Vec3Uniform extends BufferUniform<Vec3> {
     value: Vec3;
 
     constructor(v: Vec3 = vec3.create(0, 0, 0)) {

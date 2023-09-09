@@ -5,7 +5,7 @@ import BufferUniform from "./BufferUniform";
 /**
  * Uniform that holds a {@link Vec2}
  */
-export default class Vec2Uniform extends BufferUniform {
+export default class Vec2Uniform extends BufferUniform<Vec2> {
     value: Vec2;
 
     constructor(v: Vec2 = vec2.create(0, 0)) {

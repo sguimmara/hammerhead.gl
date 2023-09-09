@@ -131,7 +131,7 @@ class PipelineManager implements Service {
                 case UniformType.Vec2:
                 case UniformType.Vec3:
                 case UniformType.Vec4: {
-                    const uniform = material.getBufferUniform(slot);
+                    const uniform = material.getUntypedBufferUniform(slot);
                     this.bufferStore.destroyUniformBuffer(uniform);
                     break;
                 }
@@ -277,7 +277,7 @@ class PipelineManager implements Service {
         const slot = info.binding;
         switch (info.type) {
             case UniformType.Texture2D: {
-                const uniform = material.getTexture(slot);
+                const uniform = material.getTextureUniform(slot);
                 const { defaultView } = this.textureStore.getOrCreateTexture(
                     uniform.value
                 );
@@ -285,7 +285,7 @@ class PipelineManager implements Service {
                 break;
             }
             case UniformType.Sampler:
-                const uniform = material.getSampler(slot);
+                const uniform = material.getSamplerUniform(slot);
                 const sampler = this.textureStore.getOrCreateSampler(
                     uniform.value
                 );
@@ -295,7 +295,7 @@ class PipelineManager implements Service {
             case UniformType.Vec2:
             case UniformType.Vec3:
             case UniformType.Vec4: {
-                const uniform = material.getBufferUniform(slot);
+                const uniform = material.getUntypedBufferUniform(slot);
                 const gpuBuffer =
                     this.bufferStore.getOrCreateUniformBuffer(uniform);
                 entries.push({

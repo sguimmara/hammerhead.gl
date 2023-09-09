@@ -4,7 +4,7 @@ import BufferUniform from "./BufferUniform";
 /**
  * Uniform that holds a single number.
  */
-export default class ScalarUniform extends BufferUniform {
+export default class ScalarUniform extends BufferUniform<number> {
     value: number;
 
     constructor(value?: number) {

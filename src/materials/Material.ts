@@ -24,6 +24,8 @@ import {
 } from "./uniforms";
 import UniformType from "./UniformType";
 import GlobalValues from "@/renderer/GlobalValues";
+import { UntypedBufferUniform } from "./uniforms/BufferUniform";
+import { UntypedUniform } from "./uniforms/Uniform";
 
 let MATERIAL_ID = 0;
 
@@ -123,7 +125,7 @@ function allocateUniform(type: UniformType) {
     }
 }
 
-function allocateUniforms(layout: UniformInfo[]): Uniform[] {
+function allocateUniforms(layout: UniformInfo[]): UntypedUniform[] {
     const uniforms = Array(layout.length);
     for (let i = 0; i < layout.length; i++) {
         const info = layout[i];
@@ -136,7 +138,7 @@ export type MaterialEvents = "destroy";
 
 class Material implements Observable<MaterialEvents>, Destroy, Version {
     private readonly dispatcher: EventDispatcher<Material, MaterialEvents>;
-    private readonly uniforms: Uniform[];
+    private readonly uniforms: UntypedUniform[];
     readonly id: number;
     readonly fragmentShader: string;
     readonly vertexShader: string;
@@ -201,15 +203,27 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
         return this;
     }
 
+    protected setUniform<V, T extends Uniform<V>>(binding: number, value: V) {
+        const uniform = this.getUniformFromBinding<V, T>(binding);
+        uniform.value = value;
+        uniform.incrementVersion();
+    }
+
+    protected getUniformFromBinding<V, T extends Uniform<V>>(binding: number): T {
+        console.assert(
+            binding >= 0 && binding < this.uniforms.length,
+            `binding number out of bounds. Must be between zero and ${this.uniforms.length - 1}, got: ${binding}`);
+        const uniform = this.uniforms[binding] as T;
+        return uniform;
+    }
+
     /**
      * Sets the value of a scalar uniform.
      * @param binding The binding number of the uniform.
      * @param value The value.
      */
     protected setScalar(binding: number, v: number) {
-        const uniform = this.uniforms[binding] as BufferUniform;
-        uniform.value = v;
-        uniform.incrementVersion();
+        this.setUniform<number, BufferUniform<number>>(binding, v);
     }
 
     /**
@@ -218,9 +232,7 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
      * @param value The value.
      */
     protected setSampler(binding: number, value: Sampler) {
-        const uniform = this.uniforms[binding] as BufferUniform;
-        uniform.value = value;
-        uniform.incrementVersion();
+        this.setUniform<Sampler, BufferUniform<Sampler>>(binding, value);
     }
 
     /**
@@ -230,9 +242,7 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
      */
     protected setColorUniform(binding: number, color: Color) {
         const [r, g, b, a] = color.gl();
-        const uniform = this.uniforms[binding] as BufferUniform;
-        uniform.value = vec4.create(r, g, b, a);
-        uniform.incrementVersion();
+        this.setUniform<Vec4, BufferUniform<Vec4>>(binding, vec4.create(r, g, b, a));
     }
 
     /**
@@ -241,9 +251,7 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
      * @param value The value.
      */
     protected setVec2(binding: number, v: Vec2) {
-        const uniform = this.uniforms[binding] as BufferUniform;
-        uniform.value = v;
-        uniform.incrementVersion();
+        this.setUniform<Vec2, BufferUniform<Vec2>>(binding, v);
     }
 
     /**
@@ -252,9 +260,7 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
      * @param value The value.
      */
     protected setVec4(binding: number, v: Vec4) {
-        const uniform = this.uniforms[binding] as BufferUniform;
-        uniform.value = v;
-        uniform.incrementVersion();
+        this.setUniform<Vec4, BufferUniform<Vec4>>(binding, v);
     }
 
     /**
@@ -263,31 +269,33 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
      * @param value The value.
      */
     protected setTexture(binding: number, texture: Texture) {
-        const uniform = this.uniforms[binding] as TextureUniform;
-        uniform.value = texture;
-        uniform.incrementVersion();
+        this.setUniform<Texture, TextureUniform>(binding, texture);
     }
 
-    getBufferUniforms(): BufferUniform[] {
-        const result: BufferUniform[] = [];
+    getBufferUniforms(): UntypedBufferUniform[] {
+        const result: UntypedBufferUniform[] = [];
         this.uniforms.forEach((u) => {
-            if (u instanceof BufferUniform) {
-                result.push(u);
+            if (u != null && (u as any).isBufferUniform) {
+                result.push(u as UntypedBufferUniform);
             }
         });
         return result;
     }
 
-    getBufferUniform(binding: number): BufferUniform {
-        return this.uniforms[binding] as BufferUniform;
+    getUntypedBufferUniform(binding: number): UntypedBufferUniform {
+        console.assert(
+            binding >= 0 && binding < this.uniforms.length,
+            `binding number out of bounds. Must be between zero and ${this.uniforms.length - 1}, got: ${binding}`);
+        const uniform = this.uniforms[binding] as UntypedBufferUniform;
+        return uniform;
     }
 
-    getTexture(binding: number): TextureUniform {
-        return this.uniforms[binding] as TextureUniform;
+    getTextureUniform(binding: number): TextureUniform {
+        return this.getUniformFromBinding<Texture, TextureUniform>(binding);
     }
 
-    getSampler(binding: number): SamplerUniform {
-        return this.uniforms[binding] as SamplerUniform;
+    getSamplerUniform(binding: number): SamplerUniform {
+        return this.getUniformFromBinding<Sampler, SamplerUniform>(binding);
     }
 }
 

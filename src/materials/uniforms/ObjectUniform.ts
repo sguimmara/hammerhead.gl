@@ -6,7 +6,7 @@ type ObjectValue = Sized & Visitable & Version;
 /**
  * A uniform type for arbitrary objects.
  */
-export default class ObjectUniform extends BufferUniform {
+export default class ObjectUniform extends BufferUniform<ObjectValue> {
     value: ObjectValue;
 
     constructor(value: ObjectValue) {

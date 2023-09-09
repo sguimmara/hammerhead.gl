@@ -4,10 +4,19 @@ import Uniform from "./Uniform";
 /**
  * A uniform that maps to a GPU sampler.
  */
-export default class SamplerUniform implements Uniform {
-    readonly value: Sampler;
+export default class SamplerUniform implements Uniform<Sampler> {
+    value: Sampler;
+    private version = 0;
 
     constructor() {
         this.value = new Sampler();
+    }
+
+    getVersion(): number {
+        return this.version;
+    }
+
+    incrementVersion(): void {
+        this.version++;
     }
 }

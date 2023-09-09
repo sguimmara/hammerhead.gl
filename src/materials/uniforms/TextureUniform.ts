@@ -5,7 +5,7 @@ import { Version } from "@/core";
 /**
  * A uniform that maps to a GPU texture.
  */
-export default class TextureUniform implements Uniform, Version {
+export default class TextureUniform implements Uniform<Texture>, Version {
     value: Texture;
     private version: number = -1;
 

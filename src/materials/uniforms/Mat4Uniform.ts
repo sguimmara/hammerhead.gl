@@ -2,7 +2,7 @@ import { Mat4, mat4 } from "wgpu-matrix";
 import BufferUniform from "./BufferUniform";
 import { Visitor } from "../../core/Visitable";
 
-export default class Mat4Uniform extends BufferUniform {
+export default class Mat4Uniform extends BufferUniform<Mat4> {
     value: Mat4;
 
     constructor(value?: Mat4) {

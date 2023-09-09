@@ -53,8 +53,8 @@ describe("constructor", () => {
 
         const mat = new Material({ fragmentShader, vertexShader });
 
-        expect(mat.getBufferUniform(mat.layout.getUniformBinding('foo')).value).toEqual(new Float32Array([0, 0, 0, 0]));
-        expect(mat.getBufferUniform(mat.layout.getUniformBinding('bar')).value).toEqual(new Float32Array([0, 0]));
-        expect(mat.getBufferUniform(mat.layout.getUniformBinding('baz')).value).toEqual(new Float32Array([0, 0, 0]));
+        expect(mat.getUntypedBufferUniform(mat.layout.getUniformBinding('foo')).value).toEqual(new Float32Array([0, 0, 0, 0]));
+        expect(mat.getUntypedBufferUniform(mat.layout.getUniformBinding('bar')).value).toEqual(new Float32Array([0, 0]));
+        expect(mat.getUntypedBufferUniform(mat.layout.getUniformBinding('baz')).value).toEqual(new Float32Array([0, 0, 0]));
     });
 });
