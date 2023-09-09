@@ -1,4 +1,6 @@
-export function deg2rad(deg: number) {
+import { degrees, radians } from "./types";
+
+export function deg2rad(deg: degrees): radians {
     return deg * Math.PI / 180;
 }
 

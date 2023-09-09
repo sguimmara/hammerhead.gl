@@ -1,5 +1,6 @@
 import { Mat4, mat4, quat, Quat, Vec3 } from "wgpu-matrix";
 import { Sized, Version, Visitable, Visitor } from "@/core";
+import { radians } from "@/core/types";
 
 const DEFAULT_UP = [0, 1, 0];
 
@@ -107,7 +108,7 @@ export default class Transform implements Version, Sized, Visitable {
         }
     }
 
-    rotateX(radians: number) {
+    rotateX(radians: radians) {
         if (radians != 0) {
             quat.rotateX(this.quaternion, radians, this.quaternion);
             this.incrementVersion();
@@ -115,7 +116,7 @@ export default class Transform implements Version, Sized, Visitable {
         }
     }
 
-    rotateY(radians: number) {
+    rotateY(radians: radians) {
         if (radians != 0) {
             quat.rotateY(this.quaternion, radians, this.quaternion);
             this.incrementVersion();
@@ -123,7 +124,7 @@ export default class Transform implements Version, Sized, Visitable {
         }
     }
 
-    rotateZ(radians: number) {
+    rotateZ(radians: radians) {
         if (radians != 0) {
             quat.rotateZ(this.quaternion, radians, this.quaternion);
             this.incrementVersion();

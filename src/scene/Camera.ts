@@ -1,10 +1,11 @@
 import { MathUtils } from '@/core';
 import { Mat4, mat4 } from 'wgpu-matrix';
 import Node from './Node';
+import { radians } from '@/core/types';
 
 export type CameraMode = 'orthographic' | 'perspective';
 
-const DEFAULT_FOV = MathUtils.deg2rad(45);
+const DEFAULT_FOV : radians = MathUtils.deg2rad(45);
 
 /**
  * A camera.
@@ -13,7 +14,7 @@ export default class Camera extends Node {
     mode: CameraMode;
 
     projectionMatrix: Mat4;
-    fieldOfView: number = DEFAULT_FOV;
+    fieldOfView: radians = DEFAULT_FOV;
     nearPlane: number = 0.001;
     farPlane: number = 1000000;
 
