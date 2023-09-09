@@ -26,7 +26,9 @@ export type Attribute =
 /**
  * The supported event names.
  */
-export type MeshEvents = "destroy";
+export interface Events {
+    'destroy': undefined;
+}
 
 function initializeArray(vertexCount: number, elementSize: number, fillValue: number) {
     const array = new Float32Array(vertexCount * elementSize);
@@ -37,12 +39,12 @@ function initializeArray(vertexCount: number, elementSize: number, fillValue: nu
 /**
  * A collection of vertex attributes and an optional index buffer.
  */
-export default class Mesh implements Version, Destroy, Clone, Observable<MeshEvents> {
+export default class Mesh implements Version, Destroy, Clone, Observable<Mesh, Events> {
     readonly id: number;
     private readonly attributes: Map<Attribute, Versioned<Float32Array>>;
     private indices: Uint16Array | Uint32Array;
     private version: number = 0;
-    private readonly dispatcher: EventDispatcher<Mesh, MeshEvents>;
+    private readonly dispatcher: EventDispatcher<Mesh, Events>;
     private bounds: Box3;
     private _topology: GPUPrimitiveTopology;
     readonly frontFace: GPUFrontFace;
@@ -114,7 +116,7 @@ export default class Mesh implements Version, Destroy, Clone, Observable<MeshEve
         return this.bounds;
     }
 
-    on(type: MeshEvents, handler: EventHandler): void {
+    on<K extends keyof Events>(type: K, handler: EventHandler<Mesh, Events[K]>): void {
         return this.dispatcher.on(type, handler);
     }
 

@@ -39,18 +39,18 @@ describe('add', () => {
         expect(child.parent).toBe(parent);
     });
 
-    it('should dispatch the "added" event on the child', () => {
+    it('should dispatch the "parent-changed" event on the child', () => {
         const parent = new Node();
         const child = new Node();
 
         const handler = vi.fn();
-        child.on('added', handler);
+        child.on('parent-changed', handler);
 
         expect(handler).not.toHaveBeenCalled();
 
         parent.add(child);
 
-        expect(handler).toHaveBeenCalledWith({ emitter: child });
+        expect(handler).toHaveBeenCalledWith({ emitter: child, value: { old: undefined, new: parent } });
     });
 });
 

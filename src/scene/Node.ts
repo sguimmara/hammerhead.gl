@@ -12,17 +12,29 @@ let ID = 0;
 /**
  * Events supported by {@link Node}
  */
-export type NodeEvents = 'destroy' | 'added';
+export interface Events {
+    /**
+     * Raised when the node is destroyed.
+     */
+    'destroy': undefined;
+    /**
+     * Raised when the children list has changed.
+     */
+    'children-changed': undefined;
+    /**
+     * Raised when the parent has changed.
+     */
+    'parent-changed': { old: Node, new: Node };
+}
 
 /**
  * Base class for all objects in the scene graph.
- * @fires added When this object is added as a child of another object.
- * @fires destroy When this object is destroyed.
  */
-export default class Node implements Observable<NodeEvents>, Destroy {
+export default class Node implements Observable<Node, Events>, Destroy {
     readonly id: number;
-    readonly dispatcher: EventDispatcher<Node, NodeEvents>;
+    readonly dispatcher: EventDispatcher<Node, Events>;
     readonly transform: Transform = new Transform();
+    private _parent: Node;
     label: string;
 
     /**
@@ -30,15 +42,24 @@ export default class Node implements Observable<NodeEvents>, Destroy {
      */
     active: boolean = true;
 
-    parent: Node;
     children: Node[];
+
+    set parent(parent: Node) {
+        const old = this._parent;
+        this._parent = parent;
+        this.dispatcher.dispatch('parent-changed', { old, new: parent });
+    }
+
+    get parent() {
+        return this._parent;
+    }
 
     constructor() {
         this.id = ID++;
-        this.dispatcher = new EventDispatcher<Node, NodeEvents>(this);
+        this.dispatcher = new EventDispatcher<Node, Events>(this);
     }
 
-    on(type: NodeEvents, handler: EventHandler): void {
+    on<K extends keyof Events>(type: K, handler: EventHandler<Node, Events[K]>): void {
         this.dispatcher.on(type, handler);
     }
 
@@ -56,11 +77,7 @@ export default class Node implements Observable<NodeEvents>, Destroy {
     }
 
     destroy(): void {
-        this.dispatch('destroy');
-    }
-
-    protected dispatch(type: NodeEvents) {
-        this.dispatcher.dispatch(type);
+        this.dispatcher.dispatch('destroy');
     }
 
     /**
@@ -75,7 +92,8 @@ export default class Node implements Observable<NodeEvents>, Destroy {
             this.children.push(child);
         }
         child.transform.localMatrixNeedsUpdate = true;
-        child.dispatch('added');
+
+        this.dispatcher.dispatch('children-changed');
     }
 
     addMany(children: Iterable<Node>) {

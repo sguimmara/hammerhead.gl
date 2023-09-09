@@ -7,18 +7,21 @@ import {
 } from "@/renderer";
 import MemoryManager from "@/renderer/MemoryManager";
 import Configuration from "./Configuration";
+import { Vec2, vec2 } from "wgpu-matrix";
 
-export type ContextEvents = 'resized';
+export interface Events {
+    'resized': Vec2;
+}
 
 /**
  * The WebGPU context.
  * @fires resized When the canvas is resized.
  */
-export default class Context implements Observable<ContextEvents> {
+export default class Context implements Observable<Context, Events> {
     private readonly context: GPUCanvasContext;
     private readonly bufferStore: BufferStore;
     private readonly textureStore: TextureStore;
-    private readonly dispatcher: EventDispatcher<Context, ContextEvents>;
+    private readonly dispatcher: EventDispatcher<Context, Events>;
 
     readonly container: Container;
     readonly device: GPUDevice;
@@ -35,7 +38,7 @@ export default class Context implements Observable<ContextEvents> {
         this.context = context;
         this.device = device;
         this.configuration = configuration;
-        this.dispatcher = new EventDispatcher<Context, ContextEvents>(this);
+        this.dispatcher = new EventDispatcher<Context, Events>(this);
 
         this.container = new Container();
         this.memoryManager = new MemoryManager(device);
@@ -63,14 +66,14 @@ export default class Context implements Observable<ContextEvents> {
                     height,
                     this.device.limits.maxTextureDimension2D
                 );
-                this.dispatcher.dispatch("resized");
+                this.dispatcher.dispatch("resized", vec2.create(canvas.width, canvas.height));
             }
         });
 
         observer.observe(canvas);
     }
 
-    on(type: ContextEvents, handler: EventHandler): void {
+    on<K extends keyof Events>(type: K, handler: EventHandler<Context, Events[K]>): void {
         this.dispatcher.on(type, handler);
     }
 

@@ -2,11 +2,11 @@ import { EventHandler, Observable, ObservableEvent } from "./Observable";
 
 /**
  * Implementation of {@link Observable}
- * @typeParam T The observed object type.
- * @typeParam TEvents The type of events.
+ * @param T The observed object type.
+ * @param TEvents The type of events.
  */
-export class EventDispatcher<T extends object, TEvents extends string> implements Observable<TEvents> {
-    private readonly handlers: Map<string, EventHandler[]>;
+export class EventDispatcher<T extends object, TEvents> implements Observable<T, TEvents> {
+    private readonly handlers: Map<string, EventHandler<T, unknown>[]>;
     private readonly emitter: T;
 
     constructor(emitter: T) {
@@ -14,16 +14,17 @@ export class EventDispatcher<T extends object, TEvents extends string> implement
         this.emitter = emitter;
     }
 
-    dispatch(type: TEvents) {
-        if (this.handlers.has(type)) {
-            const handlers = this.handlers.get(type);
+    dispatch<K extends keyof TEvents>(type: K, value?: TEvents[K]) {
+        const key = type as string;
+        if (this.handlers.has(key)) {
+            const handlers = this.handlers.get(key);
             handlers.forEach(fn => {
-                fn(new ObservableEvent(this.emitter));
+                fn(new ObservableEvent<T, TEvents[K]>(this.emitter, value));
             });
         }
     }
 
-    on(type: TEvents, handler: EventHandler): void {
+    on<K extends keyof TEvents>(type: K, handler: EventHandler<T, TEvents[K]>): void {
         if (!type) {
             throw new Error('missing event name');
         }
@@ -31,10 +32,12 @@ export class EventDispatcher<T extends object, TEvents extends string> implement
             throw new Error('missing event handler');
         }
 
-        if (!this.handlers.has(type)) {
-            this.handlers.set(type, [handler]);
+        const key = type as string;
+
+        if (!this.handlers.has(key)) {
+            this.handlers.set(key, [handler]);
         } else {
-            this.handlers.get(type).push(handler);
+            this.handlers.get(key).push(handler);
         }
     }
 }

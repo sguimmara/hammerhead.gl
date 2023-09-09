@@ -1,6 +1,6 @@
 import BasicMaterial from './BasicMaterial';
 import LineMaterial from './LineMaterial';
-import Material, { BlendFactor, BlendOp, Blending, DepthCompare } from './Material';
+import Material, { type Events as MaterialEvents, BlendFactor, BlendOp, Blending, DepthCompare } from './Material';
 import { ShaderLayout, AttributeInfo, UniformInfo } from './ShaderLayout';
 import AttributeType from "./AttributeType";
 import UniformType from "./UniformType";
@@ -16,6 +16,7 @@ export {
     BlendOp,
     Blending,
     Material,
+    MaterialEvents,
     PointMaterial,
     LineMaterial,
     BasicMaterial,

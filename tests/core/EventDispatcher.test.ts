@@ -1,28 +1,40 @@
-import { EventDispatcher } from "@/core";
+import { EventDispatcher, ObservableEvent } from "@/core";
 import { describe, expect, it, vi } from "vitest";
+
+interface Events {
+    'foo': boolean;
+    'bar': number;
+    'baz': string;
+}
+
+class MyClass {}
 
 describe("on", () => {
     it("should register the event handlers", () => {
         const emitter = {};
-        const dispatcher = new EventDispatcher<Object>(emitter);
+        const dispatcher = new EventDispatcher<MyClass, Events>(emitter);
 
-        const handler1 = vi.fn();
-        dispatcher.on("foo", handler1);
+        const stringHandler = vi.fn<[ObservableEvent<MyClass, string>], void>();
+        dispatcher.on('baz', stringHandler);
 
-        const handler2 = vi.fn();
-        dispatcher.on("foo", handler2);
+        const boolHandler = vi.fn<[ObservableEvent<MyClass, boolean>], void>();
+        dispatcher.on("foo", boolHandler);
 
-        expect(handler1).not.toHaveBeenCalled();
-        expect(handler2).not.toHaveBeenCalled();
+        const barHandler = vi.fn<[ObservableEvent<MyClass, number>], void>();
+        dispatcher.on("bar", barHandler);
 
-        dispatcher.dispatch("foo");
+        expect(stringHandler).not.toHaveBeenCalled();
+        expect(boolHandler).not.toHaveBeenCalled();
 
-        expect(handler1).toHaveBeenCalledWith({ emitter });
-        expect(handler2).toHaveBeenCalledWith({ emitter });
+        dispatcher.dispatch("foo", true);
+        dispatcher.dispatch("baz", 'hello');
+
+        expect(stringHandler).toHaveBeenCalledWith({ emitter, value: 'hello' });
+        expect(boolHandler).toHaveBeenCalledWith({ emitter, value: true });
     });
 
     it('should throw on missing params', () => {
-        const dispatcher = new EventDispatcher<Object>({});
+        const dispatcher = new EventDispatcher<Object, Events>({});
         expect(() => dispatcher.on(null, null)).toThrowError(/missing event name/);
         expect(() => dispatcher.on('foo', null)).toThrowError(/missing event handler/);
     });

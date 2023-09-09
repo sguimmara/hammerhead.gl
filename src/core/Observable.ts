@@ -1,10 +1,12 @@
-export type EventHandler = (event: ObservableEvent) => void;
+export type EventHandler<TSource, T> = (event: ObservableEvent<TSource, T>) => void;
 
-export class ObservableEvent {
-    readonly emitter: object;
+export class ObservableEvent<TSource, T> {
+    readonly emitter: TSource;
+    readonly value: T;
 
-    constructor(emitter: object) {
+    constructor(emitter: TSource, value: T) {
         this.emitter = emitter;
+        this.value = value;
     }
 }
 
@@ -13,7 +15,7 @@ export class ObservableEvent {
  * @typeParam Events The type of events.
  */
 
-export interface Observable<Events extends string> {
+export interface Observable<TSource, Events> {
     /**
      * Registers an event handler on this object.
      * @param type The event type.
@@ -21,5 +23,5 @@ export interface Observable<Events extends string> {
      * @example
      * myObservable.on('destroy', evt => console.info(`${evt.emitter} was destroyed`));
      */
-    on(type: Events, handler: EventHandler): void;
+    on<K extends keyof Events>(type: K, handler: EventHandler<TSource, Events[K]>): void;
 }

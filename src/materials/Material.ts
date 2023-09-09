@@ -134,10 +134,12 @@ function allocateUniforms(layout: UniformInfo[]): UntypedUniform[] {
     return uniforms;
 }
 
-export type MaterialEvents = "destroy";
+export interface Events {
+    "destroy": undefined;
+};
 
-class Material implements Observable<MaterialEvents>, Destroy, Version {
-    private readonly dispatcher: EventDispatcher<Material, MaterialEvents>;
+export default class Material implements Observable<Material, Events>, Destroy, Version {
+    private readonly dispatcher: EventDispatcher<Material, Events>;
     private readonly uniforms: UntypedUniform[];
     readonly id: number;
     readonly fragmentShader: string;
@@ -177,7 +179,7 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
         this.layout = shaderInfo.layout;
         this.cullingMode = options.cullingMode ?? "back";
         this.primitive = options.primitive ?? Primitive.Triangles;
-        this.dispatcher = new EventDispatcher<Material, MaterialEvents>(this);
+        this.dispatcher = new EventDispatcher<Material, Events>(this);
         this.uniforms = allocateUniforms(this.layout.uniforms);
         this.renderOrder = options.renderOrder ?? 0;
     }
@@ -191,10 +193,10 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
     }
 
     destroy() {
-        this.dispatcher.dispatch("destroy");
+        this.dispatcher.dispatch("destroy", undefined);
     }
 
-    on(type: MaterialEvents, handler: EventHandler): void {
+    on<K extends keyof Events>(type: K, handler: EventHandler<Material, Events[K]>): void {
         this.dispatcher.on(type, handler);
     }
 
@@ -298,5 +300,3 @@ class Material implements Observable<MaterialEvents>, Destroy, Version {
         return this.getUniformFromBinding<Sampler, SamplerUniform>(binding);
     }
 }
-
-export default Material;

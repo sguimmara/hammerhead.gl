@@ -1,4 +1,4 @@
-import Texture, { type TextureEvents } from './Texture';
+import Texture, { type Events } from './Texture';
 import Sampler, { FilterMode, AddressMode } from './Sampler';
 import type Source from './Source';
 import ImageSource from './ImageSource';
@@ -9,7 +9,7 @@ export {
     ImageSource,
     RawSource,
     Texture,
-    TextureEvents,
+    Events as TextureEvents,
     Sampler,
     FilterMode,
     AddressMode,

@@ -155,7 +155,7 @@ class BufferStore implements Service, Stats {
         let storage = this.geometryStorages.get(mesh.id);
         if (!storage) {
             storage = new GeometryStorage(mesh);
-            mesh.on('destroy', evt => this.onGeometryDestroyed(evt.emitter as Mesh));
+            mesh.on('destroy', evt => this.onGeometryDestroyed(evt.emitter));
             this.geometryStorages.set(mesh.id, storage);
         } else if (storage.attributeBuffers.has(slot)) {
             storage.update(this.memoryManager);
