@@ -16,9 +16,13 @@ export async function wait(ms: number) {
 
 export function frameBounds(bounds: Box3, camera: Camera) {
     const [x, y, z] = bounds.center;
-    const [mx, my, mz] = bounds.max;
-    camera.transform.setPosition(mx * 10, my * 1, mz * 3);
+    const maxSize = Math.max(bounds.size[0], bounds.size[1], bounds.size[2]);
+    const distance = Math.tan(camera.fieldOfView) * maxSize + maxSize;
+
+    camera.transform.setPosition(distance, y, z);
     camera.transform.lookAt(x, y, z);
+    camera.nearPlane = distance * 0.01;
+    camera.farPlane = distance * 2;
 }
 
 export function frameObject(obj: MeshObject, camera: Camera) {
