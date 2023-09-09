@@ -104,7 +104,9 @@ jobs:
       run: npm install
 
     - name: Run pages
-      run: npm run pages -- "--base hammerhead.gl"
+      run: |
+        echo ${{ steps.deployment.outputs.page_url }}
+        echo ${{ page_url }}
 
     - name: Setup Pages
       uses: actions/configure-pages@v3
