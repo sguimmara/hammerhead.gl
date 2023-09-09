@@ -74,12 +74,16 @@ jobs:
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
 
-  docs:
+  pages:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [18.x]
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
     - name: Checkout repository
@@ -97,3 +101,7 @@ jobs:
 
     - name: Run doc
       run: npm run doc
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v2
