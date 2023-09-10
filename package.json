@@ -10,29 +10,36 @@
     "precommit": "npm run lint && npm test",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "lint": "ttsc --noEmit",
+    "lint": "ttsc --noEmit && eslint .",
     "build": "ttsc",
     "doc": "typedoc --readme none --name Hammerhead.gl src/index.ts",
     "start": "vite",
     "prepack": "shx rm -fr dist/ && shx mkdir dist && npx copyfiles -u 1 './src/**/*.wgsl' dist && node scripts/prepare-package.mjs && npm run build",
     "prepare": "husky install",
     "dev": "cd pages && npm run dev",
-    "pages": "cd pages && npm install && npm run pages"
+    "pages": "cd pages && npm install && npm run pages",
+    "prepare-examples": "node scripts/generate-example-index.mjs"
   },
   "devDependencies": {
     "@loaders.gl/core": "^3.4.4",
     "@loaders.gl/gltf": "^3.4.4",
     "@loaders.gl/ply": "^3.4.4",
     "@tweakpane/core": "^1.1.9",
+    "@types/bootstrap": "^5.2.6",
     "@types/chroma-js": "^2.4.0",
     "@types/jest": "^29.5.1",
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
+    "@typescript-eslint/parser": "^6.6.0",
     "@vitest/coverage-v8": "^0.32.0",
     "@webgpu/types": "^0.1.32",
     "apache-arrow": "^12.0.0",
     "es-main": "^1.2.0",
+    "eslint": "^8.49.0",
     "fs-extra": "^11.1.1",
+    "glob": "^10.3.4",
     "husky": "^8.0.3",
     "path": "^0.12.7",
+    "sass": "^1.66.1",
     "shx": "^0.3.4",
     "ts-node": "^10.9.1",
     "ttypescript": "^1.5.15",
@@ -48,6 +55,9 @@
     "vitest-mock-extended": "^1.1.3"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.1",
+    "bootstrap-icons": "^1.10.5",
     "chroma-js": "^2.4.2",
     "wgpu-matrix": "^2.4.0"
   }
