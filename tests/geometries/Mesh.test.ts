@@ -24,16 +24,16 @@ describe('constructor', () => {
     });
 });
 
-describe('destroy', () => {
+describe('destroyed', () => {
     it('should raise the destroy event', () => {
         const m = new Mesh();
         const listener = vi.fn();
 
-        m.on('destroy', listener);
+        m.on('destroyed', listener);
 
         m.destroy();
 
-        expect(listener).toHaveBeenCalledWith({ emitter: m });
+        expect(listener).toHaveBeenCalledWith({ source: m });
     });
 });
 

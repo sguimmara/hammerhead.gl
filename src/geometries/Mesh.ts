@@ -27,7 +27,7 @@ export type Attribute =
  * The supported event names.
  */
 export interface Events {
-    'destroy': undefined;
+    'destroyed': undefined;
 }
 
 function initializeArray(vertexCount: number, elementSize: number, fillValue: number) {
@@ -134,7 +134,7 @@ export default class Mesh implements Version, Destroy, Clone, Observable<Mesh, E
     }
 
     destroy(): void {
-        this.dispatcher.dispatch("destroy");
+        this.dispatcher.dispatch('destroyed');
     }
 
     getIndices(): Uint16Array | Uint32Array {

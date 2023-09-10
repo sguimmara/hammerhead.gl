@@ -135,7 +135,7 @@ function allocateUniforms(layout: UniformInfo[]): UntypedUniform[] {
 }
 
 export interface Events {
-    "destroy": undefined;
+    'destroyed': undefined;
 };
 
 export default class Material implements Observable<Material, Events>, Destroy, Version {
@@ -193,7 +193,7 @@ export default class Material implements Observable<Material, Events>, Destroy, 
     }
 
     destroy() {
-        this.dispatcher.dispatch("destroy", undefined);
+        this.dispatcher.dispatch('destroyed', undefined);
     }
 
     on<K extends keyof Events>(type: K, handler: EventHandler<Material, Events[K]>): void {

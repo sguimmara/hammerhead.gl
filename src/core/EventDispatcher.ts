@@ -5,26 +5,26 @@ import { EventHandler, Observable, ObservableEvent } from "./Observable";
  * @param T The observed object type.
  * @param TEvents The type of events.
  */
-export class EventDispatcher<T extends object, TEvents> implements Observable<T, TEvents> {
-    private readonly handlers: Map<string, EventHandler<T, unknown>[]>;
-    private readonly emitter: T;
+export class EventDispatcher<TSource extends object, TEvents> implements Observable<TSource, TEvents> {
+    private readonly handlers: Map<string, EventHandler<TSource, unknown>[]>;
+    private readonly source: TSource;
 
-    constructor(emitter: T) {
+    constructor(source: TSource) {
         this.handlers = new Map();
-        this.emitter = emitter;
+        this.source = source;
     }
 
-    dispatch<K extends keyof TEvents>(type: K, value?: TEvents[K]) {
+    dispatch<Type extends keyof TEvents>(type: Type, value?: TEvents[Type]) {
         const key = type as string;
         if (this.handlers.has(key)) {
             const handlers = this.handlers.get(key);
             handlers.forEach(fn => {
-                fn(new ObservableEvent<T, TEvents[K]>(this.emitter, value));
+                fn(new ObservableEvent<TSource, TEvents[Type]>(this.source, value));
             });
         }
     }
 
-    on<K extends keyof TEvents>(type: K, handler: EventHandler<T, TEvents[K]>): void {
+    on<Type extends keyof TEvents>(type: Type, handler: EventHandler<TSource, TEvents[Type]>): void {
         if (!type) {
             throw new Error('missing event name');
         }

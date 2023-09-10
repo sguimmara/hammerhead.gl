@@ -22,17 +22,17 @@ describe('constructor', () => {
     });
 });
 
-describe('destroy', () => {
+describe('destroyed', () => {
     it('should raise an event', () => {
         const t = new Texture();
 
         const listener = vi.fn();
-        t.on('destroy', listener);
+        t.on('destroyed', listener);
 
         expect(listener).not.toHaveBeenCalled();
 
         t.destroy();
 
-        expect(listener).toHaveBeenCalledWith({ emitter: t });
+        expect(listener).toHaveBeenCalledWith({ source: t });
     });
 });

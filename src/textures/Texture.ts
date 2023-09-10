@@ -4,7 +4,7 @@ import Source from "./Source";
 let TEXTURE_ID = 0;
 
 export interface Events {
-    'destroy': undefined;
+    'destroyed': undefined;
 }
 
 /**
@@ -33,6 +33,6 @@ export default class Texture implements Observable<Texture, Events>, Destroy {
     }
 
     destroy() {
-        this.dispatcher.dispatch("destroy");
+        this.dispatcher.dispatch('destroyed');
     }
 }

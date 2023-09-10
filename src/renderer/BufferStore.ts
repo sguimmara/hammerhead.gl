@@ -155,7 +155,7 @@ class BufferStore implements Service, Stats {
         let storage = this.geometryStorages.get(mesh.id);
         if (!storage) {
             storage = new GeometryStorage(mesh);
-            mesh.on('destroy', evt => this.onGeometryDestroyed(evt.emitter));
+            mesh.on('destroyed', evt => this.onGeometryDestroyed(evt.source));
             this.geometryStorages.set(mesh.id, storage);
         } else if (storage.attributeBuffers.has(slot)) {
             storage.update(this.memoryManager);
@@ -183,7 +183,7 @@ class BufferStore implements Service, Stats {
     getIndexBuffer(mesh: Mesh): GPUBuffer {
         let storage = this.geometryStorages.get(mesh.id);
         if (!storage) {
-            mesh.on('destroy', evt => this.onGeometryDestroyed(evt.emitter as Mesh));
+            mesh.on('destroyed', evt => this.onGeometryDestroyed(evt.source as Mesh));
             storage = new GeometryStorage(mesh);
             this.geometryStorages.set(mesh.id, storage);
         } else if (storage.indexBuffer) {

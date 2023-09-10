@@ -11,8 +11,8 @@ class MyClass {}
 
 describe("on", () => {
     it("should register the event handlers", () => {
-        const emitter = {};
-        const dispatcher = new EventDispatcher<MyClass, Events>(emitter);
+        const source = {};
+        const dispatcher = new EventDispatcher<MyClass, Events>(source);
 
         const stringHandler = vi.fn<[ObservableEvent<MyClass, string>], void>();
         dispatcher.on('baz', stringHandler);
@@ -29,8 +29,8 @@ describe("on", () => {
         dispatcher.dispatch("foo", true);
         dispatcher.dispatch("baz", 'hello');
 
-        expect(stringHandler).toHaveBeenCalledWith({ emitter, value: 'hello' });
-        expect(boolHandler).toHaveBeenCalledWith({ emitter, value: true });
+        expect(stringHandler).toHaveBeenCalledWith({ source, value: 'hello' });
+        expect(boolHandler).toHaveBeenCalledWith({ source, value: true });
     });
 
     it('should throw on missing params', () => {

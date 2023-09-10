@@ -16,7 +16,7 @@ export interface Events {
     /**
      * Raised when the node is destroyed.
      */
-    'destroy': undefined;
+    'destroyed': undefined;
     /**
      * Raised when the children list has changed.
      */
@@ -77,7 +77,7 @@ export default class Node implements Observable<Node, Events>, Destroy {
     }
 
     destroy(): void {
-        this.dispatcher.dispatch('destroy');
+        this.dispatcher.dispatch('destroyed');
     }
 
     /**

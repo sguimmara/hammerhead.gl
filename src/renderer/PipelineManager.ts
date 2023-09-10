@@ -239,7 +239,7 @@ class PipelineManager implements Service {
             });
             this.perObjectMap.set(mesh.id, perObject);
 
-            mesh.on("destroy", () => this.onMeshDestroyed(mesh));
+            mesh.on('destroyed', () => this.onMeshDestroyed(mesh));
         } else {
             this.bufferStore.updateUniform(perObject.transformUniform);
         }
@@ -583,8 +583,8 @@ class PipelineManager implements Service {
 
             this.perMaterialMap.set(material.id, perMaterial);
 
-            material.on("destroy", (evt) =>
-                this.onMaterialDestroyed(evt.emitter as Material)
+            material.on('destroyed', (evt) =>
+                this.onMaterialDestroyed(evt.source as Material)
             );
         } else {
             this.updatePipeline(perMaterial, mesh);

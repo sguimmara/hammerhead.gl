@@ -12,16 +12,16 @@ describe('constructor', () => {
     });
 });
 
-describe('destroy', () => {
-    it('should dispatch a "destroy" event', () => {
+describe('destroyed', () => {
+    it('should dispatch a "destroyed" event', () => {
         const obj = new Node();
 
         const handler = vi.fn();
-        obj.on('destroy', handler);
+        obj.on('destroyed', handler);
 
         obj.destroy();
 
-        expect(handler).toHaveBeenCalledWith({ emitter: obj });
+        expect(handler).toHaveBeenCalledWith({ source: obj });
     });
 });
 
@@ -50,7 +50,7 @@ describe('add', () => {
 
         parent.add(child);
 
-        expect(handler).toHaveBeenCalledWith({ emitter: child, value: { old: undefined, new: parent } });
+        expect(handler).toHaveBeenCalledWith({ source: child, value: { old: undefined, new: parent } });
     });
 });
 

@@ -126,7 +126,7 @@ class TextureStore implements Service {
             return this.textures.get(texture.id);
         }
 
-        texture.on("destroy", () => this.onTextureDestroyed(texture));
+        texture.on('destroyed', () => this.onTextureDestroyed(texture));
 
         let usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST;
         if (texture.source.isGPUImage) {

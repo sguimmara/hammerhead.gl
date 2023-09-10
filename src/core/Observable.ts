@@ -1,18 +1,30 @@
 export type EventHandler<TSource, T> = (event: ObservableEvent<TSource, T>) => void;
 
-export class ObservableEvent<TSource, T> {
-    readonly emitter: TSource;
-    readonly value: T;
+/**
+ * An event emitted by an {@link Observable}
+ * @param TSource The type of the event source.
+ * @param TArgs The type of the event argument.
+ */
+export class ObservableEvent<TSource, TArgs> {
+    /**
+     * The source of the event.
+     */
+    readonly source: TSource;
+    /**
+     * The optional argument of the event.
+     */
+    readonly value: TArgs;
 
-    constructor(emitter: TSource, value: T) {
-        this.emitter = emitter;
+    constructor(source: TSource, value: TArgs) {
+        this.source = source;
         this.value = value;
     }
 }
 
 /**
  * Trait for objects that emit events.
- * @typeParam Events The type of events.
+ * @param TSource The type of the source.
+ * @param Events The type of events.
  */
 
 export interface Observable<TSource, Events> {
@@ -21,7 +33,7 @@ export interface Observable<TSource, Events> {
      * @param type The event type.
      * @param handler The event handler.
      * @example
-     * myObservable.on('destroy', evt => console.info(`${evt.emitter} was destroyed`));
+     * myObservable.on('destroyed', evt => console.info(`${evt.source} was destroyed`));
      */
-    on<K extends keyof Events>(type: K, handler: EventHandler<TSource, Events[K]>): void;
+    on<Type extends keyof Events>(type: Type, handler: EventHandler<TSource, Events[Type]>): void;
 }
