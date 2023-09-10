@@ -1,5 +1,5 @@
-import { Sampler } from "@/textures";
-import Uniform from "./Uniform";
+import { Sampler } from '@/textures';
+import Uniform from './Uniform';
 
 /**
  * A uniform that maps to a GPU sampler.
@@ -7,6 +7,7 @@ import Uniform from "./Uniform";
 export default class SamplerUniform implements Uniform<Sampler> {
     value: Sampler;
     private version = 0;
+    readonly type = 'sampler';
 
     constructor() {
         this.value = new Sampler();

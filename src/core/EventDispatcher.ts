@@ -1,4 +1,4 @@
-import { EventHandler, Observable, ObservableEvent } from "./Observable";
+import { EventHandler, Observable, ObservableEvent } from './Observable';
 
 /**
  * Implementation of {@link Observable}

@@ -1,10 +1,9 @@
-import chroma, { Color } from "chroma-js";
-import fragmentShader from "./SolidColor.frag.wgsl";
-import wireframeVertexShader from "./wireframe.vert.wgsl";
-import lineVertexShader from "./line-list.vert.wgsl";
-import Material, { Primitive } from "./Material";
+import { Color } from 'chroma-js';
+import fragmentShader from './SolidColor.frag.wgsl';
+import wireframeVertexShader from './wireframe.vert.wgsl';
+import lineVertexShader from './line-list.vert.wgsl';
+import Material, { Primitive } from './Material';
 
-const WHITE = chroma("white");
 /**
  * A simple material with no support for lighting.
  */
@@ -30,8 +29,8 @@ class LineMaterial extends Material {
             primitive: params.primitive,
         });
 
-        this.colorBinding = this.layout.getUniformBinding("color");
-        this.offsetBinding = this.layout.getUniformBinding("offset");
+        this.colorBinding = this.layout.getUniformBinding('color');
+        this.offsetBinding = this.layout.getUniformBinding('offset');
 
         this.withLineOffset(0.002);
     }

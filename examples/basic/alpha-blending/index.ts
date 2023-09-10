@@ -1,25 +1,25 @@
-import chroma from "chroma-js";
-import { Context } from "hammerhead.gl/core";
-import { Quad, ScreenQuad, WireQuad } from "hammerhead.gl/geometries";
+import chroma from 'chroma-js';
+import { Context } from 'hammerhead.gl/core';
+import { Quad, ScreenQuad, WireQuad } from 'hammerhead.gl/geometries';
 import {
     BasicMaterial,
     Material,
-} from "hammerhead.gl/materials";
-import { Camera, MeshObject, Node } from "hammerhead.gl/scene";
+} from 'hammerhead.gl/materials';
+import { Camera, MeshObject, Node } from 'hammerhead.gl/scene';
 
-import { load8bitImage } from "../../lib";
-import { Pane } from "tweakpane";
-import { BlendFactor, BlendOp } from "hammerhead.gl/materials/Material";
+import { load8bitImage } from '../../lib';
+import { Pane } from 'tweakpane';
+import { BlendFactor, BlendOp } from 'hammerhead.gl/materials/Material';
 
-let canvas = document.getElementById("canvas") as HTMLCanvasElement;
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
 async function main() {
-    const checkerboard = await load8bitImage("/checkerboard.jpg");
-    const explosion = await load8bitImage("/explosion.png");
+    const checkerboard = await load8bitImage('/checkerboard.jpg');
+    const explosion = await load8bitImage('/explosion.png');
 
     const context = await Context.create(canvas);
     const renderer = context.renderer;
-    renderer.clearColor = chroma("cyan");
+    renderer.clearColor = chroma('cyan');
 
     const background = new MeshObject({
         material: new BasicMaterial()
@@ -36,7 +36,7 @@ async function main() {
     });
 
     const wireframe = new MeshObject({
-        material: new BasicMaterial().setDiffuseColor(chroma("yellow")),
+        material: new BasicMaterial().setDiffuseColor(chroma('yellow')),
         mesh: new WireQuad(),
     });
 
@@ -47,7 +47,7 @@ async function main() {
     root.add(background);
     root.add(tile);
 
-    const camera = new Camera("orthographic");
+    const camera = new Camera('orthographic');
 
     function render() {
         renderer.render(root, camera);

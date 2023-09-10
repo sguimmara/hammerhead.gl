@@ -1,21 +1,21 @@
-import chroma from "chroma-js";
-import { Box3, Context, MathUtils } from "hammerhead.gl/core";
+import chroma from 'chroma-js';
+import { Box3, Context, MathUtils } from 'hammerhead.gl/core';
 import {
     BasicMaterial, LineMaterial,
-} from "hammerhead.gl/materials";
-import { Camera, MeshObject, Node } from "hammerhead.gl/scene";
-import { vec3 } from "wgpu-matrix";
+} from 'hammerhead.gl/materials';
+import { Camera, MeshObject, Node } from 'hammerhead.gl/scene';
+import { vec3 } from 'wgpu-matrix';
 
-import { frameBounds, loadPLYModel, wait } from "../../lib";
+import { frameBounds, loadPLYModel, wait } from '../../lib';
 
-let canvas = document.getElementById("canvas") as HTMLCanvasElement;
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
 async function main() {
     const context = await Context.create(canvas);
     const renderer = context.renderer;
-    renderer.clearColor = chroma("gray");
+    renderer.clearColor = chroma('gray');
 
-    const mesh = await loadPLYModel("/files/hammerhead.ply");
+    const mesh = await loadPLYModel('/files/hammerhead.ply');
 
     function makeMesh(x: number, y: number, z: number, color: string) {
         const object = new MeshObject({
@@ -26,11 +26,11 @@ async function main() {
         object.label = color;
 
         const wireframeMesh = new MeshObject({
-            material: new LineMaterial().setColor(chroma.mix(chroma("black"), color, 0.2)),
+            material: new LineMaterial().setColor(chroma.mix(chroma('black'), color, 0.2)),
             mesh,
         });
 
-        wireframeMesh.label = color + "/wireframe";
+        wireframeMesh.label = color + '/wireframe';
 
         object.add(wireframeMesh);
         object.transform.setPosition(x, y, z);
@@ -39,24 +39,24 @@ async function main() {
     }
 
     const root = new Node();
-    root.label = "root";
+    root.label = 'root';
     const left = new Node();
-    left.label = "left";
+    left.label = 'left';
     const right = new Node();
-    right.label = "right";
+    right.label = 'right';
     root.transform.setPosition(0, 100, 0);
     left.transform.setPosition(0, -100, -100);
     right.transform.setPosition(0, -100, 100);
     root.add(left);
     root.add(right);
-    root.add(makeMesh(0, 0, 0, "red"));
+    root.add(makeMesh(0, 0, 0, 'red'));
 
-    left.add(makeMesh(0, 0, -50, "yellow"));
-    left.add(makeMesh(0, 0, +50, "orange"));
-    right.add(makeMesh(0, 0, -50, "lightgreen"));
-    right.add(makeMesh(0, 0, +50, "cyan"));
+    left.add(makeMesh(0, 0, -50, 'yellow'));
+    left.add(makeMesh(0, 0, +50, 'orange'));
+    right.add(makeMesh(0, 0, -50, 'lightgreen'));
+    right.add(makeMesh(0, 0, +50, 'cyan'));
 
-    const camera = new Camera("perspective");
+    const camera = new Camera('perspective');
     camera.nearPlane = 1;
     camera.farPlane = 10000;
 
@@ -105,7 +105,7 @@ async function main() {
     }
 
     requestAnimationFrame(renderLoop);
-    context.on("resized", render);
+    context.on('resized', render);
 
     const loop = [
         root,
@@ -118,7 +118,7 @@ async function main() {
     ];
 
     let i = 0;
-    while (true) {
+    for (;;) {
         await animateRotation(loop[i]);
         i++;
         if (i === loop.length) {

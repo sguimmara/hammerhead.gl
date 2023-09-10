@@ -1,4 +1,4 @@
-import { ShaderLayout } from "./ShaderLayout";
+import { ShaderLayout } from './ShaderLayout';
 
 export default class ShaderInfo {
     readonly fragment: string;
@@ -9,7 +9,7 @@ export default class ShaderInfo {
         fragment: string,
         vertex: string,
         layout: ShaderLayout,
-    }) {
+    }) {
         this.fragment = params.fragment;
         this.vertex = params.vertex;
         this.layout = params.layout;

@@ -1,6 +1,6 @@
-import { TextureUniform } from "@/materials/uniforms";
-import { Texture } from "@/textures";
-import { describe, expect, it } from "vitest";
+import { TextureUniform } from '@/materials/uniforms';
+import { Texture } from '@/textures';
+import { describe, expect, it } from 'vitest';
 
 describe('constructor', () => {
     it('should assign the value', () => {

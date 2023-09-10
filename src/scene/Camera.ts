@@ -29,10 +29,10 @@ export default class Camera extends Node {
 
     updateProjectionMatrix(aspect: number) {
         switch (this.mode) {
-            case "orthographic":
+            case 'orthographic':
                 this.projectionMatrix = mat4.ortho(-1, +1, -1, +1, -1, +1, this.projectionMatrix);
                 break;
-            case "perspective":
+            case 'perspective':
                 this.projectionMatrix = mat4.perspective(this.fieldOfView, aspect, this.nearPlane, this.farPlane, this.projectionMatrix);
                 break;
         }

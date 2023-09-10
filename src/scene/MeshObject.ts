@@ -1,9 +1,9 @@
-import { Box3 } from "@/core";
-import { Mesh } from "@/geometries";
-import { Material } from "@/materials";
-import { vec3 } from "wgpu-matrix";
+import { Box3 } from '@/core';
+import { Mesh } from '@/geometries';
+import { Material } from '@/materials';
+import { vec3 } from 'wgpu-matrix';
 
-import Node from "./Node";
+import Node from './Node';
 
 /**
  * A renderable {@link Node} that combines a {@link Material}

@@ -1,9 +1,9 @@
-import { Box3, Update } from "@/core";
-import { WireCube } from "@/geometries";
-import { LineMaterial } from "@/materials";
-import { Primitive } from "@/materials/Material";
-import { MeshObject, Node } from "@/scene";
-import chroma, { Color } from "chroma-js";
+import { Box3, Update } from '@/core';
+import { WireCube } from '@/geometries';
+import { LineMaterial } from '@/materials';
+import { Primitive } from '@/materials/Material';
+import { MeshObject, Node } from '@/scene';
+import chroma, { Color } from 'chroma-js';
 
 /**
  * Displays the bounds of an object.
@@ -14,7 +14,7 @@ export default class BoundsHelper extends MeshObject implements Update {
     constructor(params: { source: Node; color?: Color }) {
         super({
             material: new LineMaterial({ primitive: Primitive.Lines }).setColor(
-                params.color ?? chroma("yellow")
+                params.color ?? chroma('yellow')
             ),
             mesh: new WireCube(),
         });

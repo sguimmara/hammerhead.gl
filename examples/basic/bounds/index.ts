@@ -5,7 +5,7 @@ import { BoundsHelper } from 'hammerhead.gl/helpers';
 import { BasicMaterial, LineMaterial } from 'hammerhead.gl/materials';
 import { frameBounds, loadPLYModel } from '../../lib';
 
-let canvas = document.getElementById('canvas') as HTMLCanvasElement;
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
 async function main() {
     const context = await Context.create(canvas);

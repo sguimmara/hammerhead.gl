@@ -1,7 +1,7 @@
-import { Visitor } from "@/core";
-import { ScalarUniform } from "@/materials/uniforms";
-import { describe, expect, it } from "vitest";
-import { mock } from "vitest-mock-extended";
+import { Visitor } from '@/core';
+import { ScalarUniform } from '@/materials/uniforms';
+import { describe, expect, it } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
 describe('constructor', () => {
     it('should assign properties', () => {

@@ -1,14 +1,14 @@
-import { Versioned } from "@/core";
-import { describe, expect, it } from "vitest";
+import { Versioned } from '@/core';
+import { describe, expect, it } from 'vitest';
 
-describe("Versioned", () => {
-    describe("value", () => {
-        it("should return the underlying value", () => {
+describe('Versioned', () => {
+    describe('value', () => {
+        it('should return the underlying value', () => {
             const vNumber = new Versioned(19);
             expect(vNumber.value).toEqual(19);
 
-            const vString = new Versioned("hello");
-            expect(vString.value).toEqual("hello");
+            const vString = new Versioned('hello');
+            expect(vString.value).toEqual('hello');
 
             const obj = { foo: 3 };
             const vObject = new Versioned(obj);

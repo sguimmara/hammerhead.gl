@@ -1,13 +1,13 @@
-import chroma from "chroma-js";
+import chroma from 'chroma-js';
 
-import Bucket from "./Bucket";
-import RenderCommand from "./RenderCommand";
-import RenderPipeline from "./RenderPipeline";
-import { Container } from "@/core";
-import { PostProcessingMaterial } from "@/materials/postprocessing";
-import { Node, MeshObject, Camera } from "@/scene";
+import Bucket from './Bucket';
+import RenderCommand from './RenderCommand';
+import RenderPipeline from './RenderPipeline';
+import { Container } from '@/core';
+import { PostProcessingMaterial } from '@/materials/postprocessing';
+import { Node, MeshObject, Camera } from '@/scene';
 
-const DEFAULT_CLEAR_COLOR = chroma("black");
+const DEFAULT_CLEAR_COLOR = chroma('black');
 
 const tmpBuckets: Map<number, Bucket> = new Map();
 
@@ -84,7 +84,7 @@ class Renderer {
      */
     render(root: Node | null, camera: Camera) {
         if (!camera) {
-            throw new Error("no camera specified");
+            throw new Error('no camera specified');
         }
 
         camera.transform.updateWorldMatrix(camera.parent?.transform);

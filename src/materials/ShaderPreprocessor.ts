@@ -1,12 +1,12 @@
-import { BindGroup } from "@/core";
-import AttributeType from "./AttributeType";
-import ShaderError from "./ShaderError";
-import ShaderInfo from "./ShaderInfo";
-import UniformType from "./UniformType";
-import constants from "./chunks/constants.wgsl";
-import effectHeader from "./chunks/effect.header.wgsl";
-import { AttributeInfo, ShaderLayout, UniformInfo } from "./ShaderLayout";
-import { Attribute } from "@/geometries";
+import { BindGroup } from '@/core';
+import AttributeType from './AttributeType';
+import ShaderError from './ShaderError';
+import ShaderInfo from './ShaderInfo';
+import UniformType from './UniformType';
+import constants from './chunks/constants.wgsl';
+import effectHeader from './chunks/effect.header.wgsl';
+import { AttributeInfo, ShaderLayout, UniformInfo } from './ShaderLayout';
+import { Attribute } from '@/geometries';
 
 const UNIFORM_DECLARATION = /@group\((global|object|material|vertex)\)\s*@binding\(auto\)\s*(var|var<uniform>|var<storage,\s*read>)\s*(\w+)\s*:\s*(mat4x4f|vec2f|vec3f|vec4f|f32|u32|array<(u32|f32)>|sampler|texture_2d<f32>|GlobalValues)\s*;/g;
 const ATTRIBUTE_DECLARATION = /@location\(auto\)\s*(\w+)\s*:\s*(\w+)/g;
@@ -82,36 +82,36 @@ function getChunk(key: string): string {
 function getString(type: AttributeType): string {
     switch (type) {
         case AttributeType.Vec2:
-            return "vec2f";
+            return 'vec2f';
         case AttributeType.Vec3:
-            return "vec3f";
+            return 'vec3f';
         case AttributeType.Vec4:
-            return "vec4f";
+            return 'vec4f';
     }
 }
 
 function toUniformType(type: UniformType): string {
     switch (type) {
         case UniformType.Texture2D:
-            return "texture_2d<f32>";
+            return 'texture_2d<f32>';
         case UniformType.Sampler:
-            return "sampler";
+            return 'sampler';
         case UniformType.Vec2:
-            return "vec2f";
+            return 'vec2f';
         case UniformType.Vec3:
-            return "vec3f";
+            return 'vec3f';
         case UniformType.Vec4:
-            return "vec4f";
+            return 'vec4f';
         case UniformType.Mat4:
-            return "mat4x4f";
+            return 'mat4x4f';
         case UniformType.Float32:
-            return "f32";
+            return 'f32';
         case UniformType.GlobalValues:
-            return "GlobalValues";
+            return 'GlobalValues';
         case UniformType.U32Array:
-            return "array<u32>";
+            return 'array<u32>';
         case UniformType.F32Array:
-            return "array<f32>";
+            return 'array<f32>';
         default:
             throw new ShaderError(`unimplemented uniform type: ${type}`);
     }
@@ -119,11 +119,11 @@ function toUniformType(type: UniformType): string {
 
 function parseAttributeType(text: string): AttributeType {
     switch (text) {
-        case "vec4f":
+        case 'vec4f':
             return AttributeType.Vec4;
-        case "vec3f":
+        case 'vec3f':
             return AttributeType.Vec3;
-        case "vec2f":
+        case 'vec2f':
             return AttributeType.Vec2;
         default:
             throw new ShaderError(`invalid attribute type: ${text}`);
@@ -132,25 +132,25 @@ function parseAttributeType(text: string): AttributeType {
 
 function parseUniformType(text: string): UniformType {
     switch (text) {
-        case "sampler":
+        case 'sampler':
             return UniformType.Sampler;
-        case "array<f32>":
+        case 'array<f32>':
             return UniformType.F32Array;
-        case "array<u32>":
+        case 'array<u32>':
             return UniformType.U32Array;
-        case "f32":
+        case 'f32':
             return UniformType.Float32;
-        case "vec4f":
+        case 'vec4f':
             return UniformType.Vec4;
-        case "vec3f":
+        case 'vec3f':
             return UniformType.Vec3;
-        case "vec2f":
+        case 'vec2f':
             return UniformType.Vec2;
-        case "mat4x4f":
+        case 'mat4x4f':
             return UniformType.Mat4;
-        case "texture_2d<f32>":
+        case 'texture_2d<f32>':
             return UniformType.Texture2D;
-        case "GlobalValues":
+        case 'GlobalValues':
             return UniformType.GlobalValues;
         default:
             throw new ShaderError(`invalid uniform type: ${text}`);
@@ -159,13 +159,13 @@ function parseUniformType(text: string): UniformType {
 
 function validateAttribute(name: string): Attribute {
     switch (name as Attribute) {
-        case "position":
-        case "normal":
-        case "texcoord":
-        case "texcoord1":
-        case "texcoord2":
-        case "tangent":
-        case "color":
+        case 'position':
+        case 'normal':
+        case 'texcoord':
+        case 'texcoord1':
+        case 'texcoord2':
+        case 'tangent':
+        case 'color':
             return name as Attribute;
         default:
             throw new ShaderError(`unrecognized attribute name: ${name}`);
@@ -257,7 +257,7 @@ function assignUniformBindings(
     vertexUniforms: UniformDeclaration[],
     fragmentUniforms: UniformDeclaration[]
 ) {
-    let bindings = new Map<BindGroup, number>();
+    const bindings = new Map<BindGroup, number>();
     bindings.set(BindGroup.GlobalValues, 0);
     bindings.set(BindGroup.MaterialUniforms, 0);
     bindings.set(BindGroup.VertexBufferUniforms, 0);
@@ -416,5 +416,5 @@ export default {
     checkUniformDeclarations,
 };
 
-setChunk("constants", constants);
-setChunk("effectHeader", effectHeader);
+setChunk('constants', constants);
+setChunk('effectHeader', effectHeader);

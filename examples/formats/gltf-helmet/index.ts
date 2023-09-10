@@ -1,13 +1,12 @@
-import { Context, MathUtils } from "hammerhead.gl/core";
-import { Camera, Node } from "hammerhead.gl/scene";
-import GLTFLoader from "./gltf";
-import { frameBounds } from "../../lib";
-import Inspector from "../../Inspector";
-import { Renderer } from "hammerhead.gl/renderer";
-import { Colorimetry } from "hammerhead.gl/materials/postprocessing";
-import { BoundsHelper } from "hammerhead.gl/helpers";
+import { Context, MathUtils } from 'hammerhead.gl/core';
+import { Camera, Node } from 'hammerhead.gl/scene';
+import GLTFLoader from './gltf';
+import { frameBounds } from '../../lib';
+import Inspector from '../../Inspector';
+import { Renderer } from 'hammerhead.gl/renderer';
+import { BoundsHelper } from 'hammerhead.gl/helpers';
 
-let canvas = document.getElementById("canvas") as HTMLCanvasElement;
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
 async function main() {
     const model = 'DamagedHelmet';
@@ -25,7 +24,7 @@ async function main() {
     root.add(scene);
     root.add(boundsHelper);
 
-    const camera = new Camera("perspective");
+    const camera = new Camera('perspective');
     frameBounds(root.getWorldBounds(), camera);
 
     function render() {
@@ -33,7 +32,6 @@ async function main() {
     }
 
     let now = performance.now();
-    let rotation = 0;
 
     function renderLoop() {
         boundsHelper.update();
@@ -41,7 +39,6 @@ async function main() {
         const current = performance.now();
         const dt = (current - now) / 1000;
         const degrees = 40 * dt;
-        rotation += degrees;
         now = current;
         scene.transform.rotateY(MathUtils.deg2rad(degrees));
         requestAnimationFrame(renderLoop);
@@ -49,9 +46,9 @@ async function main() {
 
     requestAnimationFrame(renderLoop);
 
-    context.on("resized", render);
+    context.on('resized', render);
 
-    const inspector = new Inspector(context);
+    new Inspector(context);
 }
 
 main();

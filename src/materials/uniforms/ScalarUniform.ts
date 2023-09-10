@@ -1,5 +1,5 @@
-import { Visitor } from "../../core/Visitable";
-import BufferUniform from "./BufferUniform";
+import { Visitor } from '../../core/Visitable';
+import BufferUniform from './BufferUniform';
 
 /**
  * Uniform that holds a single number.

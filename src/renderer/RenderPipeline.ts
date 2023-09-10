@@ -33,9 +33,9 @@ class RenderPipeline implements Destroy {
         this.globalValues = new GlobalValues();
         this.globalUniform = new ObjectUniform(this.globalValues);
         this.pipelineManager =
-            container.get<PipelineManager>("PipelineManager");
-        this.bufferStore = container.get<BufferStore>("BufferStore");
-        this.textureStore = container.get<TextureStore>("TextureStore");
+            container.get<PipelineManager>('PipelineManager');
+        this.bufferStore = container.get<BufferStore>('BufferStore');
+        this.textureStore = container.get<TextureStore>('TextureStore');
         this.sceneStage = new RenderSceneStage(
             this.device,
             this.bufferStore,
@@ -65,8 +65,8 @@ class RenderPipeline implements Destroy {
 
     private createSwapTexture(reference: GPUTexture) {
         return this.device.createTexture({
-            label: "swap",
-            dimension: "2d",
+            label: 'swap',
+            dimension: '2d',
             format: reference.format,
             size: [reference.width, reference.height],
             usage:

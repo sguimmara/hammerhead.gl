@@ -1,10 +1,10 @@
-import { Material } from "@/materials";
-import { describe, expect, it } from "vitest";
+import { Material } from '@/materials';
+import { describe, expect, it } from 'vitest';
 
 describe('Version', () => {
     describe('incrementVersion', () => {
         it('should increment version', () => {
-            const mat = new Material({ fragmentShader: "", vertexShader: "" });
+            const mat = new Material({ fragmentShader: '', vertexShader: '' });
 
             const version = mat.getVersion();
 
@@ -15,23 +15,23 @@ describe('Version', () => {
     });
 });
 
-describe("constructor", () => {
-    it("should assign a unique id", () => {
-        const mat1 = new Material({ fragmentShader: "", vertexShader: "" });
-        const mat2 = new Material({ fragmentShader: "", vertexShader: "" });
-        const mat3 = new Material({ fragmentShader: "", vertexShader: "" });
+describe('constructor', () => {
+    it('should assign a unique id', () => {
+        const mat1 = new Material({ fragmentShader: '', vertexShader: '' });
+        const mat2 = new Material({ fragmentShader: '', vertexShader: '' });
+        const mat3 = new Material({ fragmentShader: '', vertexShader: '' });
 
         expect(mat1.id).not.toEqual(mat2.id);
         expect(mat1.id).not.toEqual(mat3.id);
     });
 
-    it("should honor rendering parameters", () => {
+    it('should honor rendering parameters', () => {
         const cullingMode = 'front' as GPUCullMode;
         const renderOrder = 5;
 
         const mat = new Material({
-            fragmentShader: "",
-            vertexShader: "",
+            fragmentShader: '',
+            vertexShader: '',
             cullingMode,
             renderOrder,
         });

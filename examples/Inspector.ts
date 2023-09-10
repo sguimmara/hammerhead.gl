@@ -1,6 +1,6 @@
-import { Context } from "hammerhead.gl/core";
-import { BufferStore, TextureStore } from "hammerhead.gl/renderer";
-import { Pane } from "tweakpane";
+import { Context } from 'hammerhead.gl/core';
+import { BufferStore, TextureStore } from 'hammerhead.gl/renderer';
+import { Pane } from 'tweakpane';
 
 export default class Inspector {
     private readonly bufferStore: BufferStore;
@@ -10,8 +10,8 @@ export default class Inspector {
     constructor(context: Context) {
         this.context = context;
         const container = context.container;
-        this.bufferStore = container.get<BufferStore>("BufferStore");
-        this.textureStore = container.get<TextureStore>("TextureStore");
+        this.bufferStore = container.get<BufferStore>('BufferStore');
+        this.textureStore = container.get<TextureStore>('TextureStore');
 
         const pane = new Pane();
 
@@ -38,7 +38,7 @@ export default class Inspector {
 
     addTextureFolder(pane: Pane) {
         const folder = pane.addFolder({
-            title: "textures",
+            title: 'textures',
         });
 
         folder.addMonitor(this.textureStore, 'textureCount', {
@@ -47,9 +47,9 @@ export default class Inspector {
         });
     }
 
-    addBufferFolder(pane: Pane) {
+    addBufferFolder(pane: Pane) {
         const bufferFolder = pane.addFolder({
-            title: "buffers",
+            title: 'buffers',
         });
 
         const bufferParams = this.bufferStore.getStats();

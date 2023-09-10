@@ -1,24 +1,24 @@
 import chroma from 'chroma-js';
 import { Context, MathUtils } from 'hammerhead.gl/core';
-import { BasicMaterial, LineMaterial } from 'hammerhead.gl/materials';
+import { LineMaterial } from 'hammerhead.gl/materials';
 import { Camera, MeshObject } from 'hammerhead.gl/scene';
 
 import { frameObject, loadPLYModel } from '../../lib';
 import { Primitive } from 'hammerhead.gl/materials/Material';
 
-let canvas = document.getElementById("canvas") as HTMLCanvasElement;
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
 async function main() {
     const context = await Context.create(canvas);
     const renderer = context.renderer;
 
-    const mesh = await loadPLYModel("/files/hammerhead.ply");
+    const mesh = await loadPLYModel('/files/hammerhead.ply');
 
-    const material = new LineMaterial({ primitive: Primitive.WireTriangles }).setColor(chroma("cyan"));
+    const material = new LineMaterial({ primitive: Primitive.WireTriangles }).setColor(chroma('cyan'));
 
     const shark = new MeshObject({ mesh, material });
 
-    const camera = new Camera("perspective");
+    const camera = new Camera('perspective');
     frameObject(shark, camera);
 
     function render() {
@@ -39,7 +39,7 @@ async function main() {
 
     requestAnimationFrame(renderLoop);
 
-    context.on("resized", render);
+    context.on('resized', render);
 }
 
 main();

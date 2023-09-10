@@ -1,9 +1,9 @@
-import chroma, { Color } from "chroma-js";
-import fragmentShader from "./SolidColor.frag.wgsl";
-import vertexShader from "./points.vert.wgsl";
-import Material, { Primitive } from "./Material";
+import chroma, { Color } from 'chroma-js';
+import fragmentShader from './SolidColor.frag.wgsl';
+import vertexShader from './points.vert.wgsl';
+import Material, { Primitive } from './Material';
 
-const WHITE = chroma("white");
+const WHITE = chroma('white');
 /**
  * Renders points as quads.
  */
@@ -25,8 +25,8 @@ class PointMaterial extends Material {
             primitive: Primitive.Quads,
         });
 
-        this.colorBinding = this.layout.getUniformBinding("color");
-        this.pointSizeBinding = this.layout.getUniformBinding("pointSize");
+        this.colorBinding = this.layout.getUniformBinding('color');
+        this.pointSizeBinding = this.layout.getUniformBinding('pointSize');
 
         this.setPointSize(10);
         this.setColor(WHITE);

@@ -1,6 +1,5 @@
 import { Destroy, Service } from '@/core';
 import { Attribute, Mesh } from '@/geometries';
-import { BufferUniform } from '@/materials/uniforms';
 import BufferWriter from './BufferWriter';
 import MemoryManager from './MemoryManager';
 import { UntypedBufferUniform } from '@/materials/uniforms/BufferUniform';

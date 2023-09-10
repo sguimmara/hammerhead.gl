@@ -1,13 +1,13 @@
-import { Container, Observable, EventDispatcher, EventHandler } from "@/core";
+import { Container, Observable, EventDispatcher, EventHandler } from '@/core';
 import {
     BufferStore,
     PipelineManager,
     Renderer,
     TextureStore,
-} from "@/renderer";
-import MemoryManager from "@/renderer/MemoryManager";
-import Configuration from "./Configuration";
-import { Vec2, vec2 } from "wgpu-matrix";
+} from '@/renderer';
+import MemoryManager from '@/renderer/MemoryManager';
+import Configuration from './Configuration';
+import { Vec2, vec2 } from 'wgpu-matrix';
 
 export interface Events {
     'resized': Vec2;
@@ -66,7 +66,7 @@ export default class Context implements Observable<Context, Events> {
                     height,
                     this.device.limits.maxTextureDimension2D
                 );
-                this.dispatcher.dispatch("resized", vec2.create(canvas.width, canvas.height));
+                this.dispatcher.dispatch('resized', vec2.create(canvas.width, canvas.height));
             }
         });
 
@@ -87,7 +87,7 @@ export default class Context implements Observable<Context, Events> {
      * @param canvas The canvas.
      */
     static async create(canvas: HTMLCanvasElement, configuration?: Configuration): Promise<Context> {
-        const context = canvas.getContext("webgpu");
+        const context = canvas.getContext('webgpu');
         const adapter = await navigator.gpu?.requestAdapter();
         const device = await adapter?.requestDevice();
         const format = navigator.gpu.getPreferredCanvasFormat();
@@ -96,7 +96,7 @@ export default class Context implements Observable<Context, Events> {
             format,
         });
         if (device == null) {
-            throw new Error("WebGPU is not supported on this browser.");
+            throw new Error('WebGPU is not supported on this browser.');
         }
 
         return new Context(context, device, canvas, configuration ?? Configuration.default);

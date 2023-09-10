@@ -1,16 +1,16 @@
-import { Color } from "chroma-js";
-import { Vec2, Vec4, vec4 } from "wgpu-matrix";
+import { Color } from 'chroma-js';
+import { Vec2, Vec4, vec4 } from 'wgpu-matrix';
 
-import { ShaderLayout, UniformInfo } from "./ShaderLayout";
-import ShaderPreprocessor from "./ShaderPreprocessor";
+import { ShaderLayout, UniformInfo } from './ShaderLayout';
+import ShaderPreprocessor from './ShaderPreprocessor';
 import {
     Observable,
     Destroy,
     EventDispatcher,
     EventHandler,
     Version,
-} from "@/core";
-import { Sampler, Texture } from "@/textures";
+} from '@/core';
+import { Sampler, Texture } from '@/textures';
 import {
     TextureUniform,
     SamplerUniform,
@@ -21,54 +21,54 @@ import {
     Mat4Uniform,
     Uniform,
     BufferUniform,
-} from "./uniforms";
-import UniformType from "./UniformType";
-import GlobalValues from "@/renderer/GlobalValues";
-import { UntypedBufferUniform } from "./uniforms/BufferUniform";
-import { UntypedUniform } from "./uniforms/Uniform";
+} from './uniforms';
+import UniformType from './UniformType';
+import GlobalValues from '@/renderer/GlobalValues';
+import { UntypedBufferUniform } from './uniforms/BufferUniform';
+import { UntypedUniform } from './uniforms/Uniform';
 
 let MATERIAL_ID = 0;
 
 export enum BlendOp {
-    Add = "add",
-    Subtract = "subtract",
-    ReverseSubtract = "reverse-subtract",
-    Min = "min",
-    Max = "max",
+    Add = 'add',
+    Subtract = 'subtract',
+    ReverseSubtract = 'reverse-subtract',
+    Min = 'min',
+    Max = 'max',
 }
 
 export enum Primitive {
-    Triangles = "triangles",
-    WireTriangles = "wire-triangles",
-    Quads = "quads",
-    Lines = "lines",
+    Triangles = 'triangles',
+    WireTriangles = 'wire-triangles',
+    Quads = 'quads',
+    Lines = 'lines',
 }
 
 export enum BlendFactor {
-    Zero = "zero",
-    One = "one",
-    Src = "src",
-    OneMinusSrc = "one-minus-src",
-    SrcAlpha = "src-alpha",
-    OneMinusSrcAlpha = "one-minus-src-alpha",
-    Dst = "dst",
-    OneMinusDst = "one-minus-dst",
-    DstAlpha = "dst-alpha",
-    OneMinusDstAlpha = "one-minus-dst-alpha",
-    SrcAlphaSaturated = "src-alpha-saturated",
-    Constant = "constant",
-    OneMinusConstant = "one-minus-constant",
+    Zero = 'zero',
+    One = 'one',
+    Src = 'src',
+    OneMinusSrc = 'one-minus-src',
+    SrcAlpha = 'src-alpha',
+    OneMinusSrcAlpha = 'one-minus-src-alpha',
+    Dst = 'dst',
+    OneMinusDst = 'one-minus-dst',
+    DstAlpha = 'dst-alpha',
+    OneMinusDstAlpha = 'one-minus-dst-alpha',
+    SrcAlphaSaturated = 'src-alpha-saturated',
+    Constant = 'constant',
+    OneMinusConstant = 'one-minus-constant',
 }
 
 export enum DepthCompare {
-    Never = "never",
-    Less = "less",
-    Equal = "equal",
-    LessEqual = "less-equal",
-    Greater = "greater",
-    NotEqual = "not-equal",
-    GreaterEqual = "greater-equal",
-    Always = "always",
+    Never = 'never',
+    Less = 'less',
+    Equal = 'equal',
+    LessEqual = 'less-equal',
+    Greater = 'greater',
+    NotEqual = 'not-equal',
+    GreaterEqual = 'greater-equal',
+    Always = 'always',
 }
 
 export class Blending {
@@ -136,7 +136,7 @@ function allocateUniforms(layout: UniformInfo[]): UntypedUniform[] {
 
 export interface Events {
     'destroyed': undefined;
-};
+}
 
 export default class Material implements Observable<Material, Events>, Destroy, Version {
     private readonly dispatcher: EventDispatcher<Material, Events>;
@@ -177,7 +177,7 @@ export default class Material implements Observable<Material, Events>, Destroy, 
         this.fragmentShader = shaderInfo.fragment;
         this.vertexShader = shaderInfo.vertex;
         this.layout = shaderInfo.layout;
-        this.cullingMode = options.cullingMode ?? "back";
+        this.cullingMode = options.cullingMode ?? 'back';
         this.primitive = options.primitive ?? Primitive.Triangles;
         this.dispatcher = new EventDispatcher<Material, Events>(this);
         this.uniforms = allocateUniforms(this.layout.uniforms);
@@ -277,7 +277,7 @@ export default class Material implements Observable<Material, Events>, Destroy, 
     getBufferUniforms(): UntypedBufferUniform[] {
         const result: UntypedBufferUniform[] = [];
         this.uniforms.forEach((u) => {
-            if (u != null && (u as any).isBufferUniform) {
+            if (u != null && u.type === 'buffer') {
                 result.push(u as UntypedBufferUniform);
             }
         });

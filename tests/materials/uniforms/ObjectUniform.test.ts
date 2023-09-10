@@ -1,10 +1,10 @@
-import { Sized, Version, Visitable, Visitor } from "@/core";
-import { ObjectUniform, Vec3Uniform } from "@/materials/uniforms";
-import { describe, expect, it } from "vitest";
-import { mock } from "vitest-mock-extended";
+import { Sized, Version, Visitable, Visitor } from '@/core';
+import { ObjectUniform } from '@/materials/uniforms';
+import { describe, expect, it } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
-describe("constructor", () => {
-    it("should assign properties", () => {
+describe('constructor', () => {
+    it('should assign properties', () => {
         const obj = mock<Sized & Visitable & Version>();
         const uniform = new ObjectUniform(obj);
         expect(uniform.value).toBe(obj);
@@ -15,8 +15,8 @@ describe("constructor", () => {
     });
 });
 
-describe("visit", () => {
-    it("should delegate the visit to the object", () => {
+describe('visit', () => {
+    it('should delegate the visit to the object', () => {
         const obj = mock<Sized & Visitable & Version>();
         const uniform = new ObjectUniform(obj);
         const visitor = mock<Visitor>();

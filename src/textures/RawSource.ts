@@ -1,4 +1,4 @@
-import Source, { TextureData } from "./Source";
+import Source, { TextureData } from './Source';
 
 /**
  * A {@link Source} that comes from a raw buffer.

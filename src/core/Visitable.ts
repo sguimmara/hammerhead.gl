@@ -1,5 +1,5 @@
-import { Color } from "chroma-js";
-import { Mat4, Vec2, Vec3, Vec4 } from "wgpu-matrix";
+import { Color } from 'chroma-js';
+import { Mat4, Vec2, Vec3, Vec4 } from 'wgpu-matrix';
 
 /**
  * Visitor.

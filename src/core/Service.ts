@@ -1,4 +1,4 @@
-import { Destroy } from "@/core";
+import { Destroy } from '@/core';
 
 /**
  * A service that can be registered and used

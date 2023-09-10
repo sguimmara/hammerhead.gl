@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 import Spherical from '@/core/Spherical';
 
 describe('constructor', () => {

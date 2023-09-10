@@ -7,7 +7,7 @@ import {
     Observable,
     Version,
     Versioned,
-} from "@/core";
+} from '@/core';
 
 let ID = 0;
 
@@ -15,13 +15,13 @@ let ID = 0;
  * The supported vertex attribute names.
  */
 export type Attribute =
-    | "position"
-    | "normal"
-    | "texcoord"
-    | "texcoord1"
-    | "texcoord2"
-    | "tangent"
-    | "color";
+    | 'position'
+    | 'normal'
+    | 'texcoord'
+    | 'texcoord1'
+    | 'texcoord2'
+    | 'tangent'
+    | 'color';
 
 /**
  * The supported event names.
@@ -51,11 +51,11 @@ export default class Mesh implements Version, Destroy, Clone, Observable<Mesh, E
 
 
     get indexFormat(): GPUIndexFormat {
-        return this.indices instanceof Uint16Array ? "uint16" : "uint32";
+        return this.indices instanceof Uint16Array ? 'uint16' : 'uint32';
     }
 
     get vertexCount() {
-        return this.attributes.get("position").value.length / 3;
+        return this.attributes.get('position').value.length / 3;
     }
 
     get indexCount() {
@@ -111,7 +111,7 @@ export default class Mesh implements Version, Destroy, Clone, Observable<Mesh, E
 
     getBounds(): Box3 {
         if (!this.bounds) {
-            this.bounds = Box3.fromPoints(this.attributes.get("position").value);
+            this.bounds = Box3.fromPoints(this.attributes.get('position').value);
         }
         return this.bounds;
     }
@@ -142,7 +142,7 @@ export default class Mesh implements Version, Destroy, Clone, Observable<Mesh, E
     }
 
     setAttribute(type: Attribute, buffer: Float32Array) {
-        if (type === "position") {
+        if (type === 'position') {
             this.bounds = null;
         }
         // TODO should we constrain the buffer size to match the vertex count ?
@@ -165,34 +165,34 @@ export default class Mesh implements Version, Destroy, Clone, Observable<Mesh, E
 
         // Assign default buffers
         switch (type) {
-            case "position":
-                throw new Error("no position attribute");
-            case "normal":
+            case 'position':
+                throw new Error('no position attribute');
+            case 'normal':
                 return this.setAttribute(
                     type,
                     initializeArray(this.vertexCount, 3, 0)
                 );
-            case "texcoord":
+            case 'texcoord':
                 return this.setAttribute(
                     type,
                     initializeArray(this.vertexCount, 2, 0)
                 );
-            case "texcoord1":
+            case 'texcoord1':
                 return this.setAttribute(
                     type,
                     initializeArray(this.vertexCount, 2, 0)
                 );
-            case "texcoord2":
+            case 'texcoord2':
                 return this.setAttribute(
                     type,
                     initializeArray(this.vertexCount, 2, 0)
                 );
-            case "tangent":
+            case 'tangent':
                 return this.setAttribute(
                     type,
                     initializeArray(this.vertexCount, 3, 0)
                 );
-            case "color":
+            case 'color':
                 return this.setAttribute(
                     type,
                     initializeArray(this.vertexCount, 4, 1)

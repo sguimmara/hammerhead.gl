@@ -1,12 +1,12 @@
 export enum FilterMode {
-    Nearest = "nearest",
-    Linear = "linear",
+    Nearest = 'nearest',
+    Linear = 'linear',
 }
 
 export enum AddressMode {
-    ClampToEdge = "clamp-to-edge",
-    Repeat = "repeat",
-    Mirror = "mirror-repeat",
+    ClampToEdge = 'clamp-to-edge',
+    Repeat = 'repeat',
+    Mirror = 'mirror-repeat',
 }
 
 /**

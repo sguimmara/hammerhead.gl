@@ -1,6 +1,6 @@
-import fragmentShader from "./Colorimetry.wgsl";
-import vertexShader from "../screenQuad.vert.wgsl";
-import PostProcessingMaterial from "./PostProcessingMaterial";
+import fragmentShader from './Colorimetry.wgsl';
+import vertexShader from '../screenQuad.vert.wgsl';
+import PostProcessingMaterial from './PostProcessingMaterial';
 
 /**
  * Alters the colorimetry of the image.

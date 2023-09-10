@@ -1,5 +1,5 @@
-import { Sized, Visitable, Version, Visitor } from "@/core";
-import BufferUniform from "./BufferUniform";
+import { Sized, Visitable, Version, Visitor } from '@/core';
+import BufferUniform from './BufferUniform';
 
 type ObjectValue = Sized & Visitable & Version;
 
@@ -25,4 +25,4 @@ export default class ObjectUniform extends BufferUniform<ObjectValue> {
     visit(visitor: Visitor): void {
         this.value.visit(visitor);
     }
-};
+}

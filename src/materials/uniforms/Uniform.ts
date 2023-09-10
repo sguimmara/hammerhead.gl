@@ -1,8 +1,9 @@
-import { Version } from "@/core";
+import { Version } from '@/core';
 
 export interface UntypedUniform {
     value: unknown;
-}
+    type: 'buffer' | 'sampler' | 'texture';
+ }
 
 /**
  * A uniform is a resource bound to a shader that will remain constant for all invocations

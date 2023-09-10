@@ -1,4 +1,4 @@
-import { parse } from "@loaders.gl/core";
+import { parse } from '@loaders.gl/core';
 import * as ply from '@loaders.gl/ply';
 
 import Texture from 'hammerhead.gl/textures/Texture';
@@ -6,7 +6,7 @@ import MeshObject from 'hammerhead.gl/scene/MeshObject';
 import Camera from 'hammerhead.gl/scene/Camera';
 import Box3 from 'hammerhead.gl/core/Box3';
 import ImageSource from 'hammerhead.gl/textures/ImageSource';
-import { Mesh } from "hammerhead.gl/geometries";
+import { Mesh } from 'hammerhead.gl/geometries';
 
 export async function wait(ms: number) {
     return new Promise((resolve) => {

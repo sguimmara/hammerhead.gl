@@ -1,16 +1,16 @@
-import { Context } from "hammerhead.gl/core";
-import { ScreenQuad } from "hammerhead.gl/geometries";
-import { BasicMaterial } from "hammerhead.gl/materials";
-import { Flip } from "hammerhead.gl/materials/postprocessing";
-import { Camera, MeshObject } from "hammerhead.gl/scene";
+import { Context } from 'hammerhead.gl/core';
+import { ScreenQuad } from 'hammerhead.gl/geometries';
+import { BasicMaterial } from 'hammerhead.gl/materials';
+import { Flip } from 'hammerhead.gl/materials/postprocessing';
+import { Camera, MeshObject } from 'hammerhead.gl/scene';
 import { Pane } from 'tweakpane';
 
-import { load8bitImage } from "../../lib";
+import { load8bitImage } from '../../lib';
 
-let canvas = document.getElementById("canvas") as HTMLCanvasElement;
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
 async function main() {
-    const logo = await load8bitImage("/webgpu.png");
+    const logo = await load8bitImage('/webgpu.png');
 
     const context = await Context.create(canvas);
     const renderer = context.renderer;
@@ -26,7 +26,7 @@ async function main() {
         mesh: new ScreenQuad(),
     });
 
-    const camera = new Camera("orthographic");
+    const camera = new Camera('orthographic');
 
     function render() {
         renderer.render(mesh, camera);
@@ -34,7 +34,7 @@ async function main() {
 
     render();
 
-    context.on("resized", render);
+    context.on('resized', render);
 
     const pane = new Pane();
 

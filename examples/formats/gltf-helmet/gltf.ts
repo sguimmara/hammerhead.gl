@@ -1,32 +1,30 @@
-import { MeshObject, Node, Scene } from "hammerhead.gl/scene";
-import { parse } from "@loaders.gl/core";
-import * as gltf from "@loaders.gl/gltf";
-import { Scene as GltfScene } from "@loaders.gl/gltf/dist/lib/types/gltf-postprocessed-schema";
-import { Attribute, Mesh } from "hammerhead.gl/geometries";
-import { Material, MetallicRoughnessMaterial } from "hammerhead.gl/materials";
-import { Transform } from "hammerhead.gl/core";
-import Texture from "hammerhead.gl/textures/Texture";
-import ImageSource from "hammerhead.gl/textures/ImageSource";
-import GL from "./GL";
-
-let DEFAULT_TEXTURE: Texture;
+import { MeshObject, Node, Scene } from 'hammerhead.gl/scene';
+import { parse } from '@loaders.gl/core';
+import * as gltf from '@loaders.gl/gltf';
+import { Scene as GltfScene } from '@loaders.gl/gltf/dist/lib/types/gltf-postprocessed-schema';
+import { Attribute, Mesh } from 'hammerhead.gl/geometries';
+import { Material, MetallicRoughnessMaterial } from 'hammerhead.gl/materials';
+import { Transform } from 'hammerhead.gl/core';
+import Texture from 'hammerhead.gl/textures/Texture';
+import ImageSource from 'hammerhead.gl/textures/ImageSource';
+import GL from './GL';
 
 function mapAttributeName(input: string): Attribute {
     switch (input) {
-        case "POSITION":
-            return "position";
-        case "TEXCOORD_0":
-            return "texcoord";
-        case "NORMAL":
-            return "normal";
-        case "TANGENT":
-            return "tangent";
-        case "TEXCOORD_1":
-            return "texcoord1";
-        case "TEXCOORD_2":
-            return "texcoord2";
+        case 'POSITION':
+            return 'position';
+        case 'TEXCOORD_0':
+            return 'texcoord';
+        case 'NORMAL':
+            return 'normal';
+        case 'TANGENT':
+            return 'tangent';
+        case 'TEXCOORD_1':
+            return 'texcoord1';
+        case 'TEXCOORD_2':
+            return 'texcoord2';
         default:
-            throw new Error("glTF attribute unrecognized: " + input);
+            throw new Error('glTF attribute unrecognized: ' + input);
     }
 }
 
@@ -38,14 +36,13 @@ class GLTFLoader {
     ): Float32Array {
         const bufferView = attribute.bufferView;
         const buf = bufferView.buffer.arrayBuffer;
-        let result;
         let componentSize;
         switch (attribute.type) {
             case 'VEC3': componentSize = 3; break;
             case 'VEC2': componentSize = 2; break;
             case 'VEC4': componentSize = 4; break;
         }
-        result = new Float32Array(buf, bufferView.byteOffset, attribute.count * componentSize);
+        const result = new Float32Array(buf, bufferView.byteOffset, attribute.count * componentSize);
         return result;
     }
 
@@ -76,7 +73,7 @@ class GLTFLoader {
     }
 
     processGeometry(mesh: gltf.GLTFMeshPrimitivePostprocessed): Mesh {
-        const result = new Mesh({ frontFace: "ccw" });
+        const result = new Mesh({ frontFace: 'ccw' });
 
         const indexArray = this.processIndexBuffer(mesh.indices);
 
@@ -108,7 +105,7 @@ class GLTFLoader {
         if (pbr) {
             if (pbr.baseColorTexture) {
                 const albedo = this.processTexture(pbr.baseColorTexture.texture);
-                albedo.format = "rgba8unorm-srgb";
+                albedo.format = 'rgba8unorm-srgb';
                 result.setAlbedoTexture(albedo);
             }
             if (pbr.metallicRoughnessTexture) {
@@ -117,7 +114,7 @@ class GLTFLoader {
                 );
                 result.setMetalRoughnessTexture(metalRoughness);
             }
-            if (pbr.baseColorFactor) {
+            if (pbr.baseColorFactor) {
                 result.setBaseColorFactor(pbr.baseColorFactor);
             }
             if (pbr.metallicFactor) {
@@ -162,10 +159,10 @@ class GLTFLoader {
             const meshes = this.processMesh(node.mesh);
             result.addMany(meshes);
         } else if (node.camera) {
-            throw new Error("not implemented: camera");
+            throw new Error('not implemented: camera');
         }
 
-        result.label = node.name ?? "GLTFNode";
+        result.label = node.name ?? 'GLTFNode';
 
         const xform: Transform = result.transform;
         if (node.scale) {
@@ -188,7 +185,7 @@ class GLTFLoader {
 
     processScene(gltfScene: GltfScene): Scene {
         const scene = new Scene();
-        scene.label = gltfScene.name ?? "GLTFScene";
+        scene.label = gltfScene.name ?? 'GLTFScene';
 
         if (gltfScene.nodes) {
             const children = gltfScene.nodes.map((n) => this.processNode(n));

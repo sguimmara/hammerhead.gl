@@ -1,10 +1,10 @@
-import chroma, { Color } from "chroma-js";
-import fragmentShader from "./BasicMaterial.frag.wgsl";
-import triangleVertexShader from "./default.vert.wgsl";
-import { Texture } from "@/textures";
-import Material from "./Material";
+import chroma, { Color } from 'chroma-js';
+import fragmentShader from './BasicMaterial.frag.wgsl';
+import triangleVertexShader from './default.vert.wgsl';
+import { Texture } from '@/textures';
+import Material from './Material';
 
-const WHITE = chroma("white");
+const WHITE = chroma('white');
 
 /**
  * A simple material with no support for lighting.
@@ -25,9 +25,9 @@ class BasicMaterial extends Material {
             ...params,
         });
 
-        this.colorBinding = this.layout.getUniformBinding("color");
+        this.colorBinding = this.layout.getUniformBinding('color');
         this.colorTextureBinding =
-            this.layout.getUniformBinding("colorTexture");
+            this.layout.getUniformBinding('colorTexture');
 
         this.setDiffuseColor(WHITE);
     }

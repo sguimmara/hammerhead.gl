@@ -1,4 +1,4 @@
-import Node from "./Node";
+import Node from './Node';
 
 /**
  * The root of the scene graph.

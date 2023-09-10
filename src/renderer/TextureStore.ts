@@ -1,5 +1,5 @@
-import { Service } from "@/core";
-import { AddressMode, FilterMode, Sampler, Source, Texture } from "@/textures";
+import { Service } from '@/core';
+import { Sampler, Source, Texture } from '@/textures';
 
 type GPUImage =
     | ImageBitmap
@@ -25,9 +25,9 @@ class TextureStore implements Service {
         this.device = device;
         this.samplers = new Map();
         this.emptyTexture = device.createTexture({
-            label: "empty texture",
-            dimension: "2d",
-            format: "rgba8unorm",
+            label: 'empty texture',
+            dimension: '2d',
+            format: 'rgba8unorm',
             size: [1, 1],
             usage:
                 GPUTextureUsage.COPY_SRC |
@@ -41,7 +41,7 @@ class TextureStore implements Service {
     }
 
     getType(): string {
-        return "TextureStore";
+        return 'TextureStore';
     }
 
     destroy() {

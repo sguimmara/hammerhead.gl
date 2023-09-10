@@ -63,7 +63,7 @@ class PostProcessingStage extends Stage {
 
         this.pipelineManager.bindGlobalUniforms(pass, this.GlobalValues);
         this.bindGroup = this.device.createBindGroup({
-            label: "stage texture bind group",
+            label: 'stage texture bind group',
             layout: this.pipeline.getBindGroupLayout(
                 BindGroup.MaterialUniforms
             ),

@@ -1,4 +1,4 @@
-import Source, { TextureData } from "./Source";
+import Source, { TextureData } from './Source';
 
 type Input =
     | HTMLImageElement
@@ -22,12 +22,12 @@ export default class ImageSource implements Source {
         if (this.image instanceof ImageBitmap) {
             return this.image;
         }
-        const canvas = document.createElement("canvas");
+        const canvas = document.createElement('canvas');
         canvas.width = this.width;
         canvas.height = this.height;
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext('2d');
         if (!ctx) {
-            throw new Error("could not acquire 2d context");
+            throw new Error('could not acquire 2d context');
         }
         ctx.drawImage(this.image, 0, 0);
 

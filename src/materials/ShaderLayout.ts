@@ -1,9 +1,8 @@
-import { BindGroup } from "@/core";
-import ShaderError from "./ShaderError";
-import UniformType from "./UniformType";
-import AttributeType from "./AttributeType";
-import { Attribute } from "@/geometries";
-import { Uniform } from "./uniforms";
+import { BindGroup } from '@/core';
+import ShaderError from './ShaderError';
+import UniformType from './UniformType';
+import AttributeType from './AttributeType';
+import { Attribute } from '@/geometries';
 
 export class UniformInfo {
     readonly binding: number;

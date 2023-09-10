@@ -1,6 +1,6 @@
-import { Vec3, vec3 } from "wgpu-matrix";
-import BufferUniform from "./BufferUniform";
-import { Visitor } from "@/core";
+import { Vec3, vec3 } from 'wgpu-matrix';
+import BufferUniform from './BufferUniform';
+import { Visitor } from '@/core';
 
 /**
  * Uniform that holds a {@link Vec3}

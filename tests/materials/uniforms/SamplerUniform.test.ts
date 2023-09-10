@@ -1,5 +1,5 @@
-import { SamplerUniform } from "@/materials/uniforms";
-import { describe, expect, it } from "vitest";
+import { SamplerUniform } from '@/materials/uniforms';
+import { describe, expect, it } from 'vitest';
 
 describe('constructor', () => {
     it('should assign a sampler', () => {

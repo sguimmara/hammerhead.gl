@@ -1,7 +1,7 @@
-import fragmentShader from "./MetallicRoughness.frag.wgsl";
-import vertexShader from "./MetallicRoughness.vert.wgsl";
-import { Texture } from "@/textures";
-import Material from "./Material";
+import fragmentShader from './MetallicRoughness.frag.wgsl';
+import vertexShader from './MetallicRoughness.vert.wgsl';
+import { Texture } from '@/textures';
+import Material from './Material';
 import { Color } from 'chroma-js';
 
 /**
@@ -30,28 +30,28 @@ class MetallicRoughnessMaterial extends Material {
         });
 
         this.albedoTextureBinding =
-            this.layout.getUniformBinding("albedoTexture");
+            this.layout.getUniformBinding('albedoTexture');
 
         this.aoTextureBinding =
-            this.layout.getUniformBinding("aoTexture");
+            this.layout.getUniformBinding('aoTexture');
 
         this.normalTextureBinding =
-            this.layout.getUniformBinding("normalTexture");
+            this.layout.getUniformBinding('normalTexture');
 
         this.metalRoughnessTextureBinding =
-            this.layout.getUniformBinding("metalRoughnessTexture");
+            this.layout.getUniformBinding('metalRoughnessTexture');
 
         this.emissiveTextureBinding =
-            this.layout.getUniformBinding("emissiveTexture");
+            this.layout.getUniformBinding('emissiveTexture');
 
         this.baseColorFactorBinding =
-            this.layout.getUniformBinding("baseColorFactor");
+            this.layout.getUniformBinding('baseColorFactor');
 
         this.metallicFactorBinding =
-            this.layout.getUniformBinding("metallicFactor");
+            this.layout.getUniformBinding('metallicFactor');
 
         this.roughnessFactorBinding =
-            this.layout.getUniformBinding("roughnessFactor");
+            this.layout.getUniformBinding('roughnessFactor');
     }
 
     setAlbedoTexture(texture: Texture) {

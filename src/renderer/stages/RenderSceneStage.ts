@@ -1,12 +1,12 @@
-import { Mesh } from "@/geometries";
-import { ObjectUniform } from "@/materials/uniforms";
-import { MeshObject } from "@/scene";
-import { Bucket, BufferStore, PipelineManager, TextureStore } from "@/renderer";
+import { Mesh } from '@/geometries';
+import { ObjectUniform } from '@/materials/uniforms';
+import { MeshObject } from '@/scene';
+import { Bucket, BufferStore, PipelineManager, TextureStore } from '@/renderer';
 
-import Stage from "./Stage";
-import { Material } from "@/materials";
-import { BindGroup } from "@/core";
-import { Primitive } from "@/materials/Material";
+import Stage from './Stage';
+import { Material } from '@/materials';
+import { BindGroup } from '@/core';
+import { Primitive } from '@/materials/Material';
 
 /**
  * A render pipeline stage that render the scene into a color attachment.
@@ -45,16 +45,18 @@ class RenderSceneStage extends Stage {
             this.drawIndexedTriangles(mesh, material, pass);
         } else {
             switch (material.primitive) {
-                case Primitive.WireTriangles:
-                    const triangleCount = mesh.indexCount / 3;
-                    pass.draw(6 * triangleCount);
+                case Primitive.WireTriangles: {
+                        const triangleCount = mesh.indexCount / 3;
+                        pass.draw(6 * triangleCount);
+                    }
                     break;
                 case Primitive.Quads:
                     pass.draw(6 * mesh.vertexCount);
                     break;
-                case Primitive.Lines:
-                    const lineCount = mesh.indexCount / 2;
-                    pass.draw(6 * lineCount);
+                case Primitive.Lines: {
+                        const lineCount = mesh.indexCount / 2;
+                        pass.draw(6 * lineCount);
+                    }
                     break;
             }
         }
@@ -101,7 +103,7 @@ class RenderSceneStage extends Stage {
 
     executeStage(encoder: GPUCommandEncoder) {
         if (!this.output) {
-            throw new Error("no output texture to render into");
+            throw new Error('no output texture to render into');
         }
         this.currentPipeline = null;
         this.currentMesh = null;

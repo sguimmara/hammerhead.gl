@@ -1,5 +1,5 @@
-import { Mesh } from "@/geometries";
-import { describe, expect, it, vi } from "vitest";
+import { Mesh } from '@/geometries';
+import { describe, expect, it, vi } from 'vitest';
 
 describe('constructor', () => {
     it('should assign a unique id', () => {

@@ -49,12 +49,12 @@ class PipelineManager implements Service {
         this.perMaterialMap = new Map();
         this.perGeometryMap = new Map();
         this.shaderModules = new Map();
-        this.configuration = container.get<Configuration>("Configuration");
-        this.textureStore = container.get<TextureStore>("TextureStore");
-        this.bufferStore = container.get<BufferStore>("BufferStore");
+        this.configuration = container.get<Configuration>('Configuration');
+        this.textureStore = container.get<TextureStore>('TextureStore');
+        this.bufferStore = container.get<BufferStore>('BufferStore');
 
         this.globalUniformLayout = device.createBindGroupLayout({
-            label: "global uniforms",
+            label: 'global uniforms',
             entries: [
                 {
                     binding: 0,
@@ -66,7 +66,7 @@ class PipelineManager implements Service {
     }
 
     getType(): string {
-        return "PipelineManager";
+        return 'PipelineManager';
     }
 
     destroy() {
@@ -88,14 +88,14 @@ class PipelineManager implements Service {
         // Linux implementation refuses constants as group numbers
         // and require literals.
         return shaderCode
-            .replaceAll("GLOBAL_UNIFORMS", BindGroup.GlobalValues.toString())
+            .replaceAll('GLOBAL_UNIFORMS', BindGroup.GlobalValues.toString())
             .replaceAll(
-                "MATERIAL_UNIFORMS",
+                'MATERIAL_UNIFORMS',
                 BindGroup.MaterialUniforms.toString()
             )
-            .replaceAll("OBJECT_UNIFORMS", BindGroup.ObjectUniforms.toString())
+            .replaceAll('OBJECT_UNIFORMS', BindGroup.ObjectUniforms.toString())
             .replaceAll(
-                "VERTEX_UNIFORMS",
+                'VERTEX_UNIFORMS',
                 BindGroup.VertexBufferUniforms.toString()
             );
     }
@@ -168,7 +168,7 @@ class PipelineManager implements Service {
                     // TODO parse the storage type from the shader
                     binding: uniform.binding,
                     visibility,
-                    buffer: { type: "read-only-storage" },
+                    buffer: { type: 'read-only-storage' },
                 };
             case UniformType.Float32:
             case UniformType.Vec2:
@@ -182,7 +182,7 @@ class PipelineManager implements Service {
                     buffer: {},
                 };
             default:
-                throw new Error("unsupported uniform type");
+                throw new Error('unsupported uniform type');
         }
     }
 
@@ -225,10 +225,10 @@ class PipelineManager implements Service {
             perObject.worldMatrixBuffer =
                 this.bufferStore.getOrCreateUniformBuffer(
                     perObject.transformUniform,
-                    "modelMatrix"
+                    'modelMatrix'
                 );
             perObject.bindGroup = this.device.createBindGroup({
-                label: "modelMatrix BindGroup",
+                label: 'modelMatrix BindGroup',
                 layout,
                 entries: [
                     {
@@ -253,12 +253,12 @@ class PipelineManager implements Service {
     ) {
         const gpuBuffer = this.bufferStore.getOrCreateUniformBuffer(
             GlobalValues,
-            "GlobalValues"
+            'GlobalValues'
         );
 
         if (!this.globalUniformBindGroup) {
             this.globalUniformBindGroup = this.device.createBindGroup({
-                label: "global uniforms BindGroup",
+                label: 'global uniforms BindGroup',
                 layout: this.globalUniformLayout,
                 entries: [{ binding: 0, resource: { buffer: gpuBuffer } }],
             });
@@ -284,13 +284,14 @@ class PipelineManager implements Service {
                 entries.push({ binding: slot, resource: defaultView });
                 break;
             }
-            case UniformType.Sampler:
+            case UniformType.Sampler: {
                 const uniform = material.getSamplerUniform(slot);
                 const sampler = this.textureStore.getOrCreateSampler(
                     uniform.value
                 );
                 entries.push({ binding: slot, resource: sampler });
                 break;
+            }
             case UniformType.Float32:
             case UniformType.Vec2:
             case UniformType.Vec3:
@@ -302,6 +303,7 @@ class PipelineManager implements Service {
                     binding: slot,
                     resource: { buffer: gpuBuffer },
                 });
+                break;
             }
         }
     }
@@ -326,15 +328,15 @@ class PipelineManager implements Service {
         switch (info.type) {
             case AttributeType.Vec2:
                 arrayStride = 2 * 4;
-                format = "float32x2";
+                format = 'float32x2';
                 break;
             case AttributeType.Vec3:
                 arrayStride = 3 * 4;
-                format = "float32x3";
+                format = 'float32x3';
                 break;
             case AttributeType.Vec4:
                 arrayStride = 4 * 4;
-                format = "float32x4";
+                format = 'float32x4';
                 break;
         }
 
@@ -536,12 +538,12 @@ class PipelineManager implements Service {
             primitive: this.getPrimitiveState(material, mesh),
             vertex: {
                 module: perMaterial.vertexShader,
-                entryPoint: "vs",
+                entryPoint: 'vs',
                 buffers,
             },
             fragment: {
                 module: perMaterial.fragmentShader,
-                entryPoint: "fs",
+                entryPoint: 'fs',
                 targets: [colorTarget],
             },
         });

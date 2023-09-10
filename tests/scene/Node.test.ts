@@ -1,5 +1,5 @@
-import { Node } from "@/scene";
-import { describe, expect, it, vi } from "vitest";
+import { Node } from '@/scene';
+import { describe, expect, it, vi } from 'vitest';
 
 describe('constructor', () => {
     it('should assign a unique id', () => {

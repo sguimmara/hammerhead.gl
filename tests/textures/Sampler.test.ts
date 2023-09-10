@@ -1,5 +1,5 @@
-import { AddressMode, FilterMode, Sampler } from "@/textures";
-import { expect, it } from "vitest";
+import { AddressMode, FilterMode, Sampler } from '@/textures';
+import { expect, it } from 'vitest';
 
 it('should assign default values', () => {
     const sampler = new Sampler();

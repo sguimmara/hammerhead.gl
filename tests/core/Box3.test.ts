@@ -1,5 +1,5 @@
-import { Box3, MathUtils } from "@/core";
-import { describe, expect, it } from "vitest";
+import { Box3, MathUtils } from '@/core';
+import { describe, expect, it } from 'vitest';
 
 describe('constructor', () => {
     it('should assign members', () => {

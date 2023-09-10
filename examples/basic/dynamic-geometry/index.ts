@@ -7,7 +7,7 @@ import { Camera, MeshObject, Node } from 'hammerhead.gl/scene';
 import { loadPLYModel } from '../../lib';
 import LineMaterial from 'hammerhead.gl/materials/LineMaterial';
 
-let canvas = document.getElementById('canvas') as HTMLCanvasElement;
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
 async function main() {
     const context = await Context.create(canvas);

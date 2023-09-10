@@ -1,8 +1,8 @@
-import { Visitor } from "@/core";
-import { Vec4Uniform } from "@/materials/uniforms";
-import chroma from "chroma-js";
-import { describe, expect, it } from "vitest";
-import { mock } from "vitest-mock-extended";
+import { Visitor } from '@/core';
+import { Vec4Uniform } from '@/materials/uniforms';
+import chroma from 'chroma-js';
+import { describe, expect, it } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
 describe('constructor', () => {
     it('should assign properties', () => {

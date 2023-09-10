@@ -1,5 +1,5 @@
-import { RawSource, Texture } from "@/textures";
-import { describe, expect, it, vi } from "vitest";
+import { RawSource, Texture } from '@/textures';
+import { describe, expect, it, vi } from 'vitest';
 
 describe('constructor', () => {
     it('should assign a unique id', () => {

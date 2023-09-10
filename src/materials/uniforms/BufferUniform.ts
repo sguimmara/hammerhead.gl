@@ -1,5 +1,5 @@
-import { Sized, Version, Visitable, Visitor } from "@/core";
-import Uniform, { UntypedUniform } from "./Uniform";
+import { Sized, Version, Visitable, Visitor } from '@/core';
+import Uniform, { UntypedUniform } from './Uniform';
 
 /**
  * Contained a buffer uniform whose exact type is unspecified.
@@ -18,6 +18,7 @@ export default abstract class BufferUniform<V> implements UntypedBufferUniform, 
     private version: number = -1;
     abstract getByteSize(): number;
     abstract visit(visitor: Visitor): void;
+    readonly type = 'buffer';
 
     getVersion(): number {
         return this.version;

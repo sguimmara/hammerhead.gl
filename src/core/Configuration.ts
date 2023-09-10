@@ -1,4 +1,4 @@
-import { Service } from "./Service";
+import { Service } from './Service';
 
 export default class Configuration implements Service {
     readonly depthBufferFormat: GPUTextureFormat;

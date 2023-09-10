@@ -5,10 +5,10 @@
  * The azimuthal angle (theta) is measured from the positive z-axis.
  */
 
-import { Vec3 } from "wgpu-matrix";
-import { radians } from "./types";
-import { Clone } from "./Clone";
-import MathUtils from "./MathUtils";
+import { Vec3 } from 'wgpu-matrix';
+import { radians } from './types';
+import { Clone } from './Clone';
+import MathUtils from './MathUtils';
 
 // Taken from three.js
 

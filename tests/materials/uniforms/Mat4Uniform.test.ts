@@ -1,8 +1,8 @@
-import { Visitor } from "@/core";
-import { Mat4Uniform } from "@/materials/uniforms";
-import { describe, expect, it } from "vitest";
-import { mock } from "vitest-mock-extended";
-import { mat4 } from "wgpu-matrix";
+import { Visitor } from '@/core';
+import { Mat4Uniform } from '@/materials/uniforms';
+import { describe, expect, it } from 'vitest';
+import { mock } from 'vitest-mock-extended';
+import { mat4 } from 'wgpu-matrix';
 
 describe('constructor', () => {
     it('should assign properties', () => {
