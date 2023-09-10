@@ -1,0 +1,29 @@
+{
+  "geometries": [
+    "tetrahedron",
+    "quad",
+    "cube"
+  ],
+  "formats": [
+    "gltf-helmet"
+  ],
+  "effects": [
+    "flip",
+    "colorimetry"
+  ],
+  "basic": [
+    "vertex-colors",
+    "transparent-texture",
+    "solid+lines",
+    "scene-graph",
+    "mode-points",
+    "mode-lines",
+    "full-screen-quad",
+    "frustum-culling",
+    "dynamic-geometry",
+    "clear-color",
+    "bounds",
+    "alpha-blending",
+    "active-inactive"
+  ]
+}
