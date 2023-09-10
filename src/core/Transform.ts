@@ -60,8 +60,7 @@ export default class Transform implements Version, Sized, Visitable {
         if (typeof x === 'number') {
             quat.set(x, y, z, w, this.quaternion);
         } else {
-            const q = x as Quat;
-            quat.set(q[0], q[1], q[2], q[3], this.quaternion);
+            quat.set(x[0], x[1], x[2], x[3], this.quaternion);
         }
         this.incrementVersion();
         this.localMatrixNeedsUpdate = true;

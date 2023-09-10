@@ -56,4 +56,4 @@ async function main() {
     }).on('change', (ev) => wireframe.withLineOffset(ev.value));
 }
 
-main();
+main().catch(e => console.error(e));

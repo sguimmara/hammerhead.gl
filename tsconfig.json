@@ -1,27 +1,16 @@
 {
+  "extends": "./tsconfig.common.json",
   "compilerOptions": {
     "outDir": "dist",
-    "lib": ["ES2022", "DOM"],
-    "target": "ES2022",
-    "module": "ES2022",
-    "moduleResolution": "node",
-    "skipLibCheck": true,
     "noEmit": false,
     "declaration": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "noImplicitAny": true,
     "removeComments": false,
     "preserveConstEnums": true,
     "sourceMap": true,
-    "baseUrl": "src",
-    "paths": {
-      "@/*": ["./*"]
-    },
     "plugins": [
       { "transform": "typescript-transform-paths" }
     ],
     "typeRoots": [ "./node_modules/@webgpu/types", "./node_modules/@types"]
   },
-  "include": ["src/**/*", "index.ts"],
+  "include": ["src/**/*"],
 }

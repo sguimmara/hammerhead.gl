@@ -28,6 +28,8 @@ async function main() {
 
     const camera = new Camera('perspective');
     camera.transform.setPosition(0, 0, 300);
+    camera.nearPlane = 1;
+    camera.farPlane = 600;
 
     const helper = new BoundsHelper({ source: solidMesh });
 
@@ -75,4 +77,4 @@ async function main() {
     context.on('resized', render);
 }
 
-main();
+main().catch(e => console.error(e));

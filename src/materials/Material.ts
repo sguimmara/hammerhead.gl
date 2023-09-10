@@ -21,6 +21,7 @@ import {
     Mat4Uniform,
     Uniform,
     BufferUniform,
+    ObjectUniform,
 } from './uniforms';
 import UniformType from './UniformType';
 import GlobalValues from '@/renderer/GlobalValues';
@@ -104,7 +105,7 @@ export class Blending {
     }
 }
 
-function allocateUniform(type: UniformType) {
+function allocateUniform(type: UniformType): UntypedUniform {
     switch (type) {
         case UniformType.Texture2D:
             return new TextureUniform();
@@ -121,12 +122,12 @@ function allocateUniform(type: UniformType) {
         case UniformType.Mat4:
             return new Mat4Uniform();
         case UniformType.GlobalValues:
-            return new GlobalValues();
+            return new ObjectUniform(new GlobalValues());
     }
 }
 
 function allocateUniforms(layout: UniformInfo[]): UntypedUniform[] {
-    const uniforms = Array(layout.length);
+    const uniforms: UntypedUniform[] = Array<UntypedUniform>(layout.length);
     for (let i = 0; i < layout.length; i++) {
         const info = layout[i];
         uniforms[info.binding] = allocateUniform(info.type);

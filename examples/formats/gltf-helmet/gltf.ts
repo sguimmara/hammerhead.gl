@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { MeshObject, Node, Scene } from 'hammerhead.gl/scene';
 import { parse } from '@loaders.gl/core';
 import * as gltf from '@loaders.gl/gltf';

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Visitor } from '@/core';
 import { ScalarUniform } from '@/materials/uniforms';
 import { describe, expect, it } from 'vitest';

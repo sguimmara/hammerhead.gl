@@ -586,7 +586,7 @@ class PipelineManager implements Service {
             this.perMaterialMap.set(material.id, perMaterial);
 
             material.on('destroyed', (evt) =>
-                this.onMaterialDestroyed(evt.source as Material)
+                this.onMaterialDestroyed(evt.source)
             );
         } else {
             this.updatePipeline(perMaterial, mesh);

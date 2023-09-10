@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { parse } from '@loaders.gl/core';
 import * as ply from '@loaders.gl/ply';
 

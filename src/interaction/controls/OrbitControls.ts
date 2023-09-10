@@ -10,7 +10,7 @@ export default class OrbitControls extends Controls {
         super(camera);
         this._interactiveElement = interactiveElement;
 
-        this._interactiveElement.addEventListener('pointermove', this.onPointerMove);
+        this._interactiveElement.addEventListener('pointermove', ev => this.onPointerMove(ev));
         this._interactiveElement.addEventListener('wheel', ev => this.onZoom(ev));
     }
 

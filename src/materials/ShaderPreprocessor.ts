@@ -113,7 +113,7 @@ function toUniformType(type: UniformType): string {
         case UniformType.F32Array:
             return 'array<f32>';
         default:
-            throw new ShaderError(`unimplemented uniform type: ${type}`);
+            throw new ShaderError('unimplemented uniform type');
     }
 }
 

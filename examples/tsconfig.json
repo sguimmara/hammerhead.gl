@@ -1,20 +1,10 @@
 {
+    "extends": "../tsconfig.common.json",
     "compilerOptions": {
-      "lib": ["ES2022", "DOM"],
-      "target": "ES2022",
-      "module": "ES2022",
-      "moduleResolution": "node",
-      "noEmit": true,
-      "esModuleInterop": true,
-      "noImplicitAny": true,
-      "removeComments": true,
-      "preserveConstEnums": true,
-      "sourceMap": true,
-      "baseUrl": "../src",
       "paths": {
-        "hammerhead.gl/*": ["./*"],
+        "hammerhead.gl/*": ["../dist/*"],
+        "@/*": ["../dist/*"],
       },
-      "typeRoots": [ "../node_modules/@webgpu/types", "../node_modules/@types"]
     },
     "include": ["**/*"],
   }

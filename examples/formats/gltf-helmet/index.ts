@@ -3,7 +3,6 @@ import { Camera, Node } from 'hammerhead.gl/scene';
 import GLTFLoader from './gltf';
 import { frameBounds } from '../../lib';
 import Inspector from '../../Inspector';
-import { Renderer } from 'hammerhead.gl/renderer';
 import { BoundsHelper } from 'hammerhead.gl/helpers';
 
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -15,7 +14,7 @@ async function main() {
     const loader = new GLTFLoader();
     const gltf = await loader.loadGltfScene(uri, baseUri);
     const context = await Context.create(canvas);
-    const renderer = context.renderer as Renderer;
+    const renderer = context.renderer;
 
     const scene = gltf[0];
 
@@ -51,4 +50,4 @@ async function main() {
     new Inspector(context);
 }
 
-main();
+main().catch(e => console.error(e));

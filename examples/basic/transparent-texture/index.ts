@@ -37,4 +37,4 @@ async function main() {
     requestAnimationFrame(renderLoop);
 }
 
-main();
+main().catch(e => console.error(e));

@@ -31,4 +31,4 @@ async function main() {
     context.on('resized', render);
 }
 
-main();
+main().catch(e => console.error(e));
