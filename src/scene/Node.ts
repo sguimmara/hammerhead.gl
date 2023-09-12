@@ -5,7 +5,11 @@ import {
     Transform,
     EventHandler,
     Box3,
+    ChangedEventArgs,
 } from '@core';
+import { Mesh } from '@geometries';
+import { Material } from '@materials';
+import { vec3 } from 'wgpu-matrix';
 
 let ID = 0;
 
@@ -24,7 +28,15 @@ export interface Events {
     /**
      * Raised when the parent has changed.
      */
-    'parent-changed': { old: Node, new: Node };
+    'parent-changed': ChangedEventArgs<Node>;
+    /**
+     * Raised when the material has changed.
+     */
+    'material-changed': ChangedEventArgs<Material>;
+    /**
+     * Raised when the mesh has changed.
+     */
+    'mesh-changed': ChangedEventArgs<Mesh>;
 }
 
 /**
@@ -35,7 +47,19 @@ export default class Node implements Observable<Node, Events>, Destroy {
     readonly dispatcher: EventDispatcher<Node, Events>;
     readonly transform: Transform = new Transform();
     private _parent: Node;
-    label: string;
+
+    private _material: Material;
+    private _mesh: Mesh;
+
+    /**
+     * User-defined metadata on the object.
+     */
+    metadata: Record<string, unknown> = {};
+
+    /**
+     * Optional label.
+     */
+    label?: string;
 
     /**
      * The active state of the object. An inactive object is not renderable and not traversable.
@@ -45,13 +69,33 @@ export default class Node implements Observable<Node, Events>, Destroy {
     children: Node[];
 
     set parent(parent: Node) {
-        const old = this._parent;
+        const oldValue = this._parent;
         this._parent = parent;
-        this.dispatcher.dispatch('parent-changed', { old, new: parent });
+        this.dispatcher.dispatch('parent-changed', { oldValue, newValue: parent });
     }
 
     get parent() {
         return this._parent;
+    }
+
+    get material() {
+        return this._material;
+    }
+
+    set material(v: Material) {
+        const oldValue = this._material;
+        this._material = v;
+        this.dispatcher.dispatch('material-changed', { oldValue: oldValue, newValue: v });
+    }
+
+    get mesh() {
+        return this._mesh;
+    }
+
+    set mesh(v: Mesh) {
+        const oldValue = this._mesh;
+        this._mesh = v;
+        this.dispatcher.dispatch('mesh-changed', { oldValue: oldValue, newValue: v });
     }
 
     constructor() {
@@ -63,17 +107,49 @@ export default class Node implements Observable<Node, Events>, Destroy {
         this.dispatcher.on(type, handler);
     }
 
+    setMaterial(material: Material): this {
+        this.material = material;
+        return this;
+    }
+
+    setMesh(mesh: Mesh): this {
+        this.mesh = mesh;
+        return this;
+    }
+
     /**
-     * Returns the axis-aligned bounding box (AABB) of this object.
+     * Returns the axis-aligned bounding box (AABB) of this object and its descendants.
      */
     getWorldBounds(): Box3 {
-        if (this.children) {
+        const worldBounds = Box3.empty();
+
+        if (this.mesh) {
+            const localBounds = this.mesh.getBounds();
+
             this.transform.updateWorldMatrix(this.parent?.transform);
-            const children = this.children.map((c) => c.getWorldBounds());
-            return Box3.union(children);
-        } else {
-            return null;
+
+            const vertices: number[] = [];
+            const worldMatrix = this.transform.worldMatrix;
+            localBounds.forEachCorner((c) => {
+                const c2 = vec3.transformMat4(c, worldMatrix);
+                vertices.push(c2[0]);
+                vertices.push(c2[1]);
+                vertices.push(c2[2]);
+            });
+
+            const meshBounds = Box3.fromPoints(vertices);
+            worldBounds.expand(meshBounds);
         }
+
+        if (this.children) {
+            const childCount = this.children.length;
+            for (let i = 0; i < childCount; i++) {
+                const child = this.children[i];
+                worldBounds.expand(child.getWorldBounds());
+            }
+        }
+
+        return worldBounds;
     }
 
     destroy(): void {

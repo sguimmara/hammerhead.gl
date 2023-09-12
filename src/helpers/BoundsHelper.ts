@@ -2,22 +2,22 @@ import { Box3, Update } from '@core';
 import { WireCube } from '@geometries';
 import { LineMaterial } from '@materials';
 import { Primitive } from '@materials/Material';
-import { MeshObject, Node } from '@scene';
+import { Node } from '@scene';
 import chroma, { Color } from 'chroma-js';
 
 /**
  * Displays the bounds of an object.
  */
-export default class BoundsHelper extends MeshObject implements Update {
+export default class BoundsHelper extends Node implements Update {
     readonly source: Node;
 
     constructor(params: { source: Node; color?: Color }) {
-        super({
-            material: new LineMaterial({ primitive: Primitive.Lines }).setColor(
-                params.color ?? chroma('yellow')
-            ),
-            mesh: new WireCube(),
-        });
+        super();
+        this.label = 'BoundsHelper';
+        this.material = new LineMaterial({ primitive: Primitive.Lines }).setColor(
+            params.color ?? chroma('yellow')
+        )
+        this.mesh = new WireCube();
         this.source = params.source;
     }
 

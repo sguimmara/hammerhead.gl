@@ -2,7 +2,7 @@ import chroma from 'chroma-js';
 import { Context } from 'hammerhead.gl/core';
 import { BoundsHelper } from 'hammerhead.gl/helpers';
 import { BasicMaterial } from 'hammerhead.gl/materials';
-import { Camera, MeshObject, Node } from 'hammerhead.gl/scene';
+import { Camera, Node } from 'hammerhead.gl/scene';
 
 import { loadPLYModel } from '../../lib';
 import LineMaterial from 'hammerhead.gl/materials/LineMaterial';
@@ -21,8 +21,8 @@ async function main() {
     const wireframe = new LineMaterial().setColor(chroma('black'));
 
     const mesh = await loadPLYModel('/files/hammerhead.ply');
-    const solidMesh = new MeshObject({ mesh, material: solid});
-    const wireframeMesh = new MeshObject({ mesh, material: wireframe});
+    const solidMesh = new Node().setMesh(mesh).setMaterial(solid);
+    const wireframeMesh = new Node().setMesh(mesh).setMaterial(wireframe);
 
     solidMesh.add(wireframeMesh);
 

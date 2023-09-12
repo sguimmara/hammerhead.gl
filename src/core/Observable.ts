@@ -21,6 +21,11 @@ export class ObservableEvent<TSource, TArgs> {
     }
 }
 
+export interface ChangedEventArgs<T> {
+    oldValue: T;
+    newValue: T;
+}
+
 /**
  * Trait for objects that emit events.
  * @param TSource The type of the source.

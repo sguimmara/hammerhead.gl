@@ -3,7 +3,7 @@ import { Box3, Context, MathUtils } from 'hammerhead.gl/core';
 import {
     BasicMaterial, LineMaterial,
 } from 'hammerhead.gl/materials';
-import { Camera, MeshObject, Node } from 'hammerhead.gl/scene';
+import { Camera, Node } from 'hammerhead.gl/scene';
 import { vec3 } from 'wgpu-matrix';
 
 import { frameBounds, loadPLYModel, wait } from '../../lib';
@@ -18,17 +18,15 @@ async function main() {
     const mesh = await loadPLYModel('/files/hammerhead.ply');
 
     function makeMesh(x: number, y: number, z: number, color: string) {
-        const object = new MeshObject({
-            material: new BasicMaterial().setDiffuseColor(chroma(color)),
-            mesh,
-        });
+        const object = new Node()
+            .setMaterial(new BasicMaterial().setDiffuseColor(chroma(color)))
+           .setMesh(mesh);
 
         object.label = color;
 
-        const wireframeMesh = new MeshObject({
-            material: new LineMaterial().setColor(chroma.mix(chroma('black'), color, 0.2)),
-            mesh,
-        });
+        const wireframeMesh = new Node()
+            .setMaterial(new LineMaterial().setColor(chroma.mix(chroma('black'), color, 0.2)))
+           .setMesh(mesh);
 
         wireframeMesh.label = color + '/wireframe';
 

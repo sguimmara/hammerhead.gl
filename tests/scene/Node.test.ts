@@ -25,6 +25,22 @@ describe('destroyed', () => {
     });
 });
 
+describe('metadata', () => {
+    it('should hold any user-defined value', () => {
+        const node = new Node();
+
+        expect(node.metadata).toEqual({});
+
+        node.metadata.hello = 'world';
+        node.metadata.foo = 'bar';
+        node.metadata.myBool = false;
+
+        expect(node.metadata.hello).toEqual('world');
+        expect(node.metadata.foo).toEqual('bar');
+        expect(node.metadata.myBool).toEqual(false);
+    });
+});
+
 describe('add', () => {
     it("should set the child's parent", () => {
         const parent = new Node();
@@ -50,7 +66,7 @@ describe('add', () => {
 
         parent.add(child);
 
-        expect(handler).toHaveBeenCalledWith({ source: child, value: { old: undefined, new: parent } });
+        expect(handler).toHaveBeenCalledWith({ source: child, value: { oldValue: undefined, newValue: parent } });
     });
 });
 

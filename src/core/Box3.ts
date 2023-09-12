@@ -68,22 +68,31 @@ export default class Box3 implements Clone {
         return result;
     }
 
+    static empty() {
+        return new Box3({
+            min: [Infinity, Infinity, Infinity],
+            max: [-Infinity, -Infinity, -Infinity]
+        });
+    }
+
     /**
      * **Mutates** this box to contain the other box.
      * @param other The box to expand.
      */
     expand(other: Box3) {
-        const xMin = Math.min(this.min[0], other.min[0]);
-        const yMin = Math.min(this.min[1], other.min[1]);
-        const zMin = Math.min(this.min[2], other.min[2]);
+        if (other) {
+            const xMin = Math.min(this.min[0], other.min[0]);
+            const yMin = Math.min(this.min[1], other.min[1]);
+            const zMin = Math.min(this.min[2], other.min[2]);
 
-        const xMax = Math.max(this.max[0], other.max[0]);
-        const yMax = Math.max(this.max[1], other.max[1]);
-        const zMax = Math.max(this.max[2], other.max[2]);
+            const xMax = Math.max(this.max[0], other.max[0]);
+            const yMax = Math.max(this.max[1], other.max[1]);
+            const zMax = Math.max(this.max[2], other.max[2]);
 
-        this.min = [xMin, yMin, zMin];
-        this.max = [xMax, yMax, zMax];
-        this.updateCenterAndSize();
+            this.min = [xMin, yMin, zMin];
+            this.max = [xMax, yMax, zMax];
+            this.updateCenterAndSize();
+        }
 
         return this;
     }

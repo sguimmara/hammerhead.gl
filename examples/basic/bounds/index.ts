@@ -1,6 +1,6 @@
 import chroma from 'chroma-js';
 import { Context, MathUtils } from 'hammerhead.gl/core';
-import { Node, MeshObject, Camera } from 'hammerhead.gl/scene';
+import { Node, Camera } from 'hammerhead.gl/scene';
 import { BoundsHelper } from 'hammerhead.gl/helpers';
 import { BasicMaterial, LineMaterial } from 'hammerhead.gl/materials';
 import { frameBounds, loadPLYModel } from '../../lib';
@@ -17,12 +17,12 @@ async function main() {
     const purple = new BasicMaterial().setDiffuseColor(chroma('purple'));
     const wireframe = new LineMaterial().setColor(chroma('black'));
 
-    const shark1 = new MeshObject({ mesh, material: cyan});
-    const wireframe1 = new MeshObject({ mesh, material: wireframe});
+    const shark1 = new Node().setMesh(mesh).setMaterial(cyan);
+    const wireframe1 = new Node().setMesh(mesh).setMaterial(wireframe);
     shark1.add(wireframe1);
 
-    const shark2 = new MeshObject({ mesh, material: purple});
-    const wireframe2 = new MeshObject({ mesh, material: wireframe});
+    const shark2 = new Node().setMesh(mesh).setMaterial(purple);
+    const wireframe2 = new Node().setMesh(mesh).setMaterial(wireframe);
     shark2.add(wireframe2);
 
     const camera = new Camera('perspective');

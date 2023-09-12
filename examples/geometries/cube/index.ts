@@ -2,7 +2,7 @@ import chroma from 'chroma-js';
 import { Context, MathUtils } from 'hammerhead.gl/core';
 import { Cube, WireCube } from 'hammerhead.gl/geometries';
 import { BasicMaterial, LineMaterial } from 'hammerhead.gl/materials';
-import { Camera, MeshObject } from 'hammerhead.gl/scene';
+import { Camera, Node } from 'hammerhead.gl/scene';
 
 import { frameObject, load8bitImage } from '../../lib';
 import { Primitive } from 'hammerhead.gl/materials/Material';
@@ -15,17 +15,16 @@ async function main() {
     const renderer = context.renderer;
     renderer.clearColor = chroma('gray');
 
-    const cube = new MeshObject({
-        material: new BasicMaterial()
+    // TODO put textures on side of cube
+    const cube = new Node()
+        .setMesh(new Cube())
+        .setMaterial(new BasicMaterial()
             .setDiffuseColor(chroma('yellow'))
-            .withColorTexture(logo),
-        mesh: new Cube(),
-    });
+            .withColorTexture(logo))
 
-    const wirecube = new MeshObject({
-        material: new LineMaterial({ primitive: Primitive.Lines }).setColor(chroma('black')),
-        mesh: new WireCube(),
-    });
+    const wirecube = new Node()
+        .setMaterial(new LineMaterial({ primitive: Primitive.Lines }).setColor(chroma('black')))
+        .setMesh(new WireCube());
 
     cube.add(wirecube);
     const camera = new Camera('perspective');

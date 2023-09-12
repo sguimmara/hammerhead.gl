@@ -1,6 +1,6 @@
-import { MeshObject } from '@scene';
+import { Node } from '@scene';
 
 export default class Bucket {
     order: number;
-    meshes: MeshObject[];
+    meshes: Node[];
 }

@@ -6,7 +6,7 @@ import { Primitive } from '@materials/Material';
 import ShaderError from '@materials/ShaderError';
 import { ObjectUniform } from '@materials/uniforms';
 import { BufferStore, TextureStore } from '@renderer';
-import { MeshObject } from '@scene';
+import { Node } from '@scene';
 
 class PerObject {
     transformUniform: ObjectUniform;
@@ -111,12 +111,12 @@ class PipelineManager implements Service {
         return shaderModule;
     }
 
-    private onMeshDestroyed(mesh: MeshObject) {
-        const perObject = this.perObjectMap.get(mesh.id);
+    private onNodeDestroyed(node: Node) {
+        const perObject = this.perObjectMap.get(node.id);
 
         if (perObject) {
             this.bufferStore.destroyUniformBuffer(perObject.transformUniform);
-            this.perMaterialMap.delete(mesh.id);
+            this.perMaterialMap.delete(node.id);
         }
     }
 
@@ -216,12 +216,12 @@ class PipelineManager implements Service {
         return layout;
     }
 
-    bindPerObjectUniforms(pass: GPURenderPassEncoder, material: Material, mesh: MeshObject) {
-        let perObject = this.perObjectMap.get(mesh.id);
+    bindPerObjectUniforms(pass: GPURenderPassEncoder, material: Material, node: Node) {
+        let perObject = this.perObjectMap.get(node.id);
         const layout = this.layouts.get(material.id).get(BindGroup.ObjectUniforms);
         if (!perObject) {
             perObject = new PerObject();
-            perObject.transformUniform = new ObjectUniform(mesh.transform);
+            perObject.transformUniform = new ObjectUniform(node.transform);
             perObject.worldMatrixBuffer =
                 this.bufferStore.getOrCreateUniformBuffer(
                     perObject.transformUniform,
@@ -237,9 +237,9 @@ class PipelineManager implements Service {
                     },
                 ],
             });
-            this.perObjectMap.set(mesh.id, perObject);
+            this.perObjectMap.set(node.id, perObject);
 
-            mesh.on('destroyed', () => this.onMeshDestroyed(mesh));
+            node.on('destroyed', () => this.onNodeDestroyed(node));
         } else {
             this.bufferStore.updateUniform(perObject.transformUniform);
         }

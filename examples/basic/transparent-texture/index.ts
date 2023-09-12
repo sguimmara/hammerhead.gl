@@ -2,7 +2,7 @@ import chroma from 'chroma-js';
 import { Context } from 'hammerhead.gl/core';
 import { ScreenQuad } from 'hammerhead.gl/geometries';
 import { BasicMaterial } from 'hammerhead.gl/materials';
-import { Camera, MeshObject } from 'hammerhead.gl/scene';
+import { Camera, Node } from 'hammerhead.gl/scene';
 
 import { load8bitImage } from '../../lib';
 
@@ -17,10 +17,9 @@ async function main() {
 
     const material = new BasicMaterial().withColorTexture(logo);
 
-    const mesh = new MeshObject({
-        material,
-        mesh: new ScreenQuad(),
-    });
+    const mesh = new Node()
+        .setMaterial(material)
+        .setMesh(new ScreenQuad());
 
     const camera = new Camera('orthographic');
 

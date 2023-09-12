@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { MeshObject, Node, Scene } from 'hammerhead.gl/scene';
+import { Node, Scene } from 'hammerhead.gl/scene';
 import { parse } from '@loaders.gl/core';
 import * as gltf from '@loaders.gl/gltf';
 import { Scene as GltfScene } from '@loaders.gl/gltf/dist/lib/types/gltf-postprocessed-schema';
@@ -143,14 +143,18 @@ class GLTFLoader {
         return result;
     }
 
-    processMesh(mesh: gltf.GLTFMeshPostprocessed): MeshObject[] {
-        const result: MeshObject[] = [];
+    processMesh(mesh: gltf.GLTFMeshPostprocessed): Node[] {
+        const result: Node[] = [];
 
         for (const prim of mesh.primitives) {
             const mesh = this.processGeometry(prim);
             const material = this.processMetallicRoughnessMaterial(prim.material);
 
-            result.push(new MeshObject({ material, mesh }));
+            const node = new Node()
+                .setMaterial(material)
+                .setMesh(mesh);
+
+            result.push(node);
         }
 
         return result;

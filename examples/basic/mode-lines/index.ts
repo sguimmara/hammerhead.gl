@@ -1,7 +1,7 @@
 import chroma from 'chroma-js';
 import { Context, MathUtils } from 'hammerhead.gl/core';
 import { LineMaterial } from 'hammerhead.gl/materials';
-import { Camera, MeshObject } from 'hammerhead.gl/scene';
+import { Camera, Node } from 'hammerhead.gl/scene';
 
 import { frameObject, loadPLYModel } from '../../lib';
 import { Primitive } from 'hammerhead.gl/materials/Material';
@@ -16,7 +16,7 @@ async function main() {
 
     const material = new LineMaterial({ primitive: Primitive.WireTriangles }).setColor(chroma('cyan'));
 
-    const shark = new MeshObject({ mesh, material });
+    const shark = new Node().setMesh(mesh).setMaterial(material);
 
     const camera = new Camera('perspective');
     frameObject(shark, camera);

@@ -1,6 +1,6 @@
 import { Mesh } from '@geometries';
 import { ObjectUniform } from '@materials/uniforms';
-import { MeshObject } from '@scene';
+import { Node } from '@scene';
 import { Bucket, BufferStore, PipelineManager, TextureStore } from '@renderer';
 
 import Stage from './Stage';
@@ -62,9 +62,9 @@ class RenderSceneStage extends Stage {
         }
     }
 
-    renderMesh(meshObject: MeshObject, pass: GPURenderPassEncoder) {
-        const material = meshObject.material;
-        const mesh = meshObject.mesh;
+    renderNode(node: Node, pass: GPURenderPassEncoder) {
+        const material = node.material;
+        const mesh = node.mesh;
 
         const pipeline = this.pipelineManager.getPipeline(material, mesh);
         if (this.currentPipeline == null || pipeline != this.currentPipeline) {
@@ -77,7 +77,7 @@ class RenderSceneStage extends Stage {
             this.pipelineManager.bindPerMaterialUniforms(material, pass);
         }
         if (layout.hasBindGroup(BindGroup.ObjectUniforms)) {
-            this.pipelineManager.bindPerObjectUniforms(pass, material, meshObject);
+            this.pipelineManager.bindPerObjectUniforms(pass, material, node);
         }
         if (layout.hasBindGroup(BindGroup.VertexBufferUniforms)) {
             this.pipelineManager.bindVertexBufferUniforms(
@@ -112,7 +112,7 @@ class RenderSceneStage extends Stage {
 
         for (const bucket of this.renderList) {
             for (const mesh of bucket.meshes) {
-                this.renderMesh(mesh, this.pass);
+                this.renderNode(mesh, this.pass);
             }
         }
 

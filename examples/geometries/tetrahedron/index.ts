@@ -2,7 +2,7 @@ import chroma from 'chroma-js';
 import { Context, MathUtils } from 'hammerhead.gl/core';
 import { Tetrahedron } from 'hammerhead.gl/geometries';
 import { BasicMaterial, LineMaterial } from 'hammerhead.gl/materials';
-import { Camera, MeshObject } from 'hammerhead.gl/scene';
+import { Camera, Node } from 'hammerhead.gl/scene';
 
 import { frameObject } from '../../lib';
 
@@ -16,15 +16,13 @@ async function main() {
     const material = new BasicMaterial();
     const tetrahedron = new Tetrahedron();
 
-    const mesh = new MeshObject({
-        material,
-        mesh: tetrahedron,
-    });
+    const solid: Node = new Node()
+        .setMaterial(material)
+        .setMesh(tetrahedron);
 
-    const wireMesh = new MeshObject({
-        material: new LineMaterial().setColor(chroma('black')),
-        mesh: tetrahedron,
-    })
+    const wireframe = new Node()
+        .setMaterial(new LineMaterial().setColor(chroma('black')))
+        .setMesh(tetrahedron);
 
     const colors = [
         chroma('red'),
@@ -33,15 +31,15 @@ async function main() {
         chroma('yellow')
     ];
 
-    mesh.add(wireMesh);
+    solid.add(wireframe);
 
-    mesh.mesh.setAttribute('color', new Float32Array(colors.flatMap(c => c.gl())));
+    solid.mesh.setAttribute('color', new Float32Array(colors.flatMap(c => c.gl())));
 
     const camera = new Camera('perspective');
-    frameObject(mesh, camera);
+    frameObject(solid, camera);
 
     function render() {
-        renderer.render(mesh, camera);
+        renderer.render(solid, camera);
     }
 
     let now = performance.now();
@@ -52,7 +50,7 @@ async function main() {
         const dt = (current - now) / 1000;
         const degrees = 40 * dt;
         now = current;
-        mesh.transform.rotateY(MathUtils.deg2rad(degrees));
+        solid.transform.rotateY(MathUtils.deg2rad(degrees));
         requestAnimationFrame(renderLoop);
     }
 

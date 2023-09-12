@@ -5,7 +5,7 @@ import {
     BasicMaterial,
     Material,
 } from 'hammerhead.gl/materials';
-import { Camera, MeshObject, Node } from 'hammerhead.gl/scene';
+import { Camera, Node } from 'hammerhead.gl/scene';
 
 import { load8bitImage } from '../../lib';
 import { Pane } from 'tweakpane';
@@ -21,24 +21,21 @@ async function main() {
     const renderer = context.renderer;
     renderer.clearColor = chroma('cyan');
 
-    const background = new MeshObject({
-        material: new BasicMaterial()
+    const background = new Node()
+       .setMaterial(new BasicMaterial()
             .withColorTexture(checkerboard)
-            .setDiffuseColor(chroma([255, 255, 255, 0.4], 'rgb')),
-        mesh: new ScreenQuad(),
-    });
+            .setDiffuseColor(chroma([255, 255, 255, 0.4], 'rgb')))
+        .setMesh(new ScreenQuad());
 
     background.transform.setPosition(0, 0, -0.2);
 
-    const tile = new MeshObject({
-        material: new BasicMaterial().withColorTexture(explosion),
-        mesh: new Quad(),
-    });
+    const tile = new Node()
+        .setMaterial(new BasicMaterial().withColorTexture(explosion))
+        .setMesh(new Quad());
 
-    const wireframe = new MeshObject({
-        material: new BasicMaterial().setDiffuseColor(chroma('yellow')),
-        mesh: new WireQuad(),
-    });
+    const wireframe = new Node()
+        .setMaterial(new BasicMaterial().setDiffuseColor(chroma('yellow')))
+        .setMesh(new WireQuad());
 
     tile.add(wireframe);
 

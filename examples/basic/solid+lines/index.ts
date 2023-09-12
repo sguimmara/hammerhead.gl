@@ -1,7 +1,7 @@
 import chroma from 'chroma-js';
 import { Context, MathUtils } from 'hammerhead.gl/core';
 import { BasicMaterial } from 'hammerhead.gl/materials';
-import { Camera, MeshObject } from 'hammerhead.gl/scene';
+import { Camera, Node } from 'hammerhead.gl/scene';
 
 import { frameObject, loadPLYModel } from '../../lib';
 import { Pane } from 'tweakpane';
@@ -19,8 +19,8 @@ async function main() {
 
     const wireframe = new LineMaterial().setColor(chroma('black'));
 
-    const solidMesh = new MeshObject({ mesh, material: solid });
-    const wireframeMesh = new MeshObject({ mesh, material: wireframe });
+    const solidMesh = new Node().setMesh(mesh).setMaterial(solid);
+    const wireframeMesh = new Node().setMesh(mesh).setMaterial(wireframe);
     solidMesh.add(wireframeMesh);
     const camera = new Camera('perspective');
     frameObject(solidMesh, camera);

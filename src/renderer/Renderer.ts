@@ -5,7 +5,7 @@ import RenderCommand from './RenderCommand';
 import RenderPipeline from './RenderPipeline';
 import { Container } from '@core';
 import { PostProcessingMaterial } from '@materials/postprocessing';
-import { Node, MeshObject, Camera } from '@scene';
+import { Node, Camera } from '@scene';
 
 const DEFAULT_CLEAR_COLOR = chroma('black');
 
@@ -37,19 +37,18 @@ class Renderer {
     private getRenderBuckets(graph: Node): Bucket[] {
         if (graph) {
             tmpBuckets.forEach((b) => (b.meshes.length = 0));
-            graph.traverse((obj) => {
-                obj.transform.updateWorldMatrix(obj.parent?.transform);
-                const mesh = obj as MeshObject;
-                if (mesh.isMesh) {
-                    const material = mesh.material;
+            graph.traverse((node) => {
+                node.transform.updateWorldMatrix(node.parent?.transform);
+                if (node.mesh && node.material) {
+                    const material = node.material;
                     if (material && material.active) {
                         let bucket = tmpBuckets.get(material.renderOrder);
                         if (!bucket) {
                             bucket = new Bucket();
-                            bucket.meshes = [mesh];
+                            bucket.meshes = [node];
                             tmpBuckets.set(material.renderOrder, bucket);
                         } else {
-                            bucket.meshes.push(mesh);
+                            bucket.meshes.push(node);
                         }
                     }
                 }

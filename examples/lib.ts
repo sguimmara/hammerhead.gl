@@ -4,11 +4,11 @@ import { parse } from '@loaders.gl/core';
 import * as ply from '@loaders.gl/ply';
 
 import Texture from 'hammerhead.gl/textures/Texture';
-import MeshObject from 'hammerhead.gl/scene/MeshObject';
 import Camera from 'hammerhead.gl/scene/Camera';
 import Box3 from 'hammerhead.gl/core/Box3';
 import ImageSource from 'hammerhead.gl/textures/ImageSource';
 import { Mesh } from 'hammerhead.gl/geometries';
+import { Node } from 'hammerhead.gl/scene';
 
 export async function wait(ms: number) {
     return new Promise((resolve) => {
@@ -27,7 +27,7 @@ export function frameBounds(bounds: Box3, camera: Camera) {
     camera.farPlane = distance * 2;
 }
 
-export function frameObject(obj: MeshObject, camera: Camera) {
+export function frameObject(obj: Node, camera: Camera) {
     const bounds = obj.getWorldBounds();
 
     frameBounds(bounds, camera);

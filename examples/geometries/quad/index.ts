@@ -2,7 +2,7 @@ import chroma from 'chroma-js';
 import { Context, MathUtils } from 'hammerhead.gl/core';
 import { Quad, WireQuad } from 'hammerhead.gl/geometries';
 import { BasicMaterial, LineMaterial } from 'hammerhead.gl/materials';
-import { Camera, MeshObject } from 'hammerhead.gl/scene';
+import { Camera, Node } from 'hammerhead.gl/scene';
 
 import { frameObject, load8bitImage } from '../../lib';
 import { Primitive } from 'hammerhead.gl/materials/Material';
@@ -16,16 +16,14 @@ async function main() {
 
     const logo = await load8bitImage('/webgpu.png');
 
-    const cube = new MeshObject({
-        material: new BasicMaterial().withColorTexture(logo),
-        mesh: new Quad(),
-    });
+    const cube = new Node()
+        .setMaterial(new BasicMaterial().withColorTexture(logo))
+        .setMesh(new Quad());
 
-    const wirecube = new MeshObject({
-        material: new LineMaterial({ primitive: Primitive.Lines})
-            .setColor(chroma('black')),
-        mesh: new WireQuad(),
-    });
+    const wirecube = new Node()
+        .setMaterial(new LineMaterial({ primitive: Primitive.Lines})
+            .setColor(chroma('black')))
+        .setMesh(new WireQuad());
 
     const colors = [
         chroma('red'),
