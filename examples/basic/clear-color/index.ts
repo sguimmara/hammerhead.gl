@@ -1,12 +1,9 @@
 import chroma from 'chroma-js';
 import { Context } from 'hammerhead.gl/core';
 import { Camera } from 'hammerhead.gl/scene';
-import { Pane } from 'tweakpane';
+import Inspector from '../../Inspector';
 
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-
-async function main() {
-    const context = await Context.create(canvas);
+export function run(context: Context, pane: Inspector) {
     const renderer = context.renderer;
 
     const camera = new Camera('perspective');
@@ -14,22 +11,16 @@ async function main() {
         renderer.render(null, camera);
     }
 
-    setInterval(render, 500);
-
     context.on('resized', render);
 
     const PARAMS = {
         clearColor: {r: 255, g: 0, b: 55},
       };
 
-    const pane = new Pane();
-
-    pane.addInput(PARAMS, 'clearColor').on('change', ev => {
+    pane.exampleFolder.addInput(PARAMS, 'clearColor').on('change', ev => {
         const rgb = ev.value;
         const c = chroma(rgb.r, rgb.g, rgb.b);
         renderer.clearColor = c;
         render();
     })
 }
-
-main().catch(e => console.error(e));

@@ -1,11 +1,13 @@
 import { Context } from 'hammerhead.gl/core';
 import { BufferStore, TextureStore } from 'hammerhead.gl/renderer';
-import { Pane } from 'tweakpane';
+import { FolderApi, Pane } from 'tweakpane';
 
 export default class Inspector {
     private readonly bufferStore: BufferStore;
     private readonly textureStore: TextureStore;
     private readonly context: Context;
+    readonly pane: Pane;
+    readonly exampleFolder: FolderApi;
 
     constructor(context: Context) {
         this.context = context;
@@ -13,16 +15,22 @@ export default class Inspector {
         this.bufferStore = container.get<BufferStore>('BufferStore');
         this.textureStore = container.get<TextureStore>('TextureStore');
 
-        const pane = new Pane();
+        this.pane = new Pane();
 
-        this.addGeneralFolder(pane);
-        this.addBufferFolder(pane);
-        this.addTextureFolder(pane);
+        this.addGeneralFolder(this.pane);
+        this.addBufferFolder(this.pane);
+        this.addTextureFolder(this.pane);
+
+        this.exampleFolder = this.pane.addFolder({
+            title: 'example',
+            expanded: true
+        });
     }
 
     addGeneralFolder(pane: Pane) {
         const folder = pane.addFolder({
-            title: 'device'
+            title: 'device',
+            expanded: false,
         });
 
         const limits = this.context.device.limits;
@@ -32,6 +40,11 @@ export default class Inspector {
                 format: n => n.toFixed(0),
             });
         }
+        const renderer = this.context.renderer;
+        folder.addMonitor(renderer, 'frameCount', {
+            label: 'frames',
+            format: n => n.toFixed(0)
+        });
         num('maxVertexBuffers');
         num('maxUniformBufferBindingSize');
     }
@@ -39,6 +52,7 @@ export default class Inspector {
     addTextureFolder(pane: Pane) {
         const folder = pane.addFolder({
             title: 'textures',
+            expanded: false,
         });
 
         folder.addMonitor(this.textureStore, 'textureCount', {
@@ -47,15 +61,21 @@ export default class Inspector {
         });
     }
 
+    dispose() {
+        this.pane.dispose();
+        this.pane.element.remove();
+    }
+
     addBufferFolder(pane: Pane) {
         const bufferFolder = pane.addFolder({
             title: 'buffers',
+            expanded: false,
         });
 
         const bufferParams = this.bufferStore.getStats();
         bufferFolder.addMonitor(bufferParams, 'bufferCount', {
             format: n => n.toFixed(0),
-            label: 'GPUBuffers',
+            label: 'GPU buffers',
         });
         bufferFolder.addMonitor(bufferParams, 'bufferMemoryBytes', {
             format: n => {

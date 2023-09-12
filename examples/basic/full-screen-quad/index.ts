@@ -5,12 +5,9 @@ import { Camera, Node } from 'hammerhead.gl/scene';
 
 import { load8bitImage } from '../../lib';
 
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-
-async function main() {
+export async function run(context: Context) {
     const logo = await load8bitImage('/webgpu.png');
 
-    const context = await Context.create(canvas);
     const renderer = context.renderer;
 
     const material = new BasicMaterial().withColorTexture(logo);
@@ -22,6 +19,9 @@ async function main() {
     const camera = new Camera('orthographic');
 
     function render() {
+        if (renderer.destroyed) {
+            return;
+        }
         renderer.render(mesh, camera);
     }
 
@@ -29,5 +29,3 @@ async function main() {
 
     context.on('resized', render);
 }
-
-main().catch(e => console.error(e));

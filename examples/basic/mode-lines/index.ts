@@ -6,10 +6,7 @@ import { Camera, Node } from 'hammerhead.gl/scene';
 import { frameObject, loadPLYModel } from '../../lib';
 import { Primitive } from 'hammerhead.gl/materials/Material';
 
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-
-async function main() {
-    const context = await Context.create(canvas);
+export async function run(context: Context) {
     const renderer = context.renderer;
 
     const mesh = await loadPLYModel('/files/hammerhead.ply');
@@ -28,6 +25,9 @@ async function main() {
     let now = performance.now();
 
     function renderLoop() {
+        if (renderer.destroyed) {
+            return;
+        }
         render();
         const current = performance.now();
         const dt = (current - now) / 1000;
@@ -41,5 +41,3 @@ async function main() {
 
     context.on('resized', render);
 }
-
-main().catch(e => console.error(e));

@@ -18,10 +18,21 @@ class Renderer {
     private readonly device: GPUDevice;
     private readonly context: GPUCanvasContext;
 
+    private _frameCount: number = 0;
+
     private renderPipeline: RenderPipeline;
+    private _destroyed: boolean = false;
 
     /** The clear color. */
     clearColor: chroma.Color = DEFAULT_CLEAR_COLOR;
+
+    get destroyed() {
+        return this._destroyed;
+    }
+
+    get frameCount() {
+        return this._frameCount;
+    }
 
     constructor(
         device: GPUDevice,
@@ -82,6 +93,9 @@ class Renderer {
      * @param camera The camera to render.
      */
     render(root: Node | null, camera: Camera) {
+        if (this._destroyed) {
+            throw new Error('this renderer is destroyed');
+        }
         if (!camera) {
             throw new Error('no camera specified');
         }
@@ -96,6 +110,8 @@ class Renderer {
             target: this.context.getCurrentTexture(),
         });
         this.renderPipeline.executeRenderCommand(command);
+
+        this._frameCount++;
     }
 
     /**
@@ -113,6 +129,7 @@ class Renderer {
     }
 
     destroy() {
+        this._destroyed = true;
         this.renderPipeline.destroy();
     }
 }

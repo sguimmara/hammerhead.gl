@@ -8,10 +8,7 @@ import { vec3 } from 'wgpu-matrix';
 
 import { frameBounds, loadPLYModel, wait } from '../../lib';
 
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-
-async function main() {
-    const context = await Context.create(canvas);
+export async function run(context: Context) {
     const renderer = context.renderer;
     renderer.clearColor = chroma('gray');
 
@@ -98,6 +95,9 @@ async function main() {
     }
 
     function renderLoop() {
+        if (renderer.destroyed) {
+            return;
+        }
         render();
         requestAnimationFrame(renderLoop);
     }
@@ -124,5 +124,3 @@ async function main() {
         }
     }
 }
-
-main().catch(e => console.error(e));

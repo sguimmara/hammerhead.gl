@@ -7,11 +7,8 @@ import { Camera, Node } from 'hammerhead.gl/scene';
 import { frameObject, load8bitImage } from '../../lib';
 import { Primitive } from 'hammerhead.gl/materials/Material';
 
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-
-async function main() {
+export async function run(context: Context) {
     const logo = await load8bitImage('/webgpu.png');
-    const context = await Context.create(canvas);
     const renderer = context.renderer;
     renderer.clearColor = chroma('gray');
 
@@ -37,6 +34,9 @@ async function main() {
     let now = performance.now();
 
     function renderLoop() {
+        if (renderer.destroyed) {
+            return;
+        }
         render();
         const current = performance.now();
         const dt = (current - now) / 1000;
@@ -50,5 +50,3 @@ async function main() {
 
     context.on('resized', render);
 }
-
-main().catch(e => console.error(e));

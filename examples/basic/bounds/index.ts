@@ -5,10 +5,7 @@ import { BoundsHelper } from 'hammerhead.gl/helpers';
 import { BasicMaterial, LineMaterial } from 'hammerhead.gl/materials';
 import { frameBounds, loadPLYModel } from '../../lib';
 
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-
-async function main() {
-    const context = await Context.create(canvas);
+export async function run(context: Context) {
     const renderer = context.renderer;
     renderer.clearColor = chroma('gray');
 
@@ -54,6 +51,10 @@ async function main() {
     let now = performance.now();
 
     function renderLoop() {
+        if (renderer.destroyed) {
+            return;
+        }
+
         const current = performance.now();
         const dt = (current - now) / 1000;
         const degrees = 40 * dt;
@@ -81,5 +82,3 @@ async function main() {
 
     context.on('resized', render);
 }
-
-main().catch(e => console.error(e));

@@ -6,12 +6,8 @@ import { Camera, Node } from 'hammerhead.gl/scene';
 
 import { load8bitImage } from '../../lib';
 
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-
-async function main() {
+export async function run(context: Context) {
     const logo = await load8bitImage('/webgpu-transparent.png');
-
-    const context = await Context.create(canvas);
     const renderer = context.renderer;
     renderer.clearColor = chroma('pink');
 
@@ -27,6 +23,9 @@ async function main() {
     const color2 = chroma('red');
 
     function renderLoop() {
+        if (renderer.destroyed) {
+            return;
+        }
         const t = (Math.sin(performance.now() / 250) + 1) / 2;
         renderer.clearColor = chroma.interpolate(color1, color2, t);
         renderer.render(mesh, camera);
@@ -35,5 +34,3 @@ async function main() {
 
     requestAnimationFrame(renderLoop);
 }
-
-main().catch(e => console.error(e));

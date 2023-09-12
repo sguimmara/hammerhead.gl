@@ -4,14 +4,10 @@ import { BasicMaterial } from 'hammerhead.gl/materials';
 import { Camera, Node } from 'hammerhead.gl/scene';
 
 import { load8bitImage } from '../../lib';
-import { Pane } from 'tweakpane';
+import Inspector from '../../Inspector';
 
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-
-async function main() {
+export async function run(context: Context, inspector: Inspector) {
     const logo = await load8bitImage('/webgpu.png');
-
-    const context = await Context.create(canvas);
     const renderer = context.renderer;
 
     const material = new BasicMaterial().withColorTexture(logo);
@@ -30,23 +26,19 @@ async function main() {
 
     context.on('resized', render);
 
-    const pane = new Pane();
-
     const params = {
         mesh: mesh.active,
         material: material.active,
     };
 
-    pane.addInput(params, 'mesh')
+    inspector.exampleFolder.addInput(params, 'mesh')
         .on('change', ev => {
             mesh.active = ev.value;
             render();
         });
-    pane.addInput(params, 'material')
+    inspector.exampleFolder.addInput(params, 'material')
         .on('change', ev => {
             material.active = ev.value;
             render()
         });
 }
-
-main().catch(e => console.error(e));

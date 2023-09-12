@@ -5,14 +5,10 @@ import { Colorimetry } from 'hammerhead.gl/materials/postprocessing';
 import { Camera, Node } from 'hammerhead.gl/scene';
 
 import { load8bitImage } from '../../lib';
-import { Pane } from 'tweakpane';
+import Inspector from '../../Inspector';
 
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-
-async function main() {
+export async function run(context: Context, inspector: Inspector) {
     const logo = await load8bitImage('/webgpu.png');
-
-    const context = await Context.create(canvas);
     const renderer = context.renderer;
 
     const colorimetry = new Colorimetry({
@@ -38,23 +34,19 @@ async function main() {
 
     context.on('resized', render);
 
-    const pane = new Pane();
-
     const params = {
         saturation: 1,
         brightness: 1,
     };
 
-    pane.addInput(params, 'saturation', { min: 0, max: 3 })
+    inspector.exampleFolder.addInput(params, 'saturation', { min: 0, max: 3 })
         .on('change', ev => {
             colorimetry.withSaturation(ev.value);
             render();
         });
-    pane.addInput(params, 'brightness', { min: 0, max: 3 })
+    inspector.exampleFolder.addInput(params, 'brightness', { min: 0, max: 3 })
         .on('change', ev => {
             colorimetry.withBrightness(ev.value);
             render()
         });
 }
-
-main().catch(e => console.error(e));

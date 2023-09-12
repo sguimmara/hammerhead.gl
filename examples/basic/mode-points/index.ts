@@ -4,13 +4,10 @@ import { PointMaterial } from 'hammerhead.gl/materials';
 import { Camera, Node } from 'hammerhead.gl/scene';
 
 import { frameObject, loadPLYModel } from '../../lib';
-import { Pane } from 'tweakpane';
 import { BoundsHelper } from 'hammerhead.gl/helpers';
+import Inspector from '../../Inspector';
 
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-
-async function main() {
-    const context = await Context.create(canvas);
+export async function run(context: Context, inspector: Inspector) {
     const renderer = context.renderer;
 
     const mesh = await loadPLYModel('/files/hammerhead.ply');
@@ -30,6 +27,9 @@ async function main() {
     let now = performance.now();
 
     function renderLoop() {
+        if (renderer.destroyed) {
+            return;
+        }
         render();
         const current = performance.now();
         const dt = (current - now) / 1000;
@@ -43,17 +43,13 @@ async function main() {
 
     context.on('resized', render);
 
-    const pane = new Pane();
-
     const params = {
         pointSize: 2,
     };
 
-    pane.addInput(params, 'pointSize', { min: 0, max: 20 })
+    inspector.exampleFolder.addInput(params, 'pointSize', { min: 0, max: 20 })
         .on('change', ev => {
             material.setPointSize(ev.value);
             render();
         });
 }
-
-main().catch(e => console.error(e));

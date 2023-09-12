@@ -4,13 +4,10 @@ import { BasicMaterial } from 'hammerhead.gl/materials';
 import { Camera, Node } from 'hammerhead.gl/scene';
 
 import { frameObject, loadPLYModel } from '../../lib';
-import { Pane } from 'tweakpane';
 import LineMaterial from 'hammerhead.gl/materials/LineMaterial';
+import Inspector from '../../Inspector';
 
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-
-async function main() {
-    const context = await Context.create(canvas);
+export async function run(context: Context, pane: Inspector) {
     const renderer = context.renderer;
     renderer.clearColor = chroma('gray');
 
@@ -32,6 +29,9 @@ async function main() {
     let now = performance.now();
 
     function renderLoop() {
+        if (renderer.destroyed) {
+            return;
+        }
         render();
         const current = performance.now();
         const dt = (current - now) / 1000;
@@ -45,15 +45,12 @@ async function main() {
 
     context.on('resized', render);
 
-    const pane = new Pane();
     const params = {
         offset: 0.002,
     };
-    pane.addInput(params, 'offset', {
+    pane.exampleFolder.addInput(params, 'offset', {
         label: 'wireframe offset',
         min: -1,
         max: 1,
     }).on('change', (ev) => wireframe.withLineOffset(ev.value));
 }
-
-main().catch(e => console.error(e));
