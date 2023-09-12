@@ -145,7 +145,6 @@ export default class Mesh implements Version, Destroy, Clone, Observable<Mesh, E
         if (type === 'position') {
             this.bounds = null;
         }
-        // TODO should we constrain the buffer size to match the vertex count ?
         let current = this.attributes.get(type);
         if (current) {
             current.value = buffer;

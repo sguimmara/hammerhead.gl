@@ -57,8 +57,8 @@ class PostProcessingStage extends Stage {
                     this.material,
                     i,
                     entries
-                    );
-                }
+                );
+            }
         }
 
         this.pipelineManager.bindGlobalUniforms(pass, this.GlobalValues);
