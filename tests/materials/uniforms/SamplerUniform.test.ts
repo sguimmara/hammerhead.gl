@@ -1,4 +1,4 @@
-import { SamplerUniform } from '@/materials/uniforms';
+import { SamplerUniform } from '@materials/uniforms';
 import { describe, expect, it } from 'vitest';
 
 describe('constructor', () => {

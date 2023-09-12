@@ -1,12 +1,12 @@
-import { Mesh } from '@/geometries';
-import { ObjectUniform } from '@/materials/uniforms';
-import { MeshObject } from '@/scene';
-import { Bucket, BufferStore, PipelineManager, TextureStore } from '@/renderer';
+import { Mesh } from '@geometries';
+import { ObjectUniform } from '@materials/uniforms';
+import { MeshObject } from '@scene';
+import { Bucket, BufferStore, PipelineManager, TextureStore } from '@renderer';
 
 import Stage from './Stage';
-import { Material } from '@/materials';
-import { BindGroup } from '@/core';
-import { Primitive } from '@/materials/Material';
+import { Material } from '@materials';
+import { BindGroup } from '@core';
+import { Primitive } from '@materials/Material';
 
 /**
  * A render pipeline stage that render the scene into a color attachment.

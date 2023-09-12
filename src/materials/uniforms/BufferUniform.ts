@@ -1,4 +1,4 @@
-import { Sized, Version, Visitable, Visitor } from '@/core';
+import { Sized, Version, Visitable, Visitor } from '@core';
 import Uniform, { UntypedUniform } from './Uniform';
 
 /**

@@ -1,4 +1,4 @@
-import { Observable, Destroy, EventDispatcher, EventHandler } from '@/core';
+import { Observable, Destroy, EventDispatcher, EventHandler } from '@core';
 import Source from './Source';
 
 let TEXTURE_ID = 0;

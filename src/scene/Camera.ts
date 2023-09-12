@@ -1,7 +1,7 @@
-import { MathUtils } from '@/core';
+import { MathUtils } from '@core';
 import { Mat4, mat4 } from 'wgpu-matrix';
 import Node from './Node';
-import { radians } from '@/core/types';
+import { radians } from '@core/types';
 
 export type CameraMode = 'orthographic' | 'perspective';
 

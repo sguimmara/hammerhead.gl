@@ -1,8 +1,8 @@
-import { Destroy, Service } from '@/core';
-import { Attribute, Mesh } from '@/geometries';
+import { Destroy, Service } from '@core';
+import { Attribute, Mesh } from '@geometries';
 import BufferWriter from './BufferWriter';
 import MemoryManager from './MemoryManager';
-import { UntypedBufferUniform } from '@/materials/uniforms/BufferUniform';
+import { UntypedBufferUniform } from '@materials/uniforms/BufferUniform';
 
 class GeometryStorage implements Destroy {
     currentVersion: number;

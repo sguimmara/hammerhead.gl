@@ -1,4 +1,4 @@
-import { Node } from '@/scene';
+import { Node } from '@scene';
 import { describe, expect, it, vi } from 'vitest';
 
 describe('constructor', () => {

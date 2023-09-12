@@ -1,11 +1,11 @@
-import { Container, Observable, EventDispatcher, EventHandler } from '@/core';
+import { Container, Observable, EventDispatcher, EventHandler } from '@core';
 import {
     BufferStore,
     PipelineManager,
     Renderer,
     TextureStore,
-} from '@/renderer';
-import MemoryManager from '@/renderer/MemoryManager';
+} from '@renderer';
+import MemoryManager from '@renderer/MemoryManager';
 import Configuration from './Configuration';
 import { Vec2, vec2 } from 'wgpu-matrix';
 

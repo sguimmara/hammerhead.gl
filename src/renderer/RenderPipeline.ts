@@ -1,7 +1,7 @@
-import { Container, Destroy } from '@/core';
-import { PostProcessingMaterial } from '@/materials/postprocessing';
-import { ObjectUniform } from '@/materials/uniforms';
-import { Camera } from '@/scene';
+import { Container, Destroy } from '@core';
+import { PostProcessingMaterial } from '@materials/postprocessing';
+import { ObjectUniform } from '@materials/uniforms';
+import { Camera } from '@scene';
 import { Color } from 'chroma-js';
 
 import { PipelineManager } from '.';

@@ -1,4 +1,4 @@
-import { Visitor } from '@/core';
+import { Visitor } from '@core';
 import { Vec2, vec2 } from 'wgpu-matrix';
 import BufferUniform from './BufferUniform';
 

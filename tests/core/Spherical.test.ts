@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import Spherical from '@/core/Spherical';
+import Spherical from '@core/Spherical';
 
 describe('constructor', () => {
     it('should assign the properties', () => {

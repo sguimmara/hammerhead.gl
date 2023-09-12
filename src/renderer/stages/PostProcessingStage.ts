@@ -1,10 +1,10 @@
-import { BindGroup } from '@/core';
-import { PostProcessingMaterial } from '@/materials/postprocessing';
-import { ObjectUniform } from '@/materials/uniforms';
+import { BindGroup } from '@core';
+import { PostProcessingMaterial } from '@materials/postprocessing';
+import { ObjectUniform } from '@materials/uniforms';
 
-import BufferStore from '../BufferStore';
-import PipelineManager from '../PipelineManager';
-import TextureStore from '../TextureStore';
+import BufferStore from '@renderer/BufferStore';
+import PipelineManager from '@renderer/PipelineManager';
+import TextureStore from '@renderer/TextureStore';
 import Stage from './Stage';
 
 class PostProcessingStage extends Stage {

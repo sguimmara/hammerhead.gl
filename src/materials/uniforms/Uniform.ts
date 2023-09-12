@@ -1,4 +1,4 @@
-import { Version } from '@/core';
+import { Version } from '@core';
 
 export interface UntypedUniform {
     value: unknown;

@@ -1,4 +1,4 @@
-import { Material } from '@/materials';
+import { Material } from '@materials';
 import { describe, expect, it } from 'vitest';
 
 describe('Version', () => {

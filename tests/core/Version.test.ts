@@ -1,4 +1,4 @@
-import { Versioned } from '@/core';
+import { Versioned } from '@core';
 import { describe, expect, it } from 'vitest';
 
 describe('Versioned', () => {

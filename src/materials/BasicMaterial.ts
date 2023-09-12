@@ -1,7 +1,7 @@
 import chroma, { Color } from 'chroma-js';
 import fragmentShader from './BasicMaterial.frag.wgsl';
 import triangleVertexShader from './default.vert.wgsl';
-import { Texture } from '@/textures';
+import { Texture } from '@textures';
 import Material from './Material';
 
 const WHITE = chroma('white');

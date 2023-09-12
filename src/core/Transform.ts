@@ -1,6 +1,6 @@
 import { Mat4, mat4, quat, Quat, Vec3 } from 'wgpu-matrix';
-import { Sized, Version, Visitable, Visitor } from '@/core';
-import { radians } from '@/core/types';
+import { Sized, Version, Visitable, Visitor } from '@core';
+import { radians } from '@core/types';
 
 const DEFAULT_UP = [0, 1, 0];
 

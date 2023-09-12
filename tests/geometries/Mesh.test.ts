@@ -1,4 +1,4 @@
-import { Mesh } from '@/geometries';
+import { Mesh } from '@geometries';
 import { describe, expect, it, vi } from 'vitest';
 
 describe('constructor', () => {

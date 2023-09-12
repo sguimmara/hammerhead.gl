@@ -1,4 +1,4 @@
-import { MathUtils } from '@/core';
+import { MathUtils } from '@core';
 import Mesh from './Mesh';
 
 /**

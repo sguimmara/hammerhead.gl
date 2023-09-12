@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { Container, Service } from '@/core';
+import { Container, Service } from '@core';
 import { describe, expect, it, beforeEach } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 

@@ -1,5 +1,5 @@
-import { EventDispatcher, EventHandler, Observable } from '@/core';
-import { Camera } from '@/scene';
+import { EventDispatcher, EventHandler, Observable } from '@core';
+import { Camera } from '@scene';
 
 export interface Events {
     'updated': Controls;

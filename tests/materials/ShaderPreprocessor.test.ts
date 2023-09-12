@@ -1,14 +1,14 @@
-import { BindGroup } from '@/core';
-import { Attribute } from '@/geometries';
+import { BindGroup } from '@core';
+import { Attribute } from '@geometries';
 import {
     UniformType,
     AttributeType,
     ShaderPreprocessor as SPP,
-} from '@/materials';
+} from '@materials';
 import {
     UniformDeclaration,
     AttributeDeclaration,
-} from '@/materials/ShaderPreprocessor';
+} from '@materials/ShaderPreprocessor';
 import { describe, expect, it } from 'vitest';
 
 function attrDecl(name: string, type: AttributeType, location: number) {

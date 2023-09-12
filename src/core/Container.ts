@@ -1,4 +1,4 @@
-import { Destroy, Service } from '@/core';
+import { Destroy, Service } from '@core';
 
 class ContainerError extends Error {
     constructor(message: string) {

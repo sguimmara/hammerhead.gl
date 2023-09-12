@@ -7,7 +7,7 @@
   "description": "A 3D renderer written in TypeScript and WebGPU.",
   "main": "index.js",
   "imports": {
-    "@/*": "./*"
+    "@*": "./*"
   },
   "scripts": {
     "precommit": "npm run lint && npm test",

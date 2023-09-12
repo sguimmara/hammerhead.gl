@@ -1,6 +1,6 @@
-import { Camera } from '@/scene';
+import { Camera } from '@scene';
 
-import { Bucket } from '@/renderer';
+import { Bucket } from '@renderer';
 
 export default class RenderCommand {
     readonly camera: Camera;

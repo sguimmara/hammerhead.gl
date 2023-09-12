@@ -1,6 +1,6 @@
-import { Mesh, ScreenQuad } from '@/geometries';
-import { ObjectUniform } from '@/materials/uniforms';
-import { BufferStore, PipelineManager, TextureStore } from '@/renderer';
+import { Mesh, ScreenQuad } from '@geometries';
+import { ObjectUniform } from '@materials/uniforms';
+import { BufferStore, PipelineManager, TextureStore } from '@renderer';
 import chroma, { Color } from 'chroma-js';
 
 const DEFAULT_CLEAR_COLOR = chroma('black');

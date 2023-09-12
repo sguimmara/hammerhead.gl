@@ -1,6 +1,6 @@
-import { Box3 } from '@/core';
-import { Mesh } from '@/geometries';
-import { Material } from '@/materials';
+import { Box3 } from '@core';
+import { Mesh } from '@geometries';
+import { Material } from '@materials';
 import { vec3 } from 'wgpu-matrix';
 
 import Node from './Node';

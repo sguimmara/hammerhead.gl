@@ -1,4 +1,4 @@
-import { Sized, Visitable, Version, Visitor } from '@/core';
+import { Sized, Visitable, Version, Visitor } from '@core';
 import BufferUniform from './BufferUniform';
 
 type ObjectValue = Sized & Visitable & Version;

@@ -1,4 +1,4 @@
-import { EventDispatcher, ObservableEvent } from '@/core';
+import { EventDispatcher, ObservableEvent } from '@core';
 import { describe, expect, it, vi } from 'vitest';
 
 interface Events {

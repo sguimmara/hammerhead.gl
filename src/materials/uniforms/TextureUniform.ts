@@ -1,6 +1,6 @@
-import { Texture } from '@/textures';
+import { Texture } from '@textures';
 import Uniform from './Uniform';
-import { Version } from '@/core';
+import { Version } from '@core';
 
 /**
  * A uniform that maps to a GPU texture.

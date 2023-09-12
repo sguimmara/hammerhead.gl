@@ -1,4 +1,4 @@
-import Configuration from '@/core/Configuration';
+import Configuration from '@core/Configuration';
 import { describe, expect, it } from 'vitest';
 
 describe('default()', () => {

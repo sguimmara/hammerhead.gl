@@ -1,12 +1,12 @@
-import { BindGroup, Container, Service, Versioned } from '@/core';
-import Configuration from '@/core/Configuration';
-import { Attribute, Mesh } from '@/geometries';
-import { AttributeInfo, AttributeType, Material, UniformInfo, UniformType } from '@/materials';
-import { Primitive } from '@/materials/Material';
-import ShaderError from '@/materials/ShaderError';
-import { ObjectUniform } from '@/materials/uniforms';
-import { BufferStore, TextureStore } from '@/renderer';
-import { MeshObject } from '@/scene';
+import { BindGroup, Container, Service, Versioned } from '@core';
+import Configuration from '@core/Configuration';
+import { Attribute, Mesh } from '@geometries';
+import { AttributeInfo, AttributeType, Material, UniformInfo, UniformType } from '@materials';
+import { Primitive } from '@materials/Material';
+import ShaderError from '@materials/ShaderError';
+import { ObjectUniform } from '@materials/uniforms';
+import { BufferStore, TextureStore } from '@renderer';
+import { MeshObject } from '@scene';
 
 class PerObject {
     transformUniform: ObjectUniform;

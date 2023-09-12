@@ -1,4 +1,4 @@
-import { RawSource } from '@/textures';
+import { RawSource } from '@textures';
 import { describe, expect, it } from 'vitest';
 
 describe('getData', () => {

@@ -1,5 +1,5 @@
 import { Vec3, vec3 } from 'wgpu-matrix';
-import { Clone } from '@/core';
+import { Clone } from '@core';
 
 export default class Box3 implements Clone {
     min: Vec3;

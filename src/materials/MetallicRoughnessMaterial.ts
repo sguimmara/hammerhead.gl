@@ -1,6 +1,6 @@
 import fragmentShader from './MetallicRoughness.frag.wgsl';
 import vertexShader from './MetallicRoughness.vert.wgsl';
-import { Texture } from '@/textures';
+import { Texture } from '@textures';
 import Material from './Material';
 import { Color } from 'chroma-js';
 

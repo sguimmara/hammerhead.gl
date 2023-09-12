@@ -1,5 +1,5 @@
-import { Service } from '@/core';
-import { Sampler, Source, Texture } from '@/textures';
+import { Service } from '@core';
+import { Sampler, Source, Texture } from '@textures';
 
 type GPUImage =
     | ImageBitmap

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { Visitor } from '@/core';
-import { Vec2Uniform } from '@/materials/uniforms';
+import { Visitor } from '@core';
+import { Vec2Uniform } from '@materials/uniforms';
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 

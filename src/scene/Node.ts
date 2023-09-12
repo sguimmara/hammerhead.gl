@@ -5,7 +5,7 @@ import {
     Transform,
     EventHandler,
     Box3,
-} from '@/core';
+} from '@core';
 
 let ID = 0;
 

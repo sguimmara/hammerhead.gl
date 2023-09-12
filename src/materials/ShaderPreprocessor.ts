@@ -1,4 +1,4 @@
-import { BindGroup } from '@/core';
+import { BindGroup } from '@core';
 import AttributeType from './AttributeType';
 import ShaderError from './ShaderError';
 import ShaderInfo from './ShaderInfo';
@@ -6,7 +6,7 @@ import UniformType from './UniformType';
 import constants from './chunks/constants.wgsl';
 import effectHeader from './chunks/effect.header.wgsl';
 import { AttributeInfo, ShaderLayout, UniformInfo } from './ShaderLayout';
-import { Attribute } from '@/geometries';
+import { Attribute } from '@geometries';
 
 const UNIFORM_DECLARATION = /@group\((global|object|material|vertex)\)\s*@binding\(auto\)\s*(var|var<uniform>|var<storage,\s*read>)\s*(\w+)\s*:\s*(mat4x4f|vec2f|vec3f|vec4f|f32|u32|array<(u32|f32)>|sampler|texture_2d<f32>|GlobalValues)\s*;/g;
 const ATTRIBUTE_DECLARATION = /@location\(auto\)\s*(\w+)\s*:\s*(\w+)/g;

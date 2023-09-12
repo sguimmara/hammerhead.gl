@@ -1,8 +1,8 @@
-import { Box3, Update } from '@/core';
-import { WireCube } from '@/geometries';
-import { LineMaterial } from '@/materials';
-import { Primitive } from '@/materials/Material';
-import { MeshObject, Node } from '@/scene';
+import { Box3, Update } from '@core';
+import { WireCube } from '@geometries';
+import { LineMaterial } from '@materials';
+import { Primitive } from '@materials/Material';
+import { MeshObject, Node } from '@scene';
 import chroma, { Color } from 'chroma-js';
 
 /**

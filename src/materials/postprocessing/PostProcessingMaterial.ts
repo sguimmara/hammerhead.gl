@@ -1,4 +1,4 @@
-import Material from '@/materials/Material';
+import Material from '@materials/Material';
 
 /**
  * A {@link Material} used for post-processing effects.

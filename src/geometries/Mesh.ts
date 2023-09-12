@@ -7,7 +7,7 @@ import {
     Observable,
     Version,
     Versioned,
-} from '@/core';
+} from '@core';
 
 let ID = 0;
 

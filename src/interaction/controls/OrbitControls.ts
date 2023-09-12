@@ -1,4 +1,4 @@
-import { Camera } from '@/scene';
+import { Camera } from '@scene';
 import Controls from './Controls';
 import { Vec3, vec3 } from 'wgpu-matrix';
 

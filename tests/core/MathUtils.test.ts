@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MathUtils } from '@/core';
+import { MathUtils } from '@core';
 
 describe('deg2Rad', () => {
     it('should return the correct value', () => {

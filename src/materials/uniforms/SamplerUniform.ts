@@ -1,4 +1,4 @@
-import { Sampler } from '@/textures';
+import { Sampler } from '@textures';
 import Uniform from './Uniform';
 
 /**

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { Visitor } from '@/core';
-import { Vec4Uniform } from '@/materials/uniforms';
+import { Visitor } from '@core';
+import { Vec4Uniform } from '@materials/uniforms';
 import chroma from 'chroma-js';
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';

@@ -1,4 +1,4 @@
-import { Sized, Visitable, Version, Visitor } from '@/core';
+import { Sized, Visitable, Version, Visitor } from '@core';
 import { Mat4, Vec2, vec2 } from 'wgpu-matrix';
 
 class GlobalValues implements Sized, Visitable, Version {

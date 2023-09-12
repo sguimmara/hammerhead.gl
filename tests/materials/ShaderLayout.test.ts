@@ -1,5 +1,5 @@
-import { BindGroup } from '@/core';
-import { ShaderLayout, AttributeType, UniformType, AttributeInfo, UniformInfo } from '@/materials';
+import { BindGroup } from '@core';
+import { ShaderLayout, AttributeType, UniformType, AttributeInfo, UniformInfo } from '@materials';
 import { describe, expect, it } from 'vitest';
 
 describe('getAttributeLocation', () => {

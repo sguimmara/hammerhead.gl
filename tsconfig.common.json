@@ -10,7 +10,7 @@
     "noImplicitAny": true,
     "baseUrl": "src",
     "paths": {
-      "@/*": ["./*"]
+      "@*": ["./*"]
     },
     "plugins": [
       { "transform": "typescript-transform-paths" }

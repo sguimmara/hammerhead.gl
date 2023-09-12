@@ -1,4 +1,4 @@
-import { Box3, MathUtils } from '@/core';
+import { Box3, MathUtils } from '@core';
 import { describe, expect, it } from 'vitest';
 
 describe('constructor', () => {

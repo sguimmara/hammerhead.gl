@@ -3,9 +3,9 @@ import chroma from 'chroma-js';
 import Bucket from './Bucket';
 import RenderCommand from './RenderCommand';
 import RenderPipeline from './RenderPipeline';
-import { Container } from '@/core';
-import { PostProcessingMaterial } from '@/materials/postprocessing';
-import { Node, MeshObject, Camera } from '@/scene';
+import { Container } from '@core';
+import { PostProcessingMaterial } from '@materials/postprocessing';
+import { Node, MeshObject, Camera } from '@scene';
 
 const DEFAULT_CLEAR_COLOR = chroma('black');
 

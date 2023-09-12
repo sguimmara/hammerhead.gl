@@ -1,4 +1,4 @@
-import { Service } from '@/core';
+import { Service } from '@core';
 
 export default class MemoryManager implements Service {
     private readonly device: GPUDevice;

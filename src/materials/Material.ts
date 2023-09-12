@@ -9,8 +9,8 @@ import {
     EventDispatcher,
     EventHandler,
     Version,
-} from '@/core';
-import { Sampler, Texture } from '@/textures';
+} from '@core';
+import { Sampler, Texture } from '@textures';
 import {
     TextureUniform,
     SamplerUniform,
@@ -24,7 +24,7 @@ import {
     ObjectUniform,
 } from './uniforms';
 import UniformType from './UniformType';
-import GlobalValues from '@/renderer/GlobalValues';
+import GlobalValues from '@renderer/GlobalValues';
 import { UntypedBufferUniform } from './uniforms/BufferUniform';
 import { UntypedUniform } from './uniforms/Uniform';
 
