@@ -15,6 +15,7 @@
     "coverage": "vitest run --coverage",
     "lint": "ttsc --noEmit && eslint .",
     "build": "ttsc",
+    "watch": "npm run prepack && ttsc --watch",
     "doc": "typedoc --readme none --name Hammerhead.gl src/index.ts",
     "start": "vite",
     "prepack": "shx rm -fr dist/ && shx mkdir dist && npx copyfiles -u 1 './src/**/*.wgsl' dist && node scripts/prepare-package.mjs && npm run build",
