@@ -9,7 +9,7 @@ module.exports = {
     },
     plugins: ['@typescript-eslint'],
     root: true,
-    ignorePatterns: ['pages', 'dist', 'docs', 'vite.config.ts', '.eslintrc.cjs'],
+    ignorePatterns: ['pages', 'dist', 'coverage', 'docs', 'vite.config.ts', '.eslintrc.cjs'],
     rules: {
         quotes: [2, 'single', { 'avoidEscape': true }]
     }
