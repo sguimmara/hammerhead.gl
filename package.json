@@ -20,7 +20,7 @@
     "start": "vite",
     "prepack": "shx rm -fr dist/ && shx mkdir dist && npx copyfiles -u 1 './src/**/*.wgsl' dist && node scripts/prepare-package.mjs && npm run build",
     "prepare": "husky install",
-    "pages": "npm run prepack && cd examples && npx vite build",
+    "pages": "npm run prepack && cd examples && npx vite build --base=https://sguimmara.github.io/hammerhead.gl/",
     "prepare-examples": "node scripts/generate-example-index.mjs"
   },
   "devDependencies": {
