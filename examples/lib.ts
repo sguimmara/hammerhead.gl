@@ -34,7 +34,11 @@ export function frameObject(obj: Node, camera: Camera) {
 }
 
 export async function loadPLYModel(): Promise<Mesh> {
-    const res = await fetch('/files/hammerhead.ply');
+    let base = '';
+    if (import.meta.env.PROD) {
+        base = import.meta.env.BASE_URL;
+    }
+    const res = await fetch(`${base}/files/hammerhead.ply`);
     const text = await res.text();
     const data = await parse(text, ply.PLYLoader);
 
