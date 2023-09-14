@@ -7,7 +7,10 @@ import { Camera, Node } from 'hammerhead.gl/scene';
 import { loadPLYModel } from '../../lib';
 import LineMaterial from 'hammerhead.gl/materials/LineMaterial';
 
-export async function run(context: Context) {
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+
+async function main() {
+    const context = await Context.create(canvas);
     const renderer = context.renderer;
     renderer.clearColor = chroma('gray');
 
@@ -62,9 +65,6 @@ export async function run(context: Context) {
     }
 
     function renderLoop() {
-        if (renderer.destroyed) {
-            return;
-        }
         const current = performance.now();
         updateVertices(current);
         requestAnimationFrame(renderLoop);
@@ -76,3 +76,5 @@ export async function run(context: Context) {
 
     context.on('resized', render);
 }
+
+main().catch(e => console.error(e));

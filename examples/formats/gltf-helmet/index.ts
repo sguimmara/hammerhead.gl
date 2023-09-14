@@ -2,14 +2,18 @@ import { Context, MathUtils } from 'hammerhead.gl/core';
 import { Camera, Node } from 'hammerhead.gl/scene';
 import GLTFLoader from './gltf';
 import { frameBounds } from '../../lib';
+import Inspector from '../../Inspector';
 import { BoundsHelper } from 'hammerhead.gl/helpers';
 
-export async function run(context: Context) {
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+
+async function main() {
     const model = 'DamagedHelmet';
     const uri = `https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/${model}/glTF/${model}.gltf`;
     const baseUri = `https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/${model}/glTF/`;
     const loader = new GLTFLoader();
     const gltf = await loader.loadGltfScene(uri, baseUri);
+    const context = await Context.create(canvas);
     const renderer = context.renderer;
 
     const scene = gltf[0];
@@ -29,9 +33,6 @@ export async function run(context: Context) {
     let now = performance.now();
 
     function renderLoop() {
-        if (renderer.destroyed) {
-            return;
-        }
         boundsHelper.update();
         render();
         const current = performance.now();
@@ -45,4 +46,8 @@ export async function run(context: Context) {
     requestAnimationFrame(renderLoop);
 
     context.on('resized', render);
+
+    new Inspector(context);
 }
+
+main().catch(e => console.error(e));

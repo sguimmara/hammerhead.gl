@@ -28,7 +28,6 @@ export default class Context implements Observable<Context, Events> {
     readonly renderer: Renderer;
     readonly memoryManager: MemoryManager;
     readonly configuration: Configuration;
-    private readonly observer: ResizeObserver;
 
     private constructor(
         context: GPUCanvasContext,
@@ -54,7 +53,7 @@ export default class Context implements Observable<Context, Events> {
 
         this.renderer = new Renderer(this.device, this.context, this.container);
 
-        this.observer = new ResizeObserver((entries) => {
+        const observer = new ResizeObserver((entries) => {
             for (const entry of entries) {
                 const canvas = entry.target as HTMLCanvasElement;
                 const width = entry.contentBoxSize[0].inlineSize;
@@ -71,7 +70,7 @@ export default class Context implements Observable<Context, Events> {
             }
         });
 
-        this.observer.observe(canvas);
+        observer.observe(canvas);
     }
 
     on<K extends keyof Events>(type: K, handler: EventHandler<Context, Events[K]>): void {
@@ -81,7 +80,6 @@ export default class Context implements Observable<Context, Events> {
     destroy() {
         this.container.destroy();
         this.renderer.destroy();
-        this.observer.disconnect();
     }
 
     /**

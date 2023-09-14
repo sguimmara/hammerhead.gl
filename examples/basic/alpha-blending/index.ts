@@ -8,13 +8,16 @@ import {
 import { Camera, Node } from 'hammerhead.gl/scene';
 
 import { load8bitImage } from '../../lib';
+import { Pane } from 'tweakpane';
 import { BlendFactor, BlendOp } from 'hammerhead.gl/materials/Material';
-import Inspector from '../../Inspector';
 
-export async function run(context: Context, inspector: Inspector) {
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+
+async function main() {
     const checkerboard = await load8bitImage('/checkerboard.jpg');
     const explosion = await load8bitImage('/explosion.png');
 
+    const context = await Context.create(canvas);
     const renderer = context.renderer;
     renderer.clearColor = chroma('cyan');
 
@@ -51,13 +54,15 @@ export async function run(context: Context, inspector: Inspector) {
 
     render();
 
+    const pane = new Pane();
+
     function createFolder(material: Material) {
-        const colorFolder = inspector.pane.addFolder({
+        const colorFolder = pane.addFolder({
             title: 'color blending',
             expanded: true,
         });
 
-        const alphaFolder = inspector.pane.addFolder({
+        const alphaFolder = pane.addFolder({
             title: 'alpha blending',
             expanded: true,
         });
@@ -85,8 +90,10 @@ export async function run(context: Context, inspector: Inspector) {
 
     createFolder(tile.material);
 
-    inspector.pane.on('change', () => {
+    pane.on('change', () => {
         tile.material.incrementVersion();
         render();
     });
 }
+
+main().catch(e => console.error(e));

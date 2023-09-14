@@ -3,13 +3,16 @@ import { ScreenQuad } from 'hammerhead.gl/geometries';
 import { BasicMaterial } from 'hammerhead.gl/materials';
 import { Flip } from 'hammerhead.gl/materials/postprocessing';
 import { Camera, Node } from 'hammerhead.gl/scene';
+import { Pane } from 'tweakpane';
 
 import { load8bitImage } from '../../lib';
-import Inspector from '../../Inspector';
 
-export async function run(context: Context, inspector: Inspector) {
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+
+async function main() {
     const logo = await load8bitImage('/webgpu.png');
 
+    const context = await Context.create(canvas);
     const renderer = context.renderer;
 
     const flip = new Flip();
@@ -32,19 +35,23 @@ export async function run(context: Context, inspector: Inspector) {
 
     context.on('resized', render);
 
+    const pane = new Pane();
+
     const params = {
         flipX: false,
         flipY: false,
     };
 
-    inspector.exampleFolder.addInput(params, 'flipX')
+    pane.addInput(params, 'flipX')
         .on('change', ev => {
             flip.withFlipX(ev.value);
             render();
         });
-    inspector.exampleFolder.addInput(params, 'flipY')
+    pane.addInput(params, 'flipY')
         .on('change', ev => {
             flip.withFlipY(ev.value);
             render()
         });
 }
+
+main().catch(e => console.error(e));
