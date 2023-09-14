@@ -33,12 +33,17 @@ export function frameObject(obj: Node, camera: Camera) {
     frameBounds(bounds, camera);
 }
 
-export async function loadPLYModel(): Promise<Mesh> {
+function buildUrl(url: string) {
     let base = '';
     if (import.meta.env.PROD) {
         base = import.meta.env.BASE_URL;
     }
-    const res = await fetch(`${base}/files/hammerhead.ply`);
+
+    return `${base}${url}`;
+}
+
+export async function loadPLYModel(): Promise<Mesh> {
+    const res = await fetch(buildUrl('/files/hammerhead.ply'));
     const text = await res.text();
     const data = await parse(text, ply.PLYLoader);
 
@@ -56,7 +61,7 @@ export function load8bitImage(url: string): Promise<Texture> {
     const img = new Image();
     return new Promise((resolve, reject) => {
         img.crossOrigin = 'anonymous';
-        img.src = url;
+        img.src = buildUrl(url);
         img.onerror = reject;
         img.onload = () => {
             const source = new ImageSource(img);
