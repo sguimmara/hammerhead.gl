@@ -20,8 +20,7 @@
     "start": "vite",
     "prepack": "shx rm -fr dist/ && shx mkdir dist && npx copyfiles -u 1 './src/**/*.wgsl' dist && node scripts/prepare-package.mjs && npm run build",
     "prepare": "husky install",
-    "dev": "cd pages && npm run dev",
-    "pages": "cd pages && npm install && npm run pages",
+    "pages": "npm run prepack && cd examples && npx vite build",
     "prepare-examples": "node scripts/generate-example-index.mjs"
   },
   "devDependencies": {
