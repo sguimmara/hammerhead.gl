@@ -33,8 +33,8 @@ export function frameObject(obj: Node, camera: Camera) {
     frameBounds(bounds, camera);
 }
 
-export async function loadPLYModel(uri: string): Promise<Mesh> {
-    const res = await fetch(uri);
+export async function loadPLYModel(): Promise<Mesh> {
+    const res = await fetch('/files/hammerhead.ply');
     const text = await res.text();
     const data = await parse(text, ply.PLYLoader);
 

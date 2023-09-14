@@ -17,7 +17,7 @@
     "build": "ttsc",
     "watch": "npm run prepack && ttsc --watch",
     "doc": "typedoc --readme none --name Hammerhead.gl src/index.ts",
-    "start": "vite",
+    "start": "vite examples",
     "prepack": "shx rm -fr dist/ && shx mkdir dist && npx copyfiles -u 1 './src/**/*.wgsl' dist && node scripts/prepare-package.mjs && npm run build",
     "prepare": "husky install",
     "pages": "npm run prepack && cd examples && npx vite build --base=/hammerhead.gl/",

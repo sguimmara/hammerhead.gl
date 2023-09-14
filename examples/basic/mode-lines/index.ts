@@ -12,7 +12,7 @@ async function main() {
     const context = await Context.create(canvas);
     const renderer = context.renderer;
 
-    const mesh = await loadPLYModel('/files/hammerhead.ply');
+    const mesh = await loadPLYModel();
 
     const material = new LineMaterial({ primitive: Primitive.WireTriangles }).setColor(chroma('cyan'));
 

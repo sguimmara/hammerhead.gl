@@ -20,7 +20,7 @@ async function main() {
 
     const wireframe = new LineMaterial().setColor(chroma('black'));
 
-    const mesh = await loadPLYModel('/files/hammerhead.ply');
+    const mesh = await loadPLYModel();
     const solidMesh = new Node().setMesh(mesh).setMaterial(solid);
     const wireframeMesh = new Node().setMesh(mesh).setMaterial(wireframe);
 

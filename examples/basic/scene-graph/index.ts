@@ -15,7 +15,7 @@ async function main() {
     const renderer = context.renderer;
     renderer.clearColor = chroma('gray');
 
-    const mesh = await loadPLYModel('/files/hammerhead.ply');
+    const mesh = await loadPLYModel();
 
     function makeMesh(x: number, y: number, z: number, color: string) {
         const object = new Node()

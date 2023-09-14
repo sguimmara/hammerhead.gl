@@ -12,7 +12,7 @@ async function main() {
     const renderer = context.renderer;
     renderer.clearColor = chroma('gray');
 
-    const mesh = await loadPLYModel('/files/hammerhead.ply');
+    const mesh = await loadPLYModel();
     const cyan = new BasicMaterial().setDiffuseColor(chroma('cyan'));
     const purple = new BasicMaterial().setDiffuseColor(chroma('purple'));
     const wireframe = new LineMaterial().setColor(chroma('black'));

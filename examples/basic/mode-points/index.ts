@@ -13,7 +13,7 @@ async function main() {
     const context = await Context.create(canvas);
     const renderer = context.renderer;
 
-    const mesh = await loadPLYModel('/files/hammerhead.ply');
+    const mesh = await loadPLYModel();
 
     const material = new PointMaterial().setColor(chroma('cyan'));
 
