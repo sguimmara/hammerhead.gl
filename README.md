@@ -3,7 +3,7 @@
 A 3D renderer written in TypeScript and WebGPU.
 
 <div align="center">
-    <img src="public/hammerhead.jpg" width="300">
+    <img src="examples/public/hammerhead.jpg" width="300">
 </div>
 
 <br>
