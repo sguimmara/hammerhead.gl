@@ -4,7 +4,9 @@ import Uniform, { UntypedUniform } from './Uniform';
 /**
  * Contained a buffer uniform whose exact type is unspecified.
  */
-export interface UntypedBufferUniform extends UntypedUniform, Sized, Visitable, Version {}
+export interface UntypedBufferUniform extends UntypedUniform, Sized, Visitable, Version {
+    usage: GPUBufferUsageFlags;
+}
 
 /**
  * A uniform that maps to a GPU buffer. Buffer uniforms can contain anything that can be laid out in
@@ -18,7 +20,12 @@ export default abstract class BufferUniform<V> implements UntypedBufferUniform, 
     private version: number = -1;
     abstract getByteSize(): number;
     abstract visit(visitor: Visitor): void;
+    readonly usage: GPUBufferUsageFlags;
     readonly type = 'buffer';
+
+    constructor(usage: GPUBufferUsageFlags) {
+        this.usage = GPUBufferUsage.STORAGE | GPUBufferUsage.INDEX | GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST;
+    }
 
     getVersion(): number {
         return this.version;

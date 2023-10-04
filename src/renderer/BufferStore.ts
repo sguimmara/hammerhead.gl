@@ -132,6 +132,10 @@ class BufferStore implements Service, Stats {
         bw.update();
     }
 
+    private getUsageFlags(uniform: UntypedBufferUniform): GPUBufferUsageFlags {
+        return uniform.usage;
+    }
+
     getOrCreateUniformBuffer(uniform: UntypedBufferUniform, label: string = 'uniform buffer') {
         if (this.uniformBuffers.has(uniform)) {
             const bw = this.uniformBuffers.get(uniform);
@@ -142,7 +146,7 @@ class BufferStore implements Service, Stats {
         const gpuBuffer = this.device.createBuffer({
             label,
             size: uniform.getByteSize(),
-            usage: GPUBufferUsage.STORAGE | GPUBufferUsage.INDEX | GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+            usage: this.getUsageFlags(uniform),
         });
         const bw = new BufferWriter(uniform, gpuBuffer, this.device);
         bw.update();
